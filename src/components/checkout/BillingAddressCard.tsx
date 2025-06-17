@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
-import { MapPin, Check } from "lucide-react";
+import { MapPin, Building } from "lucide-react";
 
 interface BillingAddressCardProps {
   showBillingAddress: boolean;
@@ -82,18 +82,20 @@ export const BillingAddressCard = ({
   };
 
   return (
-    <Card className={`transition-all duration-200 ${focused ? "ring-2 ring-blue-500 ring-opacity-50" : ""}`}>
+    <Card className={`transition-all duration-200 ${focused ? "ring-2 ring-blue-500 ring-opacity-50" : ""} bg-white border-gray-200`}>
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center justify-between text-lg">
           <div className="flex items-center space-x-3">
-            <div className={`p-2 rounded-lg ${isCompleted ? "bg-green-100" : "bg-gray-100"}`}>
-              {isCompleted ? (
-                <Check className="h-5 w-5 text-green-600" />
-              ) : (
-                <MapPin className="h-5 w-5 text-gray-600" />
-              )}
+            <div className="p-2 rounded-lg bg-gray-100">
+              <MapPin className="h-5 w-5 text-gray-600" />
             </div>
-            <span>Rechnungsadresse</span>
+            <div>
+              <span>Rechnungsadresse</span>
+              <div className="text-sm text-gray-600 font-normal flex items-center gap-1">
+                <Building className="h-3 w-3 text-gray-500" />
+                Wohin soll die Rechnung gesendet werden?
+              </div>
+            </div>
           </div>
         </CardTitle>
       </CardHeader>
@@ -106,7 +108,7 @@ export const BillingAddressCard = ({
             className="border-gray-300"
           />
           <Label htmlFor="billing_different" className="text-sm font-medium text-gray-700">
-            Rechnungsadresse abweichend
+            Rechnungsadresse weicht von Lieferadresse ab
           </Label>
         </div>
 
@@ -125,7 +127,7 @@ export const BillingAddressCard = ({
                   onBlur={() => setFocused(false)}
                   required={showBillingAddress}
                   className="h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all"
-                  placeholder="Dein Vorname"
+                  placeholder="Vorname"
                 />
               </div>
               
@@ -141,7 +143,7 @@ export const BillingAddressCard = ({
                   onBlur={() => setFocused(false)}
                   required={showBillingAddress}
                   className="h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all"
-                  placeholder="Dein Nachname"
+                  placeholder="Nachname"
                 />
               </div>
             </div>
@@ -158,7 +160,7 @@ export const BillingAddressCard = ({
                 onBlur={() => setFocused(false)}
                 required={showBillingAddress}
                 className="h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all"
-                placeholder="Deine Straße und Hausnummer"
+                placeholder="Straße und Hausnummer"
               />
             </div>
             
@@ -175,7 +177,7 @@ export const BillingAddressCard = ({
                   onBlur={() => setFocused(false)}
                   required={showBillingAddress}
                   className="h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all"
-                  placeholder="Deine PLZ"
+                  placeholder="PLZ"
                 />
               </div>
               
@@ -191,7 +193,7 @@ export const BillingAddressCard = ({
                   onBlur={() => setFocused(false)}
                   required={showBillingAddress}
                   className="h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all"
-                  placeholder="Deine Stadt"
+                  placeholder="Stadt"
                 />
               </div>
             </div>

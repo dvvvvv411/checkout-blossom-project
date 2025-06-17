@@ -53,11 +53,6 @@ export const EmailCard = ({ email, onChange, onComplete, isCompleted }: EmailCar
               </div>
             </div>
           </div>
-          {isCompleted && (
-            <span className="text-sm text-green-700 font-semibold">
-              Bestätigt
-            </span>
-          )}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -76,7 +71,7 @@ export const EmailCard = ({ email, onChange, onComplete, isCompleted }: EmailCar
               onBlur={() => setFocused(false)}
               required
               className="pl-10 h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-200 text-base bg-white"
-              placeholder="deine.email@beispiel.de"
+              placeholder="ihre.email@beispiel.de"
             />
           </div>
         </div>

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { FileText, Check, Shield } from "lucide-react";
+import { FileText, Shield } from "lucide-react";
 
 interface TermsCardProps {
   termsAccepted: boolean;
@@ -23,21 +23,13 @@ export const TermsCard = ({ termsAccepted, onChange, isCompleted }: TermsCardPro
       focused 
         ? "ring-2 ring-blue-500 ring-opacity-30 shadow-lg" 
         : "hover:shadow-md"
-    } ${isCompleted ? "bg-gradient-to-br from-green-50 to-white border-green-300" : "bg-white border-gray-200"}`}>
+    } bg-white border-gray-200`}>
       
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center justify-between text-lg">
           <div className="flex items-center space-x-3">
-            <div className={`p-3 rounded-lg transition-all duration-300 ${
-              isCompleted 
-                ? "bg-green-600 shadow-sm" 
-                : "bg-gray-700 shadow-sm"
-            }`}>
-              {isCompleted ? (
-                <Check className="h-5 w-5 text-white" />
-              ) : (
-                <FileText className="h-5 w-5 text-white" />
-              )}
+            <div className="p-3 rounded-lg bg-gray-700 shadow-sm">
+              <FileText className="h-5 w-5 text-white" />
             </div>
             <div>
               <div className="text-lg font-semibold text-gray-900">
@@ -49,11 +41,6 @@ export const TermsCard = ({ termsAccepted, onChange, isCompleted }: TermsCardPro
               </div>
             </div>
           </div>
-          {isCompleted && (
-            <span className="text-sm text-green-700 font-semibold">
-              Akzeptiert
-            </span>
-          )}
         </CardTitle>
       </CardHeader>
       <CardContent>

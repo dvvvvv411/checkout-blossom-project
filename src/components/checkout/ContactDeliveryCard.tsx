@@ -99,11 +99,6 @@ export const ContactDeliveryCard = ({
               </div>
             </div>
           </div>
-          {isCompleted && (
-            <span className="text-sm text-green-700 font-semibold">
-              Vollständig
-            </span>
-          )}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -128,7 +123,7 @@ export const ContactDeliveryCard = ({
                     onBlur={() => setFocused(false)}
                     required
                     className="h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-200 text-base bg-white"
-                    placeholder="Dein Vorname"
+                    placeholder="Vorname"
                   />
                 </div>
                 
@@ -144,7 +139,7 @@ export const ContactDeliveryCard = ({
                     onBlur={() => setFocused(false)}
                     required
                     className="h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-200 text-base bg-white"
-                    placeholder="Dein Nachname"
+                    placeholder="Nachname"
                   />
                 </div>
               </div>
@@ -164,7 +159,7 @@ export const ContactDeliveryCard = ({
                     onBlur={() => setFocused(false)}
                     required
                     className="pl-10 h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-200 text-base bg-white"
-                    placeholder="Deine Telefonnummer"
+                    placeholder="Telefonnummer"
                   />
                 </div>
               </div>
@@ -190,7 +185,7 @@ export const ContactDeliveryCard = ({
                   onBlur={() => setFocused(false)}
                   required
                   className="h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-200 text-base bg-white"
-                  placeholder="Deine Straße und Hausnummer"
+                  placeholder="Straße und Hausnummer"
                 />
               </div>
               
@@ -207,7 +202,7 @@ export const ContactDeliveryCard = ({
                     onBlur={() => setFocused(false)}
                     required
                     className="h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-200 text-base bg-white"
-                    placeholder="Deine PLZ"
+                    placeholder="PLZ"
                   />
                 </div>
                 
@@ -223,7 +218,7 @@ export const ContactDeliveryCard = ({
                     onBlur={() => setFocused(false)}
                     required
                     className="h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-200 text-base bg-white"
-                    placeholder="Deine Stadt"
+                    placeholder="Stadt"
                   />
                 </div>
               </div>
