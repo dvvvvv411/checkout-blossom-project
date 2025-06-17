@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { CreditCard, Check, Clock, FileText, Sparkles, ShieldCheck } from "lucide-react";
+import { CreditCard, Check, Clock, FileText, Shield } from "lucide-react";
 
 interface PaymentMethodCardProps {
   paymentMethod: "vorkasse" | "rechnung";
@@ -33,17 +33,15 @@ export const PaymentMethodCard = ({
     const details = {
       vorkasse: {
         description: "Zahlung im Voraus per Überweisung",
-        details: "Du erhältst unsere Bankdaten nach der Bestellung. Nach Zahlungseingang wird deine Bestellung bearbeitet.",
+        details: "Sie erhalten unsere Bankdaten nach der Bestellung. Nach Zahlungseingang wird Ihre Bestellung bearbeitet.",
         icon: Clock,
-        color: "from-blue-400 to-cyan-500",
-        badge: "Sicher & bewährt"
+        badge: "Sicher"
       },
       rechnung: {
         description: "Kauf auf Rechnung",
-        details: "Du erhältst eine Rechnung mit 14 Tagen Zahlungsziel. Ideal für Geschäftskunden und regelmäßige Bestellungen.",
+        details: "Sie erhalten eine Rechnung mit 14 Tagen Zahlungsziel. Ideal für Geschäftskunden.",
         icon: FileText,
-        color: "from-green-400 to-emerald-500",
-        badge: "Flexibel & bequem"
+        badge: "Flexibel"
       }
     };
     return details[method] || details.rechnung;
@@ -56,20 +54,17 @@ export const PaymentMethodCard = ({
   return (
     <Card className={`relative overflow-hidden transition-all duration-300 ${
       focused 
-        ? "ring-2 ring-blue-500 ring-opacity-50 shadow-xl scale-[1.01]" 
-        : "hover:shadow-lg"
-    } ${isCompleted ? "bg-gradient-to-br from-green-50 to-emerald-50 border-green-200" : "bg-gradient-to-br from-purple-50 via-white to-indigo-50"}`}>
-      {/* Animated background elements */}
-      <div className="absolute top-0 right-0 w-36 h-36 bg-gradient-to-br from-purple-200/20 to-indigo-200/20 rounded-full -translate-y-18 translate-x-18 blur-xl animate-pulse"></div>
-      <div className="absolute bottom-0 left-0 w-28 h-28 bg-gradient-to-tr from-pink-200/20 to-purple-200/20 rounded-full translate-y-14 -translate-x-14 blur-xl"></div>
+        ? "ring-2 ring-blue-500 ring-opacity-30 shadow-lg" 
+        : "hover:shadow-md"
+    } ${isCompleted ? "bg-gradient-to-br from-green-50 to-white border-green-300" : "bg-white border-gray-200"}`}>
       
-      <CardHeader className="pb-4 relative z-10">
+      <CardHeader className="pb-4">
         <CardTitle className="flex items-center justify-between text-lg">
           <div className="flex items-center space-x-3">
-            <div className={`p-3 rounded-xl transition-all duration-300 ${
+            <div className={`p-3 rounded-lg transition-all duration-300 ${
               isCompleted 
-                ? "bg-gradient-to-br from-green-400 to-emerald-500 shadow-lg" 
-                : "bg-gradient-to-br from-purple-400 to-indigo-500 shadow-md"
+                ? "bg-green-600 shadow-sm" 
+                : "bg-blue-600 shadow-sm"
             }`}>
               {isCompleted ? (
                 <Check className="h-5 w-5 text-white" />
@@ -78,29 +73,29 @@ export const PaymentMethodCard = ({
               )}
             </div>
             <div>
-              <div className="text-lg font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+              <div className="text-lg font-semibold text-gray-900">
                 {getTranslation("payment_method")}
               </div>
-              <div className="text-sm text-gray-600 font-medium flex items-center gap-1">
-                <ShieldCheck className="h-3 w-3 text-purple-500" />
-                Wie möchtest du bezahlen?
+              <div className="text-sm text-gray-600 font-normal flex items-center gap-1">
+                <Shield className="h-3 w-3 text-gray-500" />
+                Wählen Sie Ihre bevorzugte Zahlungsart
               </div>
             </div>
           </div>
           {isCompleted && (
-            <span className="text-sm bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent font-bold animate-pulse">
-              ✨ Gewählt!
+            <span className="text-sm text-green-700 font-semibold">
+              Ausgewählt
             </span>
           )}
         </CardTitle>
       </CardHeader>
-      <CardContent className="relative z-10">
+      <CardContent>
         <RadioGroup
           value={paymentMethod}
           onValueChange={handleChange}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
-          className="space-y-4"
+          className="space-y-3"
         >
           {paymentMethods.map((method) => {
             const details = getPaymentMethodDetails(method);
@@ -108,51 +103,41 @@ export const PaymentMethodCard = ({
             const isSelected = paymentMethod === method;
             
             return (
-              <div key={method} className={`relative group transition-all duration-300 ${
-                isSelected ? "scale-[1.02]" : "hover:scale-[1.01]"
+              <div key={method} className={`transition-all duration-200 ${
+                isSelected ? "scale-[1.01]" : ""
               }`}>
-                <div className={`p-5 border-2 rounded-xl transition-all duration-300 ${
+                <div className={`p-4 border rounded-lg transition-all duration-200 ${
                   isSelected 
-                    ? "border-blue-300 bg-gradient-to-br from-blue-50 to-indigo-50 shadow-lg" 
-                    : "border-gray-200 bg-white/80 backdrop-blur-sm hover:border-blue-200 hover:shadow-md"
+                    ? "border-blue-300 bg-blue-50" 
+                    : "border-gray-200 bg-white hover:border-gray-300"
                 }`}>
-                  <div className="flex items-start space-x-4">
+                  <div className="flex items-start space-x-3">
                     <RadioGroupItem 
                       value={method} 
                       id={method}
-                      className="border-2 border-gray-300 mt-1 transition-all duration-300"
+                      className="border-2 border-gray-300 mt-1"
                     />
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
-                        <Label htmlFor={method} className="flex items-center text-base font-bold text-gray-800 cursor-pointer">
-                          <div className={`p-2 rounded-lg mr-3 bg-gradient-to-br ${details.color} shadow-sm`}>
-                            <IconComponent className="h-4 w-4 text-white" />
+                        <Label htmlFor={method} className="flex items-center text-base font-semibold text-gray-900 cursor-pointer">
+                          <div className="p-2 rounded-md mr-3 bg-gray-100">
+                            <IconComponent className="h-4 w-4 text-gray-600" />
                           </div>
                           {getTranslation(method)}
                         </Label>
-                        <span className={`text-xs px-3 py-1 rounded-full font-medium ${
-                          isSelected 
-                            ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white" 
-                            : "bg-gray-100 text-gray-600"
-                        }`}>
+                        <span className="text-xs px-2 py-1 rounded bg-gray-100 text-gray-600 font-medium">
                           {details.badge}
                         </span>
                       </div>
-                      <p className="text-sm text-gray-600 font-medium mb-2">{details.description}</p>
+                      <p className="text-sm text-gray-600 mb-2">{details.description}</p>
                       {isSelected && (
-                        <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200 animate-fade-in">
-                          <div className="flex items-start gap-2">
-                            <Sparkles className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
-                            <p className="text-sm text-blue-700 font-medium">{details.details}</p>
-                          </div>
+                        <div className="mt-3 p-3 bg-blue-50 rounded-md border border-blue-200">
+                          <p className="text-sm text-blue-800">{details.details}</p>
                         </div>
                       )}
                     </div>
                   </div>
                 </div>
-                {isSelected && (
-                  <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 pointer-events-none animate-pulse"></div>
-                )}
               </div>
             );
           })}

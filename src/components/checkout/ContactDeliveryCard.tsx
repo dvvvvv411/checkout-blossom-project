@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { User, Phone, MapPin, Check, Sparkles, Home } from "lucide-react";
+import { User, Phone, MapPin, Check, Building } from "lucide-react";
 
 interface ContactDeliveryCardProps {
   firstName: string;
@@ -53,7 +53,6 @@ export const ContactDeliveryCard = ({
   const handleChange = (field: string, value: string) => {
     onChange(field, value);
     
-    // Check completion based on which field was updated
     if (field === "first_name") {
       checkCompletion(value, lastName, phone, street, postalCode, city);
     } else if (field === "last_name") {
@@ -72,20 +71,17 @@ export const ContactDeliveryCard = ({
   return (
     <Card className={`relative overflow-hidden transition-all duration-300 ${
       focused 
-        ? "ring-2 ring-blue-500 ring-opacity-50 shadow-xl scale-[1.01]" 
-        : "hover:shadow-lg"
-    } ${isCompleted ? "bg-gradient-to-br from-green-50 to-emerald-50 border-green-200" : "bg-gradient-to-br from-orange-50 via-white to-pink-50"}`}>
-      {/* Animated background elements */}
-      <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-orange-200/20 to-pink-200/20 rounded-full -translate-y-20 translate-x-20 blur-2xl animate-pulse"></div>
-      <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-blue-200/20 to-purple-200/20 rounded-full translate-y-16 -translate-x-16 blur-xl"></div>
+        ? "ring-2 ring-blue-500 ring-opacity-30 shadow-lg" 
+        : "hover:shadow-md"
+    } ${isCompleted ? "bg-gradient-to-br from-green-50 to-white border-green-300" : "bg-white border-gray-200"}`}>
       
-      <CardHeader className="pb-4 relative z-10">
+      <CardHeader className="pb-4">
         <CardTitle className="flex items-center justify-between text-lg">
           <div className="flex items-center space-x-3">
-            <div className={`p-3 rounded-xl transition-all duration-300 ${
+            <div className={`p-3 rounded-lg transition-all duration-300 ${
               isCompleted 
-                ? "bg-gradient-to-br from-green-400 to-emerald-500 shadow-lg" 
-                : "bg-gradient-to-br from-orange-400 to-pink-500 shadow-md"
+                ? "bg-green-600 shadow-sm" 
+                : "bg-blue-600 shadow-sm"
             }`}>
               {isCompleted ? (
                 <Check className="h-5 w-5 text-white" />
@@ -94,36 +90,35 @@ export const ContactDeliveryCard = ({
               )}
             </div>
             <div>
-              <div className="text-lg font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-                Lieferadresse
+              <div className="text-lg font-semibold text-gray-900">
+                Kontakt & Lieferung
               </div>
-              <div className="text-sm text-gray-600 font-medium flex items-center gap-1">
-                <Home className="h-3 w-3 text-orange-500" />
-                Wohin soll das Heizöl geliefert werden?
+              <div className="text-sm text-gray-600 font-normal flex items-center gap-1">
+                <Building className="h-3 w-3 text-gray-500" />
+                Persönliche Daten und Lieferadresse
               </div>
             </div>
           </div>
           {isCompleted && (
-            <span className="text-sm bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent font-bold animate-pulse">
-              ✨ Komplett!
+            <span className="text-sm text-green-700 font-semibold">
+              Vollständig
             </span>
           )}
         </CardTitle>
       </CardHeader>
-      <CardContent className="relative z-10">
-        <div className="space-y-8">
+      <CardContent>
+        <div className="space-y-6">
           {/* Personal Data Section */}
-          <div className="relative">
-            <div className="absolute -left-2 -top-2 w-6 h-6 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full opacity-20"></div>
-            <h4 className="text-sm font-bold text-gray-800 mb-4 flex items-center">
-              <User className="h-4 w-4 mr-2 text-blue-500" />
+          <div>
+            <h4 className="text-sm font-semibold text-gray-800 mb-4 flex items-center">
+              <User className="h-4 w-4 mr-2 text-gray-600" />
               Persönliche Daten
             </h4>
-            <div className="space-y-5">
+            <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <div className="group">
-                  <Label htmlFor="first_name" className="text-sm font-semibold text-gray-800 mb-2 block">
-                    Dein Vorname *
+                <div>
+                  <Label htmlFor="first_name" className="text-sm font-medium text-gray-700 mb-2 block">
+                    Vorname *
                   </Label>
                   <Input
                     id="first_name"
@@ -132,14 +127,14 @@ export const ContactDeliveryCard = ({
                     onFocus={() => setFocused(true)}
                     onBlur={() => setFocused(false)}
                     required
-                    className="h-12 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-300 text-base font-medium bg-white/80 backdrop-blur-sm group-hover:shadow-md"
-                    placeholder="Anna"
+                    className="h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-200 text-base bg-white"
+                    placeholder="Max"
                   />
                 </div>
                 
-                <div className="group">
-                  <Label htmlFor="last_name" className="text-sm font-semibold text-gray-800 mb-2 block">
-                    Dein Nachname *
+                <div>
+                  <Label htmlFor="last_name" className="text-sm font-medium text-gray-700 mb-2 block">
+                    Nachname *
                   </Label>
                   <Input
                     id="last_name"
@@ -148,18 +143,18 @@ export const ContactDeliveryCard = ({
                     onFocus={() => setFocused(true)}
                     onBlur={() => setFocused(false)}
                     required
-                    className="h-12 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-300 text-base font-medium bg-white/80 backdrop-blur-sm group-hover:shadow-md"
-                    placeholder="Müller"
+                    className="h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-200 text-base bg-white"
+                    placeholder="Mustermann"
                   />
                 </div>
               </div>
               
-              <div className="group">
-                <Label htmlFor="phone" className="text-sm font-semibold text-gray-800 mb-2 block">
-                  Deine Telefonnummer *
+              <div>
+                <Label htmlFor="phone" className="text-sm font-medium text-gray-700 mb-2 block">
+                  Telefonnummer *
                 </Label>
                 <div className="relative">
-                  <Phone className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 transition-colors group-focus-within:text-blue-500" />
+                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input
                     id="phone"
                     type="tel"
@@ -168,7 +163,7 @@ export const ContactDeliveryCard = ({
                     onFocus={() => setFocused(true)}
                     onBlur={() => setFocused(false)}
                     required
-                    className="pl-12 h-12 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-300 text-base font-medium bg-white/80 backdrop-blur-sm group-hover:shadow-md"
+                    className="pl-10 h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-200 text-base bg-white"
                     placeholder="0173 123 4567"
                   />
                 </div>
@@ -177,15 +172,14 @@ export const ContactDeliveryCard = ({
           </div>
 
           {/* Delivery Address Section */}
-          <div className="relative">
-            <div className="absolute -left-2 -top-2 w-6 h-6 bg-gradient-to-br from-orange-400 to-pink-500 rounded-full opacity-20"></div>
-            <h4 className="text-sm font-bold text-gray-800 mb-4 flex items-center">
-              <MapPin className="h-4 w-4 mr-2 text-orange-500" />
+          <div className="border-t border-gray-200 pt-6">
+            <h4 className="text-sm font-semibold text-gray-800 mb-4 flex items-center">
+              <MapPin className="h-4 w-4 mr-2 text-gray-600" />
               Lieferadresse
             </h4>
-            <div className="space-y-5">
-              <div className="group">
-                <Label htmlFor="delivery_street" className="text-sm font-semibold text-gray-800 mb-2 block">
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="delivery_street" className="text-sm font-medium text-gray-700 mb-2 block">
                   Straße und Hausnummer *
                 </Label>
                 <Input
@@ -195,15 +189,15 @@ export const ContactDeliveryCard = ({
                   onFocus={() => setFocused(true)}
                   onBlur={() => setFocused(false)}
                   required
-                  className="h-12 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-300 text-base font-medium bg-white/80 backdrop-blur-sm group-hover:shadow-md"
-                  placeholder="Bergmannstraße 42"
+                  className="h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-200 text-base bg-white"
+                  placeholder="Musterstraße 123"
                 />
               </div>
               
               <div className="grid grid-cols-2 gap-4">
-                <div className="group">
-                  <Label htmlFor="delivery_postal_code" className="text-sm font-semibold text-gray-800 mb-2 block">
-                    Postleitzahl *
+                <div>
+                  <Label htmlFor="delivery_postal_code" className="text-sm font-medium text-gray-700 mb-2 block">
+                    PLZ *
                   </Label>
                   <Input
                     id="delivery_postal_code"
@@ -212,13 +206,13 @@ export const ContactDeliveryCard = ({
                     onFocus={() => setFocused(true)}
                     onBlur={() => setFocused(false)}
                     required
-                    className="h-12 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-300 text-base font-medium bg-white/80 backdrop-blur-sm group-hover:shadow-md"
-                    placeholder="10961"
+                    className="h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-200 text-base bg-white"
+                    placeholder="12345"
                   />
                 </div>
                 
-                <div className="group">
-                  <Label htmlFor="delivery_city" className="text-sm font-semibold text-gray-800 mb-2 block">
+                <div>
+                  <Label htmlFor="delivery_city" className="text-sm font-medium text-gray-700 mb-2 block">
                     Stadt *
                   </Label>
                   <Input
@@ -228,8 +222,8 @@ export const ContactDeliveryCard = ({
                     onFocus={() => setFocused(true)}
                     onBlur={() => setFocused(false)}
                     required
-                    className="h-12 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-300 text-base font-medium bg-white/80 backdrop-blur-sm group-hover:shadow-md"
-                    placeholder="Berlin"
+                    className="h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-200 text-base bg-white"
+                    placeholder="Musterstadt"
                   />
                 </div>
               </div>
