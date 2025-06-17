@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { OrderSummary } from "@/components/checkout/OrderSummary";
 import { CustomerForm } from "@/components/checkout/CustomerForm";
+import { VerifiedShopCard } from "@/components/checkout/VerifiedShopCard";
 import { fetchOrderData, fetchShopConfig } from "@/services/api";
 
 const Checkout = () => {
@@ -97,13 +98,18 @@ const Checkout = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Order Summary - Mobile First */}
           <div className="lg:col-span-5 lg:order-2">
-            <div className="lg:sticky lg:top-8">
+            <div className="lg:sticky lg:top-8 space-y-6">
               <div className="[&_.bg-white]:bg-transparent [&_.border]:border-transparent [&_.shadow-sm]:shadow-none">
                 <OrderSummary 
                   orderData={orderData} 
                   shopConfig={shopConfig}
                   accentColor={accentColor}
                 />
+              </div>
+              
+              {/* Verified Shop Card - positioned at bottom of right column */}
+              <div className="mt-8">
+                <VerifiedShopCard language={shopConfig?.language} />
               </div>
             </div>
           </div>
