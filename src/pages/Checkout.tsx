@@ -27,7 +27,6 @@ const Checkout = () => {
   useEffect(() => {
     if (shopConfig?.accent_color) {
       setAccentColor(shopConfig.accent_color);
-      // Setze CSS Custom Properties für dynamische Farben
       document.documentElement.style.setProperty("--checkout-accent", shopConfig.accent_color);
     }
   }, [shopConfig]);
@@ -35,13 +34,15 @@ const Checkout = () => {
   if (!token) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <h1 className="text-2xl font-semibold text-gray-900 mb-2">
-            Ungültiger Checkout-Link
-          </h1>
-          <p className="text-gray-600">
-            Bitte verwenden Sie einen gültigen Checkout-Link mit Token.
-          </p>
+        <div className="text-center max-w-md mx-auto px-6">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+            <h1 className="text-2xl font-semibold text-gray-900 mb-3">
+              Ungültiger Checkout-Link
+            </h1>
+            <p className="text-gray-600 leading-relaxed">
+              Bitte verwenden Sie einen gültigen Checkout-Link mit Token.
+            </p>
+          </div>
         </div>
       </div>
     );
@@ -50,9 +51,9 @@ const Checkout = () => {
   if (orderLoading || configLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="flex items-center space-x-3">
-          <Loader2 className="h-6 w-6 animate-spin" style={{ color: accentColor }} />
-          <span className="text-lg text-gray-700">Checkout wird geladen...</span>
+        <div className="flex flex-col items-center space-y-4">
+          <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+          <span className="text-lg text-gray-600 font-medium">Checkout wird geladen...</span>
         </div>
       </div>
     );
@@ -61,13 +62,15 @@ const Checkout = () => {
   if (orderError || !orderData) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <h1 className="text-2xl font-semibold text-red-600 mb-2">
-            Fehler beim Laden der Bestelldaten
-          </h1>
-          <p className="text-gray-600">
-            Bitte überprüfen Sie Ihren Checkout-Link oder versuchen Sie es später erneut.
-          </p>
+        <div className="text-center max-w-md mx-auto px-6">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+            <h1 className="text-2xl font-semibold text-red-600 mb-3">
+              Fehler beim Laden der Bestelldaten
+            </h1>
+            <p className="text-gray-600 leading-relaxed">
+              Bitte überprüfen Sie Ihren Checkout-Link oder versuchen Sie es später erneut.
+            </p>
+          </div>
         </div>
       </div>
     );
@@ -75,24 +78,41 @@ const Checkout = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-          {/* Bestellübersicht - Links auf Desktop, oben auf Mobile */}
-          <div className="order-2 lg:order-1">
-            <OrderSummary 
-              orderData={orderData} 
-              shopConfig={shopConfig}
-              accentColor={accentColor}
-            />
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl font-semibold text-gray-900">Checkout</h1>
+            {shopConfig && (
+              <div className="text-sm text-gray-500">
+                {shopConfig.company_name}
+              </div>
+            )}
           </div>
-          
-          {/* Kundendatenformular - Rechts auf Desktop, unten auf Mobile */}
-          <div className="order-1 lg:order-2">
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Customer Form - Left Side */}
+          <div className="lg:col-span-7">
             <CustomerForm 
               orderData={orderData}
               shopConfig={shopConfig}
               accentColor={accentColor}
             />
+          </div>
+          
+          {/* Order Summary - Right Side */}
+          <div className="lg:col-span-5">
+            <div className="lg:sticky lg:top-8">
+              <OrderSummary 
+                orderData={orderData} 
+                shopConfig={shopConfig}
+                accentColor={accentColor}
+              />
+            </div>
           </div>
         </div>
       </div>
