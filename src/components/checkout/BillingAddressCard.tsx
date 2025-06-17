@@ -125,7 +125,7 @@ export const BillingAddressCard = ({
                   onBlur={() => setFocused(false)}
                   required={showBillingAddress}
                   className="h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all"
-                  placeholder="Dein Vorname"
+                  placeholder="Max"
                 />
               </div>
               
@@ -141,7 +141,7 @@ export const BillingAddressCard = ({
                   onBlur={() => setFocused(false)}
                   required={showBillingAddress}
                   className="h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all"
-                  placeholder="Dein Nachname"
+                  placeholder="Mustermann"
                 />
               </div>
             </div>
@@ -158,7 +158,7 @@ export const BillingAddressCard = ({
                 onBlur={() => setFocused(false)}
                 required={showBillingAddress}
                 className="h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all"
-                placeholder="Deine Rechnungsstraße und Hausnummer"
+                placeholder="Rechnungsstraße 456"
               />
             </div>
             
@@ -175,7 +175,7 @@ export const BillingAddressCard = ({
                   onBlur={() => setFocused(false)}
                   required={showBillingAddress}
                   className="h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all"
-                  placeholder="Deine PLZ"
+                  placeholder="54321"
                 />
               </div>
               
@@ -191,7 +191,7 @@ export const BillingAddressCard = ({
                   onBlur={() => setFocused(false)}
                   required={showBillingAddress}
                   className="h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all"
-                  placeholder="Deine Stadt"
+                  placeholder="Hamburg"
                 />
               </div>
             </div>

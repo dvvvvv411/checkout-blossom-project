@@ -128,7 +128,7 @@ export const ContactDeliveryCard = ({
                     onBlur={() => setFocused(false)}
                     required
                     className="h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-200 text-base bg-white"
-                    placeholder="Dein Vorname"
+                    placeholder="Max"
                   />
                 </div>
                 
@@ -144,7 +144,7 @@ export const ContactDeliveryCard = ({
                     onBlur={() => setFocused(false)}
                     required
                     className="h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-200 text-base bg-white"
-                    placeholder="Dein Nachname"
+                    placeholder="Mustermann"
                   />
                 </div>
               </div>
@@ -164,7 +164,7 @@ export const ContactDeliveryCard = ({
                     onBlur={() => setFocused(false)}
                     required
                     className="pl-10 h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-200 text-base bg-white"
-                    placeholder="Deine Telefonnummer"
+                    placeholder="0173 123 4567"
                   />
                 </div>
               </div>
@@ -190,7 +190,7 @@ export const ContactDeliveryCard = ({
                   onBlur={() => setFocused(false)}
                   required
                   className="h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-200 text-base bg-white"
-                  placeholder="Deine Straße und Hausnummer"
+                  placeholder="Musterstraße 123"
                 />
               </div>
               
@@ -207,7 +207,7 @@ export const ContactDeliveryCard = ({
                     onBlur={() => setFocused(false)}
                     required
                     className="h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-200 text-base bg-white"
-                    placeholder="Deine PLZ"
+                    placeholder="12345"
                   />
                 </div>
                 
@@ -223,7 +223,7 @@ export const ContactDeliveryCard = ({
                     onBlur={() => setFocused(false)}
                     required
                     className="h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-200 text-base bg-white"
-                    placeholder="Deine Stadt"
+                    placeholder="Musterstadt"
                   />
                 </div>
               </div>
