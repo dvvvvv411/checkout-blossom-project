@@ -9,7 +9,7 @@ import { ContactDeliveryCard } from "./ContactDeliveryCard";
 import { BillingAddressCard } from "./BillingAddressCard";
 import { PaymentMethodCard } from "./PaymentMethodCard";
 import { TermsCard } from "./TermsCard";
-import { Shield } from "lucide-react";
+import { Shield, Sparkles, Rocket } from "lucide-react";
 
 interface CustomerFormProps {
   orderData: OrderData;
@@ -218,18 +218,25 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor }: CustomerFor
   const allStepsCompleted = Object.values(completedSteps).every(Boolean);
 
   return (
-    <div className="space-y-6">
-      {/* SSL Security Message */}
-      <div className="bg-green-50 border border-green-200 rounded-xl p-4">
-        <div className="flex items-center space-x-3">
-          <Shield className="h-5 w-5 text-green-600" />
-          <span className="text-sm font-medium text-green-700">
-            Sichere SSL-Verschlüsselung für Ihre Daten
-          </span>
+    <div className="space-y-8">
+      {/* Enhanced SSL Security Message */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl p-6 shadow-lg">
+        <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-green-300/20 to-emerald-300/20 rounded-full -translate-y-12 translate-x-12 blur-xl"></div>
+        <div className="relative z-10 flex items-center space-x-4">
+          <div className="p-3 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl shadow-lg">
+            <Shield className="h-6 w-6 text-white" />
+          </div>
+          <div>
+            <div className="font-bold text-green-800 text-lg flex items-center gap-2">
+              <Sparkles className="h-4 w-4" />
+              SSL-gesicherte Verbindung
+            </div>
+            <p className="text-green-700 font-medium">Deine Daten sind durch modernste Verschlüsselung geschützt</p>
+          </div>
         </div>
       </div>
       
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-8">
         <EmailCard
           email={formData.email}
           onChange={(email) => handleInputChange("email", email)}
@@ -280,24 +287,32 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor }: CustomerFor
           isCompleted={completedSteps.terms}
         />
 
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <Button
-            type="submit"
-            className={`w-full h-14 text-white font-semibold text-lg rounded-xl transition-all duration-200 hover:shadow-lg disabled:opacity-50 ${
-              allStepsCompleted ? "animate-pulse" : ""
-            }`}
-            disabled={isSubmitting || !allStepsCompleted}
-            style={{ 
-              backgroundColor: allStepsCompleted ? accentColor : "#94a3b8",
-              color: "white"
-            }}
-          >
-            {isSubmitting ? "Wird verarbeitet..." : getTranslation("submit")}
-          </Button>
-          
-          <p className="text-xs text-gray-500 text-center mt-3">
-            Mit dem Abschließen der Bestellung stimmen Sie unseren AGB zu.
-          </p>
+        <div className="relative overflow-hidden bg-gradient-to-br from-white to-gray-50 rounded-2xl border-2 border-gray-200 p-8 shadow-lg">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-200/20 to-purple-200/20 rounded-full -translate-y-16 translate-x-16 blur-xl animate-pulse"></div>
+          <div className="relative z-10">
+            <Button
+              type="submit"
+              className={`w-full h-16 text-white font-bold text-xl rounded-2xl transition-all duration-300 hover:shadow-2xl disabled:opacity-50 relative overflow-hidden group ${
+                allStepsCompleted ? "animate-pulse shadow-xl" : ""
+              }`}
+              disabled={isSubmitting || !allStepsCompleted}
+              style={{ 
+                backgroundColor: allStepsCompleted ? accentColor : "#94a3b8",
+                color: "white"
+              }}
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="flex items-center justify-center gap-3">
+                {allStepsCompleted && !isSubmitting && <Rocket className="h-5 w-5" />}
+                {isSubmitting ? "Wird verarbeitet..." : getTranslation("submit")}
+                {allStepsCompleted && !isSubmitting && <Sparkles className="h-5 w-5" />}
+              </div>
+            </Button>
+            
+            <p className="text-sm text-gray-600 text-center mt-4 font-medium">
+              Mit dem Abschließen der Bestellung stimmst du unseren AGB zu.
+            </p>
+          </div>
         </div>
       </form>
     </div>
