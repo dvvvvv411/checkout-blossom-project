@@ -4,12 +4,12 @@ import { Button } from "@/components/ui/button";
 import { OrderData, ShopConfig, CustomerData, submitOrder } from "@/services/api";
 import { useToast } from "@/hooks/use-toast";
 import { useSearchParams } from "react-router-dom";
-import { ProgressBar } from "./ProgressBar";
 import { EmailCard } from "./EmailCard";
-import { ContactCard } from "./ContactCard";
-import { DeliveryAddressCard } from "./DeliveryAddressCard";
+import { ContactDeliveryCard } from "./ContactDeliveryCard";
 import { BillingAddressCard } from "./BillingAddressCard";
 import { PaymentMethodCard } from "./PaymentMethodCard";
+import { TermsCard } from "./TermsCard";
+import { Shield } from "lucide-react";
 
 interface CustomerFormProps {
   orderData: OrderData;
@@ -37,16 +37,15 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor }: CustomerFor
 
   const [showBillingAddress, setShowBillingAddress] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [completedSteps, setCompletedSteps] = useState({
     email: false,
     contact: false,
     delivery: false,
     billing: true,
     payment: true,
+    terms: false,
   });
-
-  const steps = ["E-Mail", "Kontakt", "Lieferung", "Rechnung", "Zahlung"];
-  const currentStep = Object.values(completedSteps).filter(Boolean).length;
 
   useEffect(() => {
     if (!showBillingAddress) {
@@ -112,6 +111,11 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor }: CustomerFor
     setCompletedSteps(prev => ({ ...prev, [step]: true }));
   };
 
+  const handleTermsAccepted = (accepted: boolean) => {
+    setTermsAccepted(accepted);
+    setCompletedSteps(prev => ({ ...prev, terms: accepted }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -119,6 +123,15 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor }: CustomerFor
       toast({
         title: "Fehler",
         description: "Checkout-Token fehlt",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!termsAccepted) {
+      toast({
+        title: "Fehler",
+        description: "Bitte bestätigen Sie die Geschäftsbedingungen",
         variant: "destructive",
       });
       return;
@@ -206,11 +219,15 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor }: CustomerFor
 
   return (
     <div className="space-y-6">
-      <ProgressBar 
-        currentStep={currentStep} 
-        totalSteps={steps.length} 
-        steps={steps} 
-      />
+      {/* SSL Security Message */}
+      <div className="bg-green-50 border border-green-200 rounded-xl p-4">
+        <div className="flex items-center space-x-3">
+          <Shield className="h-5 w-5 text-green-600" />
+          <span className="text-sm font-medium text-green-700">
+            Sichere SSL-Verschlüsselung für Ihre Daten
+          </span>
+        </div>
+      </div>
       
       <form onSubmit={handleSubmit} className="space-y-6">
         <EmailCard
@@ -220,22 +237,19 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor }: CustomerFor
           isCompleted={completedSteps.email}
         />
 
-        <ContactCard
+        <ContactDeliveryCard
           firstName={formData.first_name}
           lastName={formData.last_name}
           phone={formData.phone}
-          onChange={handleInputChange}
-          onComplete={() => handleStepComplete("contact")}
-          isCompleted={completedSteps.contact}
-        />
-
-        <DeliveryAddressCard
           street={formData.delivery_address.street}
           postalCode={formData.delivery_address.postal_code}
           city={formData.delivery_address.city}
           onChange={handleInputChange}
-          onComplete={() => handleStepComplete("delivery")}
-          isCompleted={completedSteps.delivery}
+          onComplete={() => {
+            handleStepComplete("contact");
+            handleStepComplete("delivery");
+          }}
+          isCompleted={completedSteps.contact && completedSteps.delivery}
         />
 
         <BillingAddressCard
@@ -259,6 +273,12 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor }: CustomerFor
             getTranslation={getTranslation}
           />
         )}
+
+        <TermsCard
+          termsAccepted={termsAccepted}
+          onChange={handleTermsAccepted}
+          isCompleted={completedSteps.terms}
+        />
 
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <Button

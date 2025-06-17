@@ -64,7 +64,7 @@ export const BillingAddressCard = ({
   };
 
   return (
-    <Card className={`transition-all duration-200 ${focused ? "ring-2 ring-blue-500 ring-opacity-50" : ""} ${isCompleted ? "border-green-500" : ""}`}>
+    <Card className={`transition-all duration-200 ${focused ? "ring-2 ring-blue-500 ring-opacity-50" : ""}`}>
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center justify-between text-lg">
           <div className="flex items-center space-x-3">

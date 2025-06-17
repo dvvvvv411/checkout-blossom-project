@@ -107,11 +107,13 @@ const Checkout = () => {
           {/* Order Summary - Right Side */}
           <div className="lg:col-span-5">
             <div className="lg:sticky lg:top-8">
-              <OrderSummary 
-                orderData={orderData} 
-                shopConfig={shopConfig}
-                accentColor={accentColor}
-              />
+              <div className="[&_.bg-white]:bg-transparent [&_.border]:border-transparent [&_.shadow-sm]:shadow-none">
+                <OrderSummary 
+                  orderData={orderData} 
+                  shopConfig={shopConfig}
+                  accentColor={accentColor}
+                />
+              </div>
             </div>
           </div>
         </div>

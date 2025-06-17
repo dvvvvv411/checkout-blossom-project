@@ -23,7 +23,7 @@ export const EmailCard = ({ email, onChange, onComplete, isCompleted }: EmailCar
   };
 
   return (
-    <Card className={`transition-all duration-200 ${focused ? "ring-2 ring-blue-500 ring-opacity-50" : ""} ${isCompleted ? "border-green-500" : ""}`}>
+    <Card className={`transition-all duration-200 ${focused ? "ring-2 ring-blue-500 ring-opacity-50" : ""}`}>
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center justify-between text-lg">
           <div className="flex items-center space-x-3">
@@ -34,7 +34,10 @@ export const EmailCard = ({ email, onChange, onComplete, isCompleted }: EmailCar
                 <Mail className="h-5 w-5 text-gray-600" />
               )}
             </div>
-            <span>Kontakt</span>
+            <div>
+              <div className="text-lg font-semibold">E-Mail-Adresse</div>
+              <div className="text-sm text-gray-500 font-normal">Für Bestellbestätigung und Kommunikation</div>
+            </div>
           </div>
           {isCompleted && (
             <span className="text-sm text-green-600 font-medium">✓ Abgeschlossen</span>
