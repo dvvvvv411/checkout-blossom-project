@@ -1,15 +1,15 @@
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import { OrderData, ShopConfig, CustomerData, submitOrder } from "@/services/api";
 import { useToast } from "@/hooks/use-toast";
 import { useSearchParams } from "react-router-dom";
-import { User, Mail, Phone, MapPin, CreditCard } from "lucide-react";
+import { ProgressBar } from "./ProgressBar";
+import { EmailCard } from "./EmailCard";
+import { ContactCard } from "./ContactCard";
+import { DeliveryAddressCard } from "./DeliveryAddressCard";
+import { BillingAddressCard } from "./BillingAddressCard";
+import { PaymentMethodCard } from "./PaymentMethodCard";
 
 interface CustomerFormProps {
   orderData: OrderData;
@@ -37,6 +37,28 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor }: CustomerFor
 
   const [showBillingAddress, setShowBillingAddress] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [completedSteps, setCompletedSteps] = useState({
+    email: false,
+    contact: false,
+    delivery: false,
+    billing: true,
+    payment: true,
+  });
+
+  const steps = ["E-Mail", "Kontakt", "Lieferung", "Rechnung", "Zahlung"];
+  const currentStep = Object.values(completedSteps).filter(Boolean).length;
+
+  useEffect(() => {
+    if (!showBillingAddress) {
+      setCompletedSteps(prev => ({ ...prev, billing: true }));
+    }
+  }, [showBillingAddress]);
+
+  useEffect(() => {
+    if (!shopConfig?.payment_methods || shopConfig.payment_methods.length <= 1) {
+      setCompletedSteps(prev => ({ ...prev, payment: true }));
+    }
+  }, [shopConfig]);
 
   const handleInputChange = (field: string, value: string) => {
     if (field.startsWith("delivery_address.")) {
@@ -76,12 +98,18 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor }: CustomerFor
           city: "",
         },
       }));
+      setCompletedSteps(prev => ({ ...prev, billing: false }));
     } else {
       setFormData(prev => ({
         ...prev,
         billing_address: undefined,
       }));
+      setCompletedSteps(prev => ({ ...prev, billing: true }));
     }
+  };
+
+  const handleStepComplete = (step: string) => {
+    setCompletedSteps(prev => ({ ...prev, [step]: true }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -174,250 +202,73 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor }: CustomerFor
     return translations[lang][key] || translations.DE[key];
   };
 
+  const allStepsCompleted = Object.values(completedSteps).every(Boolean);
+
   return (
     <div className="space-y-6">
+      <ProgressBar 
+        currentStep={currentStep} 
+        totalSteps={steps.length} 
+        steps={steps} 
+      />
+      
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Contact Information */}
-        <div className="bg-white rounded-2xl border border-gray-200 p-6">
-          <div className="flex items-center space-x-3 mb-6">
-            <div className="p-2 bg-gray-100 rounded-lg">
-              <User className="h-5 w-5 text-gray-600" />
-            </div>
-            <h2 className="text-xl font-semibold text-gray-900">Kontaktdaten</h2>
-          </div>
-          
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="email" className="text-sm font-medium text-gray-700 mb-2 block">
-                {getTranslation("email")} *
-              </Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => handleInputChange("email", e.target.value)}
-                  required
-                  className="pl-10 h-12 border-gray-300 rounded-lg focus:border-gray-400 focus:ring-1 focus:ring-gray-400 transition-colors"
-                  placeholder="ihre@email.de"
-                />
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="first_name" className="text-sm font-medium text-gray-700 mb-2 block">
-                  {getTranslation("first_name")} *
-                </Label>
-                <Input
-                  id="first_name"
-                  value={formData.first_name}
-                  onChange={(e) => handleInputChange("first_name", e.target.value)}
-                  required
-                  className="h-12 border-gray-300 rounded-lg focus:border-gray-400 focus:ring-1 focus:ring-gray-400 transition-colors"
-                  placeholder="Max"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="last_name" className="text-sm font-medium text-gray-700 mb-2 block">
-                  {getTranslation("last_name")} *
-                </Label>
-                <Input
-                  id="last_name"
-                  value={formData.last_name}
-                  onChange={(e) => handleInputChange("last_name", e.target.value)}
-                  required
-                  className="h-12 border-gray-300 rounded-lg focus:border-gray-400 focus:ring-1 focus:ring-gray-400 transition-colors"
-                  placeholder="Mustermann"
-                />
-              </div>
-            </div>
-            
-            <div>
-              <Label htmlFor="phone" className="text-sm font-medium text-gray-700 mb-2 block">
-                {getTranslation("phone")} *
-              </Label>
-              <div className="relative">
-                <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  id="phone"
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) => handleInputChange("phone", e.target.value)}
-                  required
-                  className="pl-10 h-12 border-gray-300 rounded-lg focus:border-gray-400 focus:ring-1 focus:ring-gray-400 transition-colors"
-                  placeholder="+49 123 456789"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
+        <EmailCard
+          email={formData.email}
+          onChange={(email) => handleInputChange("email", email)}
+          onComplete={() => handleStepComplete("email")}
+          isCompleted={completedSteps.email}
+        />
 
-        {/* Delivery Address */}
-        <div className="bg-white rounded-2xl border border-gray-200 p-6">
-          <div className="flex items-center space-x-3 mb-6">
-            <div className="p-2 bg-gray-100 rounded-lg">
-              <MapPin className="h-5 w-5 text-gray-600" />
-            </div>
-            <h2 className="text-xl font-semibold text-gray-900">{getTranslation("delivery_address")}</h2>
-          </div>
-          
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="delivery_street" className="text-sm font-medium text-gray-700 mb-2 block">
-                {getTranslation("street")} *
-              </Label>
-              <Input
-                id="delivery_street"
-                value={formData.delivery_address.street}
-                onChange={(e) => handleInputChange("delivery_address.street", e.target.value)}
-                required
-                className="h-12 border-gray-300 rounded-lg focus:border-gray-400 focus:ring-1 focus:ring-gray-400 transition-colors"
-                placeholder="Musterstraße 123"
-              />
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="delivery_postal_code" className="text-sm font-medium text-gray-700 mb-2 block">
-                  {getTranslation("postal_code")} *
-                </Label>
-                <Input
-                  id="delivery_postal_code"
-                  value={formData.delivery_address.postal_code}
-                  onChange={(e) => handleInputChange("delivery_address.postal_code", e.target.value)}
-                  required
-                  className="h-12 border-gray-300 rounded-lg focus:border-gray-400 focus:ring-1 focus:ring-gray-400 transition-colors"
-                  placeholder="12345"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="delivery_city" className="text-sm font-medium text-gray-700 mb-2 block">
-                  {getTranslation("city")} *
-                </Label>
-                <Input
-                  id="delivery_city"
-                  value={formData.delivery_address.city}
-                  onChange={(e) => handleInputChange("delivery_address.city", e.target.value)}
-                  required
-                  className="h-12 border-gray-300 rounded-lg focus:border-gray-400 focus:ring-1 focus:ring-gray-400 transition-colors"
-                  placeholder="Berlin"
-                />
-              </div>
-            </div>
-          </div>
+        <ContactCard
+          firstName={formData.first_name}
+          lastName={formData.last_name}
+          phone={formData.phone}
+          onChange={handleInputChange}
+          onComplete={() => handleStepComplete("contact")}
+          isCompleted={completedSteps.contact}
+        />
 
-          {/* Billing Address Toggle */}
-          <div className="mt-6 pt-6 border-t border-gray-100">
-            <div className="flex items-center space-x-3">
-              <Checkbox
-                id="billing_different"
-                checked={showBillingAddress}
-                onCheckedChange={handleBillingAddressToggle}
-                className="border-gray-300"
-              />
-              <Label htmlFor="billing_different" className="text-sm font-medium text-gray-700">
-                {getTranslation("billing_different")}
-              </Label>
-            </div>
-          </div>
+        <DeliveryAddressCard
+          street={formData.delivery_address.street}
+          postalCode={formData.delivery_address.postal_code}
+          city={formData.delivery_address.city}
+          onChange={handleInputChange}
+          onComplete={() => handleStepComplete("delivery")}
+          isCompleted={completedSteps.delivery}
+        />
 
-          {/* Billing Address */}
-          <Collapsible open={showBillingAddress}>
-            <CollapsibleContent className="mt-6 space-y-4">
-              <h3 className="text-lg font-medium text-gray-900">{getTranslation("billing_address")}</h3>
-              
-              <div>
-                <Label htmlFor="billing_street" className="text-sm font-medium text-gray-700 mb-2 block">
-                  {getTranslation("street")} *
-                </Label>
-                <Input
-                  id="billing_street"
-                  value={formData.billing_address?.street || ""}
-                  onChange={(e) => handleInputChange("billing_address.street", e.target.value)}
-                  required={showBillingAddress}
-                  className="h-12 border-gray-300 rounded-lg focus:border-gray-400 focus:ring-1 focus:ring-gray-400 transition-colors"
-                  placeholder="Rechnungsstraße 456"
-                />
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="billing_postal_code" className="text-sm font-medium text-gray-700 mb-2 block">
-                    {getTranslation("postal_code")} *
-                  </Label>
-                  <Input
-                    id="billing_postal_code"
-                    value={formData.billing_address?.postal_code || ""}
-                    onChange={(e) => handleInputChange("billing_address.postal_code", e.target.value)}
-                    required={showBillingAddress}
-                    className="h-12 border-gray-300 rounded-lg focus:border-gray-400 focus:ring-1 focus:ring-gray-400 transition-colors"
-                    placeholder="54321"
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="billing_city" className="text-sm font-medium text-gray-700 mb-2 block">
-                    {getTranslation("city")} *
-                  </Label>
-                  <Input
-                    id="billing_city"
-                    value={formData.billing_address?.city || ""}
-                    onChange={(e) => handleInputChange("billing_address.city", e.target.value)}
-                    required={showBillingAddress}
-                    className="h-12 border-gray-300 rounded-lg focus:border-gray-400 focus:ring-1 focus:ring-gray-400 transition-colors"
-                    placeholder="Hamburg"
-                  />
-                </div>
-              </div>
-            </CollapsibleContent>
-          </Collapsible>
-        </div>
+        <BillingAddressCard
+          showBillingAddress={showBillingAddress}
+          street={formData.billing_address?.street || ""}
+          postalCode={formData.billing_address?.postal_code || ""}
+          city={formData.billing_address?.city || ""}
+          onToggle={handleBillingAddressToggle}
+          onChange={handleInputChange}
+          onComplete={() => handleStepComplete("billing")}
+          isCompleted={completedSteps.billing}
+        />
 
-        {/* Payment Method */}
         {shopConfig?.payment_methods && shopConfig.payment_methods.length > 1 && (
-          <div className="bg-white rounded-2xl border border-gray-200 p-6">
-            <div className="flex items-center space-x-3 mb-6">
-              <div className="p-2 bg-gray-100 rounded-lg">
-                <CreditCard className="h-5 w-5 text-gray-600" />
-              </div>
-              <h2 className="text-xl font-semibold text-gray-900">{getTranslation("payment_method")}</h2>
-            </div>
-            
-            <RadioGroup
-              value={formData.payment_method}
-              onValueChange={(value: "vorkasse" | "rechnung") => 
-                handleInputChange("payment_method", value)
-              }
-              className="space-y-3"
-            >
-              {shopConfig.payment_methods.map((method) => (
-                <div key={method} className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                  <RadioGroupItem 
-                    value={method} 
-                    id={method}
-                    className="border-gray-300"
-                  />
-                  <Label htmlFor={method} className="flex-1 text-sm font-medium text-gray-700 cursor-pointer">
-                    {getTranslation(method)}
-                  </Label>
-                </div>
-              ))}
-            </RadioGroup>
-          </div>
+          <PaymentMethodCard
+            paymentMethod={formData.payment_method}
+            paymentMethods={shopConfig.payment_methods}
+            onChange={(method) => handleInputChange("payment_method", method)}
+            onComplete={() => handleStepComplete("payment")}
+            isCompleted={completedSteps.payment}
+            getTranslation={getTranslation}
+          />
         )}
 
-        {/* Submit Button */}
-        <div className="bg-white rounded-2xl border border-gray-200 p-6">
+        <div className="bg-white rounded-xl border border-gray-200 p-6">
           <Button
             type="submit"
-            className="w-full h-14 text-white font-semibold text-lg rounded-xl transition-all duration-200 hover:shadow-lg disabled:opacity-50"
-            disabled={isSubmitting}
+            className={`w-full h-14 text-white font-semibold text-lg rounded-xl transition-all duration-200 hover:shadow-lg disabled:opacity-50 ${
+              allStepsCompleted ? "animate-pulse" : ""
+            }`}
+            disabled={isSubmitting || !allStepsCompleted}
             style={{ 
-              backgroundColor: accentColor,
+              backgroundColor: allStepsCompleted ? accentColor : "#94a3b8",
               color: "white"
             }}
           >
