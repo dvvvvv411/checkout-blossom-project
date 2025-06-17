@@ -29,18 +29,28 @@ export const BillingAddressCard = ({
   isCompleted 
 }: BillingAddressCardProps) => {
   const [focused, setFocused] = useState(false);
+  const [billingFirstName, setBillingFirstName] = useState("");
+  const [billingLastName, setBillingLastName] = useState("");
 
-  const checkCompletion = (updatedStreet?: string, updatedPostalCode?: string, updatedCity?: string) => {
+  const checkCompletion = (
+    updatedFirstName?: string,
+    updatedLastName?: string,
+    updatedStreet?: string, 
+    updatedPostalCode?: string, 
+    updatedCity?: string
+  ) => {
     if (!showBillingAddress) {
       onComplete();
       return;
     }
     
+    const fName = updatedFirstName ?? billingFirstName;
+    const lName = updatedLastName ?? billingLastName;
     const streetValue = updatedStreet ?? street;
     const postalCodeValue = updatedPostalCode ?? postalCode;
     const cityValue = updatedCity ?? city;
     
-    if (streetValue && postalCodeValue && cityValue) {
+    if (fName && lName && streetValue && postalCodeValue && cityValue) {
       onComplete();
     }
   };
@@ -53,13 +63,21 @@ export const BillingAddressCard = ({
   };
 
   const handleChange = (field: string, value: string) => {
-    onChange(field, value);
-    if (field === "billing_address.street") {
-      checkCompletion(value, postalCode, city);
-    } else if (field === "billing_address.postal_code") {
-      checkCompletion(street, value, city);
-    } else if (field === "billing_address.city") {
-      checkCompletion(street, postalCode, value);
+    if (field === "billing_first_name") {
+      setBillingFirstName(value);
+      checkCompletion(value, billingLastName, street, postalCode, city);
+    } else if (field === "billing_last_name") {
+      setBillingLastName(value);
+      checkCompletion(billingFirstName, value, street, postalCode, city);
+    } else {
+      onChange(field, value);
+      if (field === "billing_address.street") {
+        checkCompletion(billingFirstName, billingLastName, value, postalCode, city);
+      } else if (field === "billing_address.postal_code") {
+        checkCompletion(billingFirstName, billingLastName, street, value, city);
+      } else if (field === "billing_address.city") {
+        checkCompletion(billingFirstName, billingLastName, street, postalCode, value);
+      }
     }
   };
 
@@ -77,9 +95,6 @@ export const BillingAddressCard = ({
             </div>
             <span>Rechnungsadresse</span>
           </div>
-          {isCompleted && (
-            <span className="text-sm text-green-600 font-medium">✓ Abgeschlossen</span>
-          )}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -97,6 +112,40 @@ export const BillingAddressCard = ({
 
         <Collapsible open={showBillingAddress}>
           <CollapsibleContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="billing_first_name" className="text-sm font-medium text-gray-700 mb-2 block">
+                  Vorname *
+                </Label>
+                <Input
+                  id="billing_first_name"
+                  value={billingFirstName}
+                  onChange={(e) => handleChange("billing_first_name", e.target.value)}
+                  onFocus={() => setFocused(true)}
+                  onBlur={() => setFocused(false)}
+                  required={showBillingAddress}
+                  className="h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all"
+                  placeholder="Max"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="billing_last_name" className="text-sm font-medium text-gray-700 mb-2 block">
+                  Nachname *
+                </Label>
+                <Input
+                  id="billing_last_name"
+                  value={billingLastName}
+                  onChange={(e) => handleChange("billing_last_name", e.target.value)}
+                  onFocus={() => setFocused(true)}
+                  onBlur={() => setFocused(false)}
+                  required={showBillingAddress}
+                  className="h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all"
+                  placeholder="Mustermann"
+                />
+              </div>
+            </div>
+
             <div>
               <Label htmlFor="billing_street" className="text-sm font-medium text-gray-700 mb-2 block">
                 Straße und Hausnummer *

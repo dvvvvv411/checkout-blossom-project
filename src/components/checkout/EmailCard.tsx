@@ -35,7 +35,7 @@ export const EmailCard = ({ email, onChange, onComplete, isCompleted }: EmailCar
             <div className={`p-3 rounded-lg transition-all duration-300 ${
               isCompleted 
                 ? "bg-green-600 shadow-sm" 
-                : "bg-blue-600 shadow-sm"
+                : "bg-purple-400 shadow-sm"
             }`}>
               {isCompleted ? (
                 <Check className="h-5 w-5 text-white" />

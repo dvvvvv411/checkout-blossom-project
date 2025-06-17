@@ -95,17 +95,8 @@ const Checkout = () => {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Customer Form - Left Side */}
-          <div className="lg:col-span-7">
-            <CustomerForm 
-              orderData={orderData}
-              shopConfig={shopConfig}
-              accentColor={accentColor}
-            />
-          </div>
-          
-          {/* Order Summary - Right Side */}
-          <div className="lg:col-span-5">
+          {/* Order Summary - Mobile First */}
+          <div className="lg:col-span-5 lg:order-2">
             <div className="lg:sticky lg:top-8">
               <div className="[&_.bg-white]:bg-transparent [&_.border]:border-transparent [&_.shadow-sm]:shadow-none">
                 <OrderSummary 
@@ -115,6 +106,15 @@ const Checkout = () => {
                 />
               </div>
             </div>
+          </div>
+          
+          {/* Customer Form - Second on Mobile */}
+          <div className="lg:col-span-7 lg:order-1">
+            <CustomerForm 
+              orderData={orderData}
+              shopConfig={shopConfig}
+              accentColor={accentColor}
+            />
           </div>
         </div>
       </div>

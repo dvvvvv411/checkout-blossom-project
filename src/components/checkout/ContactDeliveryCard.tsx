@@ -81,21 +81,21 @@ export const ContactDeliveryCard = ({
             <div className={`p-3 rounded-lg transition-all duration-300 ${
               isCompleted 
                 ? "bg-green-600 shadow-sm" 
-                : "bg-blue-600 shadow-sm"
+                : "bg-blue-400 shadow-sm"
             }`}>
               {isCompleted ? (
                 <Check className="h-5 w-5 text-white" />
               ) : (
-                <User className="h-5 w-5 text-white" />
+                <MapPin className="h-5 w-5 text-white" />
               )}
             </div>
             <div>
               <div className="text-lg font-semibold text-gray-900">
-                Kontakt & Lieferung
+                Lieferadresse
               </div>
               <div className="text-sm text-gray-600 font-normal flex items-center gap-1">
                 <Building className="h-3 w-3 text-gray-500" />
-                Persönliche Daten und Lieferadresse
+                Wohin soll das Heizöl geliefert werden?
               </div>
             </div>
           </div>
@@ -172,7 +172,7 @@ export const ContactDeliveryCard = ({
           </div>
 
           {/* Delivery Address Section */}
-          <div className="border-t border-gray-200 pt-6">
+          <div>
             <h4 className="text-sm font-semibold text-gray-800 mb-4 flex items-center">
               <MapPin className="h-4 w-4 mr-2 text-gray-600" />
               Lieferadresse
