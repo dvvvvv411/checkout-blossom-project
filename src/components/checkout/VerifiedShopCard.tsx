@@ -54,7 +54,7 @@ export const VerifiedShopCard = ({ language = "DE" }: VerifiedShopCardProps) => 
         title: "Verifizierter Shop",
         subtitle: "Bewertet mit 4.8 von 5 Sternen",
         reviews: "12.847 Bewertungen",
-        securePayment: "100% Sichere Zahlung",
+        securePayment: "Sichere Bestellabwicklung",
         loading: "Bewertungen werden geladen..."
       },
       EN: {
