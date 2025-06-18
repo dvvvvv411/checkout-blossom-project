@@ -1,4 +1,3 @@
-
 // Data transformation utilities for backend/frontend compatibility
 
 export interface BackendOrderData {
@@ -98,27 +97,61 @@ export const transformOrderData = (backendData: any): any => {
 // Transform backend shop config to frontend format
 export const transformShopConfig = (backendData: any): any => {
   console.log("Transforming backend shop config:", backendData);
+  console.log("Backend data type:", typeof backendData);
+  console.log("Backend data keys:", Object.keys(backendData || {}));
   
-  // Validate that we have a shop_id
-  if (!backendData.shop_id || typeof backendData.shop_id !== 'string') {
-    console.error('Missing or invalid shop_id in backend shop config:', backendData);
-    // For shop config, we can be more lenient and provide a fallback
-    backendData.shop_id = backendData.shop_id || "unknown-shop";
+  // Extract shop_id from various possible locations in the backend response
+  let shop_id = null;
+  
+  // Check multiple possible locations for shop_id
+  if (backendData.shop_id) {
+    shop_id = backendData.shop_id;
+    console.log("Found shop_id directly:", shop_id);
+  } else if (backendData.shop?.shop_id) {
+    shop_id = backendData.shop.shop_id;
+    console.log("Found shop_id in nested shop object:", shop_id);
+  } else if (backendData.shop?.id) {
+    shop_id = backendData.shop.id;
+    console.log("Found shop_id as 'id' in nested shop object:", shop_id);
+  } else if (backendData.id) {
+    shop_id = backendData.id;
+    console.log("Found shop_id as 'id' directly:", shop_id);
+  } else {
+    console.warn("No shop_id found in any expected location");
+    console.log("Available fields:", Object.keys(backendData || {}));
+    if (backendData.shop) {
+      console.log("Shop object fields:", Object.keys(backendData.shop || {}));
+    }
   }
   
+  // Validate that we have a valid shop_id
+  if (!shop_id || typeof shop_id !== 'string' || shop_id.trim().length === 0) {
+    console.error('Missing or invalid shop_id in backend shop config:', {
+      extracted_shop_id: shop_id,
+      backend_data: backendData
+    });
+    // For shop config, we can be more lenient and provide a fallback
+    shop_id = "unknown-shop";
+    console.log("Using fallback shop_id:", shop_id);
+  }
+  
+  // Extract other fields, also checking nested shop object if available
+  const shopData = backendData.shop || backendData;
+  
   const transformed = {
-    shop_id: backendData.shop_id,
-    accent_color: backendData.accent_color || "#2563eb",
-    language: backendData.language || "DE",
-    payment_methods: backendData.payment_methods || ["vorkasse", "rechnung"],
-    currency: backendData.currency || "EUR",
-    company_name: backendData.company_name || "Demo Shop",
-    logo_url: backendData.logo_url,
-    support_phone: backendData.support_phone,
-    checkout_mode: backendData.checkout_mode || "standard",
+    shop_id: shop_id,
+    accent_color: shopData.accent_color || backendData.accent_color || "#2563eb",
+    language: shopData.language || backendData.language || "DE",
+    payment_methods: shopData.payment_methods || backendData.payment_methods || ["vorkasse", "rechnung"],
+    currency: shopData.currency || backendData.currency || "EUR",
+    company_name: shopData.company_name || backendData.company_name || "Demo Shop",
+    logo_url: shopData.logo_url || backendData.logo_url,
+    support_phone: shopData.support_phone || backendData.support_phone,
+    checkout_mode: shopData.checkout_mode || backendData.checkout_mode || "standard",
   };
   
   console.log("Transformed shop config:", transformed);
+  console.log("Final shop_id for validation:", transformed.shop_id);
   return transformed;
 };
 
@@ -185,19 +218,29 @@ export const validateOrderData = (data: any): boolean => {
 // Validate transformed shop config
 export const validateShopConfig = (data: any): boolean => {
   console.log("Validating shop config:", data);
+  console.log("Shop config data type:", typeof data);
+  console.log("Shop config shop_id:", data?.shop_id, "type:", typeof data?.shop_id);
   
   const requiredFields = ['shop_id', 'company_name'];
   
   for (const field of requiredFields) {
     if (!data[field]) {
-      console.error(`Missing required field in shop config: ${field}`);
+      console.error(`Missing required field in shop config: ${field}`, {
+        field_value: data[field],
+        all_data: data
+      });
       return false;
     }
   }
   
   // Additional validation for shop_id
   if (typeof data.shop_id !== 'string' || data.shop_id.trim().length === 0) {
-    console.error('Invalid shop_id in shop config:', data.shop_id);
+    console.error('Invalid shop_id in shop config:', {
+      shop_id: data.shop_id,
+      shop_id_type: typeof data.shop_id,
+      shop_id_length: data.shop_id?.length,
+      trimmed_length: data.shop_id?.trim?.()?.length
+    });
     return false;
   }
   
