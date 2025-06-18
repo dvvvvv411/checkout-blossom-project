@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { OrderData, ShopConfig, CustomerData, submitOrder } from "@/services/api";
@@ -397,6 +396,20 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
               handleStepComplete("delivery");
             }}
             isCompleted={completedSteps.contact && completedSteps.delivery}
+            // Pass validation errors
+            firstNameError={getFieldError("first_name")}
+            lastNameError={getFieldError("last_name")}
+            phoneError={getFieldError("phone")}
+            streetError={getFieldError("street")}
+            postalCodeError={getFieldError("postal_code")}
+            cityError={getFieldError("city")}
+            // Pass blur handlers
+            onFirstNameBlur={() => handleFieldBlur("first_name")}
+            onLastNameBlur={() => handleFieldBlur("last_name")}
+            onPhoneBlur={() => handleFieldBlur("phone")}
+            onStreetBlur={() => handleFieldBlur("street")}
+            onPostalCodeBlur={() => handleFieldBlur("postal_code")}
+            onCityBlur={() => handleFieldBlur("city")}
           />
 
           <BillingAddressCard

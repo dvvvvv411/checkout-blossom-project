@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { User, Phone, MapPin, Check, Building } from "lucide-react";
+import { User, Phone, MapPin, Check, Building, AlertCircle } from "lucide-react";
 
 interface ContactDeliveryCardProps {
   firstName: string;
@@ -15,6 +15,20 @@ interface ContactDeliveryCardProps {
   onChange: (field: string, value: string) => void;
   onComplete: () => void;
   isCompleted: boolean;
+  // Error props
+  firstNameError?: string;
+  lastNameError?: string;
+  phoneError?: string;
+  streetError?: string;
+  postalCodeError?: string;
+  cityError?: string;
+  // Blur handlers
+  onFirstNameBlur?: () => void;
+  onLastNameBlur?: () => void;
+  onPhoneBlur?: () => void;
+  onStreetBlur?: () => void;
+  onPostalCodeBlur?: () => void;
+  onCityBlur?: () => void;
 }
 
 export const ContactDeliveryCard = ({ 
@@ -26,9 +40,24 @@ export const ContactDeliveryCard = ({
   city, 
   onChange, 
   onComplete, 
-  isCompleted 
+  isCompleted,
+  firstNameError,
+  lastNameError,
+  phoneError,
+  streetError,
+  postalCodeError,
+  cityError,
+  onFirstNameBlur,
+  onLastNameBlur,
+  onPhoneBlur,
+  onStreetBlur,
+  onPostalCodeBlur,
+  onCityBlur
 }: ContactDeliveryCardProps) => {
   const [focused, setFocused] = useState(false);
+
+  // Check if any field has an error
+  const hasErrors = !!(firstNameError || lastNameError || phoneError || streetError || postalCodeError || cityError);
 
   const checkCompletion = (
     updatedFirstName?: string, 
@@ -73,17 +102,27 @@ export const ContactDeliveryCard = ({
       focused 
         ? "ring-2 ring-blue-500 ring-opacity-30 shadow-lg" 
         : "hover:shadow-md"
-    } ${isCompleted ? "bg-gradient-to-br from-green-50 to-white border-green-300" : "bg-white border-gray-200"}`}>
+    } ${
+      hasErrors
+        ? "bg-gradient-to-br from-red-50 to-white border-red-300"
+        : isCompleted 
+          ? "bg-gradient-to-br from-green-50 to-white border-green-300" 
+          : "bg-white border-gray-200"
+    }`}>
       
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center justify-between text-lg">
           <div className="flex items-center space-x-3">
             <div className={`p-3 rounded-lg transition-all duration-300 ${
-              isCompleted 
-                ? "bg-green-600 shadow-sm" 
-                : "bg-blue-400 shadow-sm"
+              hasErrors
+                ? "bg-red-600 shadow-sm"
+                : isCompleted 
+                  ? "bg-green-600 shadow-sm" 
+                  : "bg-blue-400 shadow-sm"
             }`}>
-              {isCompleted ? (
+              {hasErrors ? (
+                <AlertCircle className="h-5 w-5 text-white" />
+              ) : isCompleted ? (
                 <Check className="h-5 w-5 text-white" />
               ) : (
                 <MapPin className="h-5 w-5 text-white" />
@@ -116,11 +155,24 @@ export const ContactDeliveryCard = ({
                     value={firstName}
                     onChange={(e) => handleChange("first_name", e.target.value)}
                     onFocus={() => setFocused(true)}
-                    onBlur={() => setFocused(false)}
+                    onBlur={() => {
+                      setFocused(false);
+                      onFirstNameBlur?.();
+                    }}
                     required
-                    className="h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-200 text-base bg-white"
+                    className={`h-12 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-200 text-base bg-white ${
+                      firstNameError 
+                        ? "border-red-500 focus:border-red-500 focus:ring-red-500" 
+                        : "border-gray-300"
+                    }`}
                     placeholder="Vorname"
                   />
+                  {firstNameError && (
+                    <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                      <AlertCircle className="h-3 w-3" />
+                      {firstNameError}
+                    </p>
+                  )}
                 </div>
                 
                 <div>
@@ -132,11 +184,24 @@ export const ContactDeliveryCard = ({
                     value={lastName}
                     onChange={(e) => handleChange("last_name", e.target.value)}
                     onFocus={() => setFocused(true)}
-                    onBlur={() => setFocused(false)}
+                    onBlur={() => {
+                      setFocused(false);
+                      onLastNameBlur?.();
+                    }}
                     required
-                    className="h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-200 text-base bg-white"
+                    className={`h-12 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-200 text-base bg-white ${
+                      lastNameError 
+                        ? "border-red-500 focus:border-red-500 focus:ring-red-500" 
+                        : "border-gray-300"
+                    }`}
                     placeholder="Nachname"
                   />
+                  {lastNameError && (
+                    <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                      <AlertCircle className="h-3 w-3" />
+                      {lastNameError}
+                    </p>
+                  )}
                 </div>
               </div>
               
@@ -152,12 +217,25 @@ export const ContactDeliveryCard = ({
                     value={phone}
                     onChange={(e) => handleChange("phone", e.target.value)}
                     onFocus={() => setFocused(true)}
-                    onBlur={() => setFocused(false)}
+                    onBlur={() => {
+                      setFocused(false);
+                      onPhoneBlur?.();
+                    }}
                     required
-                    className="pl-10 h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-200 text-base bg-white"
+                    className={`pl-10 h-12 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-200 text-base bg-white ${
+                      phoneError 
+                        ? "border-red-500 focus:border-red-500 focus:ring-red-500" 
+                        : "border-gray-300"
+                    }`}
                     placeholder="Telefonnummer"
                   />
                 </div>
+                {phoneError && (
+                  <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3" />
+                    {phoneError}
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -174,11 +252,24 @@ export const ContactDeliveryCard = ({
                   value={street}
                   onChange={(e) => handleChange("delivery_address.street", e.target.value)}
                   onFocus={() => setFocused(true)}
-                  onBlur={() => setFocused(false)}
+                  onBlur={() => {
+                    setFocused(false);
+                    onStreetBlur?.();
+                  }}
                   required
-                  className="h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-200 text-base bg-white"
+                  className={`h-12 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-200 text-base bg-white ${
+                    streetError 
+                      ? "border-red-500 focus:border-red-500 focus:ring-red-500" 
+                      : "border-gray-300"
+                  }`}
                   placeholder="Straße und Hausnummer"
                 />
+                {streetError && (
+                  <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3" />
+                    {streetError}
+                  </p>
+                )}
               </div>
               
               <div className="grid grid-cols-2 gap-4">
@@ -191,11 +282,24 @@ export const ContactDeliveryCard = ({
                     value={postalCode}
                     onChange={(e) => handleChange("delivery_address.postal_code", e.target.value)}
                     onFocus={() => setFocused(true)}
-                    onBlur={() => setFocused(false)}
+                    onBlur={() => {
+                      setFocused(false);
+                      onPostalCodeBlur?.();
+                    }}
                     required
-                    className="h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-200 text-base bg-white"
+                    className={`h-12 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-200 text-base bg-white ${
+                      postalCodeError 
+                        ? "border-red-500 focus:border-red-500 focus:ring-red-500" 
+                        : "border-gray-300"
+                    }`}
                     placeholder="PLZ"
                   />
+                  {postalCodeError && (
+                    <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                      <AlertCircle className="h-3 w-3" />
+                      {postalCodeError}
+                    </p>
+                  )}
                 </div>
                 
                 <div>
@@ -207,11 +311,24 @@ export const ContactDeliveryCard = ({
                     value={city}
                     onChange={(e) => handleChange("delivery_address.city", e.target.value)}
                     onFocus={() => setFocused(true)}
-                    onBlur={() => setFocused(false)}
+                    onBlur={() => {
+                      setFocused(false);
+                      onCityBlur?.();
+                    }}
                     required
-                    className="h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-200 text-base bg-white"
+                    className={`h-12 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-200 text-base bg-white ${
+                      cityError 
+                        ? "border-red-500 focus:border-red-500 focus:ring-red-500" 
+                        : "border-gray-300"
+                    }`}
                     placeholder="Stadt"
                   />
+                  {cityError && (
+                    <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                      <AlertCircle className="h-3 w-3" />
+                      {cityError}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
