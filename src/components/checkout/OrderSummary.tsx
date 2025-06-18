@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { OrderData, ShopConfig } from "@/services/api";
 import { Package, AlertCircle } from "lucide-react";
@@ -140,15 +141,6 @@ export const OrderSummary = ({ orderData, shopConfig, accentColor }: OrderSummar
           </div>
         </div>
       </div>
-
-      {/* Shop Info */}
-      {shopConfig && (
-        <div className="bg-gray-50 rounded-xl border border-gray-200 p-3 text-center">
-          <p className="text-sm text-gray-500">
-            Verkäufer: <span className="font-medium text-gray-700">{shopConfig.company_name}</span>
-          </p>
-        </div>
-      )}
     </div>
   );
 };

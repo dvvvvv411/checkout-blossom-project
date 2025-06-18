@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -136,7 +137,10 @@ const Checkout = () => {
               
               {/* Verified Shop Card - positioned at bottom of right column */}
               <div className="mt-8">
-                <VerifiedShopCard language={shopConfig?.language} />
+                <VerifiedShopCard 
+                  language={shopConfig?.language} 
+                  shopConfig={shopConfig}
+                />
               </div>
             </div>
           </div>

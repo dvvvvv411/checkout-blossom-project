@@ -5,9 +5,12 @@ import { Star, Lock } from "lucide-react";
 
 interface VerifiedShopCardProps {
   language?: string;
+  shopConfig?: {
+    company_name?: string;
+  };
 }
 
-export const VerifiedShopCard = ({ language = "DE" }: VerifiedShopCardProps) => {
+export const VerifiedShopCard = ({ language = "DE", shopConfig }: VerifiedShopCardProps) => {
   const [showLoading, setShowLoading] = useState(true);
   const [loadingStep, setLoadingStep] = useState(0);
   const [animateStars, setAnimateStars] = useState(false);
@@ -198,6 +201,15 @@ export const VerifiedShopCard = ({ language = "DE" }: VerifiedShopCardProps) => 
             </span>
           </div>
         </div>
+
+        {/* Shop Info */}
+        {shopConfig?.company_name && (
+          <div className="mt-4 pt-3 border-t border-amber-200/60">
+            <p className="text-xs text-gray-600">
+              Verkäufer: <span className="font-medium text-gray-700">{shopConfig.company_name}</span>
+            </p>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
