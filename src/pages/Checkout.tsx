@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -6,6 +5,7 @@ import { Loader2 } from "lucide-react";
 import { OrderSummary } from "@/components/checkout/OrderSummary";
 import { CustomerForm } from "@/components/checkout/CustomerForm";
 import { VerifiedShopCard } from "@/components/checkout/VerifiedShopCard";
+import { MobileHeader } from "@/components/checkout/MobileHeader";
 import { fetchOrderData, fetchShopConfig } from "@/services/api";
 
 const Checkout = () => {
@@ -79,6 +79,9 @@ const Checkout = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      {/* Mobile Header - Only visible on mobile */}
+      <MobileHeader />
+      
       {/* Header */}
       <div className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -120,6 +123,7 @@ const Checkout = () => {
               orderData={orderData}
               shopConfig={shopConfig}
               accentColor={accentColor}
+              showBackAndProgress={false}
             />
           </div>
         </div>
