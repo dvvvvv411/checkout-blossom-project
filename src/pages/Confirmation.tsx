@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -262,29 +261,6 @@ const Confirmation = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* Enhanced Debug Panel */}
-      <div className="bg-yellow-100 border-2 border-yellow-400 p-4 m-4 rounded-lg">
-        <h3 className="font-bold text-yellow-800 mb-2">🐛 ENHANCED DEBUG INFORMATION</h3>
-        <div className="text-sm text-yellow-900 space-y-1">
-          <p><strong>Instant Mode:</strong> {isInstantMode ? "✅ YES" : "❌ NO"}</p>
-          <p><strong>Checkout Mode:</strong> {shopConfig?.checkout_mode || "undefined"}</p>
-          <p><strong>Bank Details in Response:</strong> {bankDetailsFromResponse ? "✅ YES" : "❌ NO"}</p>
-          <p><strong>Bank Data in Storage:</strong> {bankDataFromStorage ? "✅ YES" : "❌ NO"}</p>
-          <p><strong>Loaded Bank Data:</strong> {loadedBankData ? "✅ YES" : "❌ NO"}</p>
-          <p><strong>Has Bank Details (Any Source):</strong> {hasBankDetails ? "✅ YES" : "❌ NO"}</p>
-          <p><strong>Payment Instructions:</strong> {orderResponse.payment_instructions ? "✅ YES" : "❌ NO"}</p>
-          <p><strong>Shop Config Loaded:</strong> {shopConfig ? "✅ YES" : "❌ NO"}</p>
-          <p><strong>Should Show Bank Details:</strong> {isInstantMode && hasBankDetails ? "✅ YES" : "❌ NO"}</p>
-          <p><strong>Order Number (7-digit):</strong> {orderResponse.order_number || "N/A"}</p>
-          <p><strong>Order ID (UUID):</strong> {orderResponse.order_id}</p>
-          <p><strong>Confirmation Number:</strong> {orderResponse.confirmation_number}</p>
-          <p><strong>Display Order Number:</strong> {displayOrderNumber}</p>
-          <p><strong>Payment Reference Used:</strong> {paymentReference}</p>
-          <p><strong>Original Product Name:</strong> {orderData.product_name}</p>
-          <p><strong>Translated Product Name:</strong> {translatedProductName}</p>
-        </div>
-      </div>
-
       {/* Header */}
       <div className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
