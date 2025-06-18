@@ -31,6 +31,7 @@ export interface BackendShopConfig {
   logo_url?: string;
   support_phone?: string;
   checkout_mode?: "express" | "standard";
+  shop_url?: string; // Added shop URL field
 }
 
 // Transform backend order data to frontend format
@@ -160,6 +161,21 @@ export const transformShopConfig = (backendData: any): any => {
     logger.devDetailed("No valid logo URL provided, using default");
     logo_url = "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=200&h=80&fit=crop&crop=center"; // Default logo
   }
+
+  // Extract and validate shop URL
+  let shop_url = shopData.shop_url || backendData.shop_url;
+  
+  // Validate shop URL if provided
+  if (shop_url && typeof shop_url === 'string' && shop_url.trim()) {
+    try {
+      new URL(shop_url);
+      logger.devDetailed("Shop URL validation passed:", shop_url);
+    } catch (error) {
+      logger.error("Invalid shop URL format:", shop_url);
+      shop_url = undefined; // Clear invalid URL
+      logger.dev("Cleared invalid shop URL");
+    }
+  }
   
   const transformed = {
     shop_id: shop_id,
@@ -171,6 +187,7 @@ export const transformShopConfig = (backendData: any): any => {
     logo_url: logo_url,
     support_phone: shopData.support_phone || backendData.support_phone,
     checkout_mode: shopData.checkout_mode || backendData.checkout_mode || "standard",
+    shop_url: shop_url, // Include shop URL in transformed data
   };
   
   logger.dev("Shop config transformed successfully");

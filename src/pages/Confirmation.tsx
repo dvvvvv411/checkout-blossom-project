@@ -153,6 +153,20 @@ const Confirmation = () => {
     }
   }, [confirmationData, shopConfig, loadedBankData]);
 
+  const handleBackToShop = () => {
+    // Get shop URL from various sources
+    const shopUrl = shopConfig?.shop_url || 
+                   confirmationData?.shopConfig?.shop_url;
+    
+    if (shopUrl) {
+      logger.dev("Redirecting to shop URL:", shopUrl);
+      window.location.href = shopUrl;
+    } else {
+      logger.dev("No shop URL found, navigating to home");
+      navigate('/');
+    }
+  };
+
   const handleNewOrder = () => {
     // Clear confirmation data and go to home
     sessionStorage.removeItem('orderConfirmation');
@@ -232,7 +246,7 @@ const Confirmation = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <button
-                onClick={() => navigate('/')}
+                onClick={handleBackToShop}
                 className="p-2 text-gray-600 hover:text-gray-800 transition-colors"
               >
                 <ArrowLeft className="h-6 w-6" />
