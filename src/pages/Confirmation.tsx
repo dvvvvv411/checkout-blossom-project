@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -308,7 +309,7 @@ const Confirmation = () => {
               <img 
                 src={shopConfig.logo_url} 
                 alt={shopConfig.company_name}
-                className="h-12 object-contain"
+                className="h-24 object-contain"
               />
             )}
           </div>
