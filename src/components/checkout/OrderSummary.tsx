@@ -131,9 +131,9 @@ export const OrderSummary = ({ orderData, shopConfig, accentColor }: OrderSummar
         
         <div className="mt-2 pt-2 border-t-2 border-gray-200">
           <div className="flex justify-between items-center">
-            <span className="text-lg font-semibold text-gray-900">Gesamtpreis</span>
+            <span className="text-xl font-bold text-gray-900">Gesamtpreis</span>
             <span 
-              className="text-xl font-bold"
+              className="text-2xl font-bold"
               style={{ color: accentColor }}
             >
               {formatCurrency(orderData.total_gross)}
