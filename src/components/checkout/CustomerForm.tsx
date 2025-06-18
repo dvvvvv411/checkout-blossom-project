@@ -238,11 +238,11 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor }: CustomerFor
       <div className="bg-white rounded-lg border border-gray-200 p-4">
         <div className="flex items-center text-sm">
           <span className="text-gray-500">Warenkorb</span>
-          <span className="mx-2 text-gray-400">></span>
+          <span className="mx-2 text-gray-400">{'>'}</span>
           <span className="font-semibold text-gray-900">Informationen</span>
-          <span className="mx-2 text-gray-400">></span>
+          <span className="mx-2 text-gray-400">{'>'}</span>
           <span className="text-gray-500">Versand</span>
-          <span className="mx-2 text-gray-400">></span>
+          <span className="mx-2 text-gray-400">{'>'}</span>
           <span className="text-gray-500">Zahlung</span>
         </div>
       </div>
