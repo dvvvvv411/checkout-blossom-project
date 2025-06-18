@@ -1,4 +1,3 @@
-
 // API Services für Checkout-System
 
 import { 
@@ -124,30 +123,55 @@ export const validateRequired = (value: string): boolean => {
 };
 
 // Währungsformatierung
-export const formatCurrency = (amount: number, currency: string, language: "DE" | "EN" | "FR"): string => {
-  const localeMap = {
-    DE: "de-DE",
-    EN: "en-GB", 
-    FR: "fr-FR"
-  };
+export const formatCurrency = (
+  amount: number, 
+  currency: string = "EUR", 
+  language: "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL" = "DE"
+): string => {
+  const locale = getLocaleFromLanguage(language);
   
-  const locale = localeMap[language] || "de-DE";
-  
-  return new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency: currency || "EUR",
-  }).format(amount);
+  try {
+    return new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency: currency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount);
+  } catch (error) {
+    // Fallback to EUR if currency is not supported
+    return new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency: 'EUR',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount);
+  }
 };
 
-export const formatLiters = (liters: number, language: "DE" | "EN" | "FR"): string => {
+export const formatLiters = (
+  liters: number, 
+  language: "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL" = "DE"
+): string => {
+  const locale = getLocaleFromLanguage(language);
+  
+  return new Intl.NumberFormat(locale, {
+    minimumFractionDigits: liters % 1 === 0 ? 0 : 1,
+    maximumFractionDigits: 2,
+  }).format(liters);
+};
+
+const getLocaleFromLanguage = (language: "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL"): string => {
   const localeMap = {
-    DE: "de-DE",
-    EN: "en-GB", 
-    FR: "fr-FR"
+    "DE": "de-DE",
+    "EN": "en-US", 
+    "FR": "fr-FR",
+    "IT": "it-IT",
+    "ES": "es-ES",
+    "PL": "pl-PL",
+    "NL": "nl-NL"
   };
   
-  const locale = localeMap[language] || "de-DE";
-  return new Intl.NumberFormat(locale).format(liters);
+  return localeMap[language] || "de-DE";
 };
 
 // Enhanced Fetch-Funktion mit verbessertem CORS-Handling und Debugging
