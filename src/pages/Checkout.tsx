@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -126,9 +125,6 @@ const Checkout = () => {
                 </div>
               )}
               
-              <h1 className="text-3xl font-bold text-gray-900 mb-3">
-                {getTranslation("checkout", language)}
-              </h1>
               {/* Security indicators */}
               <div className="flex items-center justify-center space-x-4 text-sm text-gray-600">
                 <div className="flex items-center space-x-2">
