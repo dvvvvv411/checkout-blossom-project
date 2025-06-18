@@ -187,13 +187,13 @@ const translations = {
     NL: "Instemming met onze voorwaarden"
   },
   terms_text: {
-    DE: "Ich stimme den Allgemeinen Geschäftsbedingungen und der Datenschutzerklärung zu und bestätige, dass ich diese gelesen und verstanden habe.",
-    EN: "I agree to the Terms and Conditions and Privacy Policy and confirm that I have read and understood them.",
-    FR: "J'accepte les Conditions Générales et la Politique de Confidentialité et confirme que je les ai lues et comprises.",
-    IT: "Accetto i Termini e Condizioni e l'Informativa sulla Privacy e confermo di averli letti e compresi.",
-    ES: "Acepto los Términos y Condiciones y la Política de Privacidad y confirmo que los he leído y entendido.",
-    PL: "Zgadzam się z Regulaminem i Polityką Prywatności i potwierdzam, że je przeczytałem i zrozumiałem.",
-    NL: "Ik ga akkoord met de Algemene Voorwaarden en het Privacybeleid en bevestig dat ik deze heb gelezen en begrepen."
+    DE: "Ich stimme den Allgemeinen Geschäftsbedingungen und der Datenschutzerklärung zu.",
+    EN: "I agree to the Terms and Conditions and Privacy Policy.",
+    FR: "J'accepte les Conditions Générales et la Politique de Confidentialité.",
+    IT: "Accetto i Termini e Condizioni e l'Informativa sulla Privacy.",
+    ES: "Acepto los Términos y Condiciones y la Política de Privacidad.",
+    PL: "Zgadzam się z Regulaminem i Polityką Prywatności.",
+    NL: "Ik ga akkoord met de Algemene Voorwaarden en het Privacybeleid."
   },
 
   // Validation error messages
@@ -756,7 +756,7 @@ const translations = {
     DE: "Informationen",
     EN: "Information", 
     FR: "Informations",
-    IT: "Inform azioni",
+    IT: "Informazioni",
     ES: "Información",
     PL: "Informazioni",
     NL: "Informatie"
@@ -1255,7 +1255,7 @@ const translations = {
     FR: "Informations client",
     IT: "Informazioni cliente",
     ES: "Información del cliente",
-    PL: "Informazioni o kliencie",
+    PL: "Informacje o kliencie",
     NL: "Klantinformatie"
   },
   print_confirmation: {
