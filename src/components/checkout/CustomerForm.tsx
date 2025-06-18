@@ -39,7 +39,6 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
   const [showBillingAddress, setShowBillingAddress] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
-  const [testMode, setTestMode] = useState(false);
   const [completedSteps, setCompletedSteps] = useState({
     email: false,
     contact: false,
@@ -118,10 +117,6 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
     setCompletedSteps(prev => ({ ...prev, terms: accepted }));
   };
 
-  const handleTestModeChange = (testModeEnabled: boolean) => {
-    setTestMode(testModeEnabled);
-  };
-
   const handleBack = () => {
     navigate(-1);
   };
@@ -144,18 +139,6 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
         description: "Bitte bestätigen Sie die Geschäftsbedingungen",
         variant: "destructive",
       });
-      return;
-    }
-
-    if (testMode) {
-      // Test-Modus: Zeige Erfolg-Message ohne echte Bestellung
-      toast({
-        title: "Test-Modus",
-        description: "Dies ist ein Test. Keine echte Bestellung wurde abgeschickt.",
-      });
-      
-      // Hier könnten Sie zu einer Test-Erfolgsseite navigieren
-      console.log("Test-Bestellung:", formData);
       return;
     }
 
@@ -316,8 +299,6 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
           allStepsCompleted={allStepsCompleted}
           accentColor={accentColor}
           submitButtonText={getTranslation("submit")}
-          testMode={testMode}
-          onTestModeChange={handleTestModeChange}
         />
       </form>
     </div>
