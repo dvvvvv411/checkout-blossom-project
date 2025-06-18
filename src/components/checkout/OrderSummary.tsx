@@ -69,8 +69,8 @@ export const OrderSummary = ({ orderData, shopConfig, accentColor }: OrderSummar
       </div>
 
       {/* Discount Code */}
-      <div className="bg-white rounded-xl border border-gray-200 p-2">
-        <div className="flex space-x-2 mb-1">
+      <div className="bg-white rounded-xl border border-gray-200 px-2 py-1">
+        <div className="flex space-x-2">
           <Input
             value={discountCode}
             onChange={(e) => setDiscountCode(e.target.value)}
@@ -89,7 +89,7 @@ export const OrderSummary = ({ orderData, shopConfig, accentColor }: OrderSummar
         </div>
         
         {showError && (
-          <div className="flex items-center space-x-2 text-red-600 text-sm">
+          <div className="flex items-center space-x-2 text-red-600 text-sm mt-1">
             <AlertCircle className="h-4 w-4" />
             <span>Der eingegebene Code ist nicht gültig</span>
           </div>
