@@ -103,7 +103,7 @@ export const PaymentMethodCard = ({
               }`}>
                 <div className={`p-4 border rounded-lg transition-all duration-200 ${
                   isSelected 
-                    ? "border-green-300 bg-gradient-to-b from-white to-green-50" 
+                    ? "border-green-300 bg-gradient-to-tl from-green-25 to-white" 
                     : "border-gray-200 bg-white hover:border-gray-300"
                 }`}>
                   <div className="flex items-start space-x-3">
