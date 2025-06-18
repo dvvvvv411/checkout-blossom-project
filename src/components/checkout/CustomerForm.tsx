@@ -197,15 +197,6 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
     navigate(-1);
   };
 
-  // Helper function to get compatible language for TermsCard
-  const getTermsLanguage = (lang: typeof supportedLanguage): "DE" | "EN" | "FR" => {
-    if (lang === "DE" || lang === "EN" || lang === "FR") {
-      return lang;
-    }
-    // Fallback to German for unsupported languages in TermsCard
-    return "DE";
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     console.log("=== CUSTOMER FORM: handleSubmit called ===");
     e.preventDefault();
@@ -387,7 +378,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
             onChange={(email) => handleInputChange("email", email)}
             onComplete={() => handleStepComplete("email")}
             isCompleted={completedSteps.email}
-            language={supportedLanguage as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL"}
+            language={supportedLanguage}
             error={getFieldError("email")}
             onBlur={() => handleFieldBlur("email")}
           />

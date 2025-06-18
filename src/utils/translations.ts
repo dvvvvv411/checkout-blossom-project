@@ -29,6 +29,15 @@ export const translations: Record<string, Record<SupportedLanguage, string>> = {
     PL: "Gdzie mamy wysłać potwierdzenie?",
     NL: "Waar moeten we uw bevestiging naartoe sturen?"
   },
+  email_placeholder: {
+    DE: "ihre.email@beispiel.de",
+    EN: "your.email@example.com",
+    FR: "votre.email@exemple.fr",
+    IT: "la.tua.email@esempio.it",
+    ES: "su.email@ejemplo.es",
+    PL: "twoj.email@przyklad.pl",
+    NL: "uw.email@voorbeeld.nl"
+  },
   
   // New billing address translations
   billing_address: {
