@@ -4,7 +4,7 @@ import { OrderData, ShopConfig, formatCurrency, formatLiters } from "@/services/
 import { Package, AlertCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { getTranslation } from "@/utils/translations";
+import { getTranslation, getProductNameTranslation } from "@/utils/translations";
 
 interface OrderSummaryProps {
   orderData: OrderData;
@@ -34,6 +34,9 @@ export const OrderSummary = ({ orderData, shopConfig, accentColor, language }: O
     }
   };
 
+  // Translate the product name
+  const translatedProductName = getProductNameTranslation(orderData.product_name, language);
+
   return (
     <div className="space-y-2">
       {/* Product Card */}
@@ -51,7 +54,7 @@ export const OrderSummary = ({ orderData, shopConfig, accentColor, language }: O
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <h3 className="font-semibold text-gray-900">
-                {orderData.product_name}
+                {translatedProductName}
               </h3>
               <p className="text-gray-600 mt-0.5 text-sm">
                 {formatQuantity(orderData.quantity_liters)} Liter
