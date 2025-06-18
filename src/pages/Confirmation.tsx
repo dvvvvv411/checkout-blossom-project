@@ -266,7 +266,7 @@ const Confirmation = () => {
                         <div>
                           <h5 className="font-semibold text-gray-900 mb-1">Überweisung</h5>
                           <p className="text-gray-700">
-                            Nach unserem Anruf überweisen Sie den Betrag von{' '}
+                            Sie überweisen den Betrag von{' '}
                             <span className="font-bold">
                               {formatCurrency(orderResponse.total_amount, orderResponse.currency, language)}
                             </span>{' '}
