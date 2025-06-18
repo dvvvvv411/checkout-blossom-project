@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -267,7 +266,7 @@ const Confirmation = () => {
                               {getTranslation("reference", language)}:
                             </span>
                             <p className="text-blue-900 font-mono text-lg font-bold bg-yellow-100 px-2 py-1 rounded">
-                              {orderResponse.payment_instructions.bank_details.reference}
+                              {orderResponse.confirmation_number}
                             </p>
                           </div>
                         </div>
