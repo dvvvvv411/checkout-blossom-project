@@ -1,11 +1,10 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, Info, CreditCard, MapPin, Mail, Phone, ArrowLeft, Truck, Copy } from "lucide-react";
 import { formatCurrency, fetchShopConfig, fetchBankData, ShopConfig, BankData } from "@/services/api";
-import { getTranslation } from "@/utils/translations";
+import { getTranslation, getProductNameTranslation } from "@/utils/translations";
 
 interface OrderConfirmationData {
   orderResponse: {
@@ -241,6 +240,9 @@ const Confirmation = () => {
   // Get display order number - prefer order_number, fallback to order_id
   const displayOrderNumber = orderResponse.order_number || orderResponse.order_id;
 
+  // Get translated product name - NEW
+  const translatedProductName = getProductNameTranslation(orderData.product_name, language);
+
   // Additional runtime debugging
   console.log("=== RENDER TIME DEBUG ===");
   console.log("Final isInstantMode value:", isInstantMode);
@@ -254,6 +256,8 @@ const Confirmation = () => {
   console.log("Order ID:", orderResponse.order_id);
   console.log("Display order number:", displayOrderNumber);
   console.log("Payment reference:", paymentReference);
+  console.log("Original product name:", orderData.product_name);
+  console.log("Translated product name:", translatedProductName);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
@@ -275,6 +279,8 @@ const Confirmation = () => {
           <p><strong>Confirmation Number:</strong> {orderResponse.confirmation_number}</p>
           <p><strong>Display Order Number:</strong> {displayOrderNumber}</p>
           <p><strong>Payment Reference Used:</strong> {paymentReference}</p>
+          <p><strong>Original Product Name:</strong> {orderData.product_name}</p>
+          <p><strong>Translated Product Name:</strong> {translatedProductName}</p>
         </div>
       </div>
 
@@ -574,7 +580,7 @@ const Confirmation = () => {
                     <div className="flex justify-between items-start mb-3">
                       <div>
                         <h3 className="font-semibold text-gray-900 text-lg">
-                          {orderData.product_name}
+                          {translatedProductName}
                         </h3>
                         <p className="text-gray-600 mt-1">
                           {orderData.quantity_liters} L × {formatCurrency(orderData.price_per_liter, orderData.currency, language)}

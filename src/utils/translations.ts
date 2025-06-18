@@ -1276,6 +1276,44 @@ const translations = {
     ES: "Nuevo pedido",
     PL: "Nowe zamówienie",
     NL: "Nieuwe bestelling"
+  },
+
+  // Product name translations - NEW
+  standard_heizoel: {
+    DE: "Standard Heizöl",
+    EN: "Standard Heating Oil",
+    FR: "Fioul standard",
+    IT: "Olio combustibile standard",
+    ES: "Combustible estándar",
+    PL: "Standardowy olej opałowy",
+    NL: "Standaard stookolie"
+  },
+  premium_heizoel: {
+    DE: "Premium Heizöl",
+    EN: "Premium Heating Oil",
+    FR: "Fioul premium",
+    IT: "Olio combustibile premium",
+    ES: "Combustible premium",
+    PL: "Premium olej opałowy",
+    NL: "Premium stookolie"
+  },
+  eco_heizoel: {
+    DE: "Öko Heizöl",
+    EN: "Eco Heating Oil",
+    FR: "Fioul écologique",
+    IT: "Olio combustibile ecologico",
+    ES: "Combustible ecológico",
+    PL: "Ekologiczny olej opałowy",
+    NL: "Eco stookolie"
+  },
+  biodiesel: {
+    DE: "Biodiesel",
+    EN: "Biodiesel",
+    FR: "Biodiesel",
+    IT: "Biodiesel",
+    ES: "Biodiesel",
+    PL: "Biodiesel",
+    NL: "Biodiesel"
   }
 };
 
@@ -1295,4 +1333,30 @@ export const getTranslation = (key: string, language: "DE" | "EN" | "FR" | "IT" 
   }
   
   return translation[upperLanguage] || translation.DE || key;
+};
+
+// Product name translation function - NEW
+export const getProductNameTranslation = (productName: string, language: "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL"): string => {
+  // Convert product name to a key format (lowercase, replace spaces/special chars with underscores)
+  const productKey = productName?.toLowerCase()
+    .replace(/ä/g, 'ae')
+    .replace(/ö/g, 'oe')
+    .replace(/ü/g, 'ue')
+    .replace(/ß/g, 'ss')
+    .replace(/[^a-z0-9]/g, '_')
+    .replace(/_+/g, '_')
+    .replace(/^_|_$/g, '');
+
+  console.log(`Translating product: "${productName}" -> key: "${productKey}" -> language: ${language}`);
+  
+  // Try to get translation, fallback to original name if not found
+  const translation = getTranslation(productKey, language);
+  
+  // If translation key wasn't found (returns the key itself), return original product name
+  if (translation === productKey) {
+    console.warn(`No translation found for product: ${productName} (key: ${productKey})`);
+    return productName;
+  }
+  
+  return translation;
 };
