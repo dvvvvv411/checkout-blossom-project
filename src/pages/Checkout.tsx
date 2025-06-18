@@ -8,6 +8,7 @@ import { VerifiedShopCard } from "@/components/checkout/VerifiedShopCard";
 import { fetchOrderDataWithShopId, fetchShopConfig } from "@/services/api";
 import { getTranslation } from "@/utils/translations";
 import { Button } from "@/components/ui/button";
+import { getSupportedLanguage } from "@/lib/utils";
 
 const Checkout = () => {
   const [searchParams] = useSearchParams();
@@ -56,6 +57,9 @@ const Checkout = () => {
     },
   });
 
+  // Get the final language - use utility function for consistency
+  const language = getSupportedLanguage(shopConfig?.language);
+
   // Enhanced logging for payment method debugging
   useEffect(() => {
     if (shopConfig) {
@@ -70,12 +74,13 @@ const Checkout = () => {
         });
       }
       console.log("Language:", shopConfig.language);
+      console.log("Resolved Language:", language);
       console.log("=== LOGO DEBUG IN CHECKOUT ===");
       console.log("Logo URL from shopConfig:", shopConfig.logo_url);
       console.log("Company Name:", shopConfig.company_name);
       console.log("=====================================");
     }
-  }, [shopConfig]);
+  }, [shopConfig, language]);
 
   useEffect(() => {
     if (shopConfig?.accent_color) {
@@ -93,29 +98,6 @@ const Checkout = () => {
     setRetryCount(prev => prev + 1);
     refetchOrder();
   };
-
-  // Improved language processing with debugging and error handling
-  const getValidLanguage = (): "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL" => {
-    console.log("Processing language from shopConfig:", shopConfig);
-    console.log("shopConfig.language:", shopConfig?.language, "type:", typeof shopConfig?.language);
-    
-    const rawLanguage = shopConfig?.language;
-    const validLanguages = ["DE", "EN", "FR", "IT", "ES", "PL", "NL"] as const;
-    
-    if (rawLanguage && typeof rawLanguage === 'string') {
-      const upperLanguage = rawLanguage.toUpperCase();
-      if (validLanguages.includes(upperLanguage as any)) {
-        console.log("Valid language found:", upperLanguage);
-        return upperLanguage as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL";
-      }
-    }
-    
-    console.log("Invalid or missing language, using fallback DE");
-    return "DE";
-  };
-
-  const language = getValidLanguage();
-  console.log("Final language for component:", language);
 
   // Token validation
   if (!token) {
@@ -139,8 +121,11 @@ const Checkout = () => {
     );
   }
 
-  // Loading state
-  if (orderLoading || (orderData && configLoading)) {
+  // Loading state - wait for both order data AND shop config to be loaded
+  // This prevents the flash of wrong language content
+  const isLoading = orderLoading || (orderData && configLoading);
+  
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="flex flex-col items-center space-y-4">
@@ -239,6 +224,7 @@ const Checkout = () => {
   }
 
   // Success state - show checkout form
+  // At this point we have both orderData and shopConfig (or shopConfig failed but we have fallback)
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* CORS Warning Banner */}
