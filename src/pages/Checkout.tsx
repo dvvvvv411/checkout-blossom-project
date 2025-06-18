@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -131,9 +130,6 @@ const Checkout = () => {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="flex flex-col items-center space-y-4">
           <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
-          <span className="text-lg text-gray-600 font-medium">
-            Loading checkout...
-          </span>
           {corsError && (
             <div className="text-center mt-4">
               <WifiOff className="h-6 w-6 text-orange-500 mx-auto mb-2" />
