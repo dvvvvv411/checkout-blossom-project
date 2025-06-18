@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { FileText, Shield, Check } from "lucide-react";
+import { FileText, Shield, Check, TestTube } from "lucide-react";
 
 interface TermsCardProps {
   termsAccepted: boolean;
@@ -15,6 +15,8 @@ interface TermsCardProps {
   allStepsCompleted: boolean;
   accentColor: string;
   submitButtonText: string;
+  testMode: boolean;
+  onTestModeChange: (testMode: boolean) => void;
 }
 
 export const TermsCard = ({ 
@@ -25,12 +27,18 @@ export const TermsCard = ({
   isSubmitting,
   allStepsCompleted,
   accentColor,
-  submitButtonText
+  submitButtonText,
+  testMode,
+  onTestModeChange
 }: TermsCardProps) => {
   const [focused, setFocused] = useState(false);
 
   const handleChange = (checked: boolean) => {
     onChange(checked);
+  };
+
+  const handleTestModeChange = (checked: boolean) => {
+    onTestModeChange(checked);
   };
 
   return (
@@ -65,7 +73,7 @@ export const TermsCard = ({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className={`p-4 rounded-lg border transition-all duration-300 mb-6 ${
+        <div className={`p-4 rounded-lg border transition-all duration-300 mb-4 ${
           termsAccepted 
             ? "border-green-200 bg-green-50" 
             : "border-gray-200 bg-gray-50"
@@ -87,17 +95,48 @@ export const TermsCard = ({
           </div>
         </div>
 
+        <div className={`p-4 rounded-lg border transition-all duration-300 mb-6 ${
+          testMode 
+            ? "border-orange-200 bg-orange-50" 
+            : "border-gray-200 bg-gray-50"
+        }`}>
+          <div className="flex items-start space-x-4">
+            <Checkbox
+              id="test_mode"
+              checked={testMode}
+              onCheckedChange={handleTestModeChange}
+              className="border-2 border-gray-300 mt-1"
+            />
+            <div className="flex-1">
+              <Label htmlFor="test_mode" className="text-sm text-gray-800 leading-relaxed cursor-pointer flex items-center gap-2">
+                <TestTube className="h-4 w-4 text-orange-600" />
+                Test-Modus aktivieren (keine echte Bestellung)
+              </Label>
+              <p className="text-xs text-gray-600 mt-1">
+                Ermöglicht es, die Bestellabschluss-Seite zu sehen, ohne eine echte Bestellung abzuschicken.
+              </p>
+            </div>
+          </div>
+        </div>
+
         <button
           type="submit"
           onClick={onSubmit}
           className={`w-full h-14 text-white font-semibold text-lg rounded-lg transition-all duration-200 disabled:opacity-50 ${
             allStepsCompleted 
-              ? "bg-gradient-to-r from-green-500 to-emerald-600 shadow-lg hover:shadow-xl hover:from-green-600 hover:to-emerald-700" 
+              ? testMode
+                ? "bg-gradient-to-r from-orange-500 to-amber-600 shadow-lg hover:shadow-xl hover:from-orange-600 hover:to-amber-700"
+                : "bg-gradient-to-r from-green-500 to-emerald-600 shadow-lg hover:shadow-xl hover:from-green-600 hover:to-emerald-700"
               : "bg-gray-500"
           }`}
           disabled={isSubmitting || !allStepsCompleted}
         >
-          {isSubmitting ? "Bestellung wird verarbeitet..." : submitButtonText}
+          {isSubmitting 
+            ? "Bestellung wird verarbeitet..." 
+            : testMode 
+              ? "Test-Bestellung ansehen"
+              : submitButtonText
+          }
         </button>
       </CardContent>
     </Card>
