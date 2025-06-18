@@ -32,6 +32,7 @@ export interface ShopConfig {
   logo_url?: string;
   support_phone?: string;
   checkout_mode?: "instant" | "standard";
+  shop_url?: string; // Added shop URL field
 }
 
 export interface CustomerData {
@@ -377,7 +378,8 @@ const getFallbackShopConfig = (shopId: string): ShopConfig => ({
   company_name: "Heizöl Premium GmbH",
   logo_url: undefined,
   support_phone: "+49 123 456789",
-  checkout_mode: "standard"
+  checkout_mode: "standard",
+  shop_url: undefined
 });
 
 // Updated fetchOrderData function to return both order data and shop ID
