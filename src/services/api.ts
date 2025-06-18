@@ -23,6 +23,7 @@ export interface ShopConfig {
   company_name: string;
   logo_url?: string;
   support_phone?: string;
+  checkout_mode?: "express" | "standard";
 }
 
 export interface CustomerData {
@@ -184,7 +185,8 @@ export const fetchShopConfig = async (shopId: string): Promise<ShopConfig> => {
       currency: "EUR",
       company_name: "Heizöl Premium GmbH",
       logo_url: undefined,
-      support_phone: "+49 123 456789"
+      support_phone: "+49 123 456789",
+      checkout_mode: "express"
     };
   }
 };

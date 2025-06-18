@@ -1,4 +1,3 @@
-
 export interface Translations {
   [key: string]: string;
 }
@@ -88,6 +87,28 @@ export const translations = {
     loading_checkout: "Checkout wird geladen...",
     error_loading_order: "Fehler beim Laden der Bestelldaten",
     error_loading_message: "Bitte überprüfen Sie Ihren Checkout-Link oder versuchen Sie es später erneut.",
+    
+    // Bestätigungsseite
+    order_confirmation: "Bestellbestätigung",
+    order_number: "Bestellnummer",
+    order_confirmed: "Ihre Bestellung wurde bestätigt!",
+    order_confirmed_message: "Vielen Dank für Ihre Bestellung. Alle Details finden Sie unten.",
+    order_received: "Ihre Bestellung ist eingegangen!",
+    order_received_message: "Wir kontaktieren Sie in Kürze bezüglich Ihrer Bestellung.",
+    order_details: "Bestelldetails",
+    customer_information: "Kundendaten",
+    delivery_address: "Lieferadresse",
+    payment_instructions: "Zahlungshinweise",
+    bank_transfer_details: "Bankverbindung für Überweisung",
+    account_holder: "Kontoinhaber",
+    reference: "Verwendungszweck",
+    print_confirmation: "Bestätigung drucken",
+    new_order: "Neue Bestellung",
+    product: "Produkt",
+    quantity: "Menge",
+    price_per_liter: "Preis pro Liter",
+    invoice_sent_email: "Die Rechnung wurde per E-Mail versendet",
+    confirmation_sent_email: "Eine Bestätigung wurde per E-Mail versendet",
   },
   
   EN: {
@@ -174,6 +195,28 @@ export const translations = {
     loading_checkout: "Loading checkout...",
     error_loading_order: "Error Loading Order Data",
     error_loading_message: "Please check your checkout link or try again later.",
+    
+    // Confirmation page
+    order_confirmation: "Order Confirmation",
+    order_number: "Order Number",
+    order_confirmed: "Your order has been confirmed!",
+    order_confirmed_message: "Thank you for your order. All details can be found below.",
+    order_received: "Your order has been received!",
+    order_received_message: "We will contact you shortly regarding your order.",
+    order_details: "Order Details",
+    customer_information: "Customer Information",
+    delivery_address: "Delivery Address",
+    payment_instructions: "Payment Instructions",
+    bank_transfer_details: "Bank Details for Transfer",
+    account_holder: "Account Holder",
+    reference: "Reference",
+    print_confirmation: "Print Confirmation",
+    new_order: "New Order",
+    product: "Product",
+    quantity: "Quantity",
+    price_per_liter: "Price per Liter",
+    invoice_sent_email: "The invoice has been sent by email",
+    confirmation_sent_email: "A confirmation has been sent by email",
   },
   
   FR: {
@@ -260,6 +303,28 @@ export const translations = {
     loading_checkout: "Chargement de la commande...",
     error_loading_order: "Erreur de Chargement des Données de Commande",
     error_loading_message: "Veuillez vérifier votre lien de commande ou réessayer plus tard.",
+    
+    // Page de confirmation
+    order_confirmation: "Confirmation de Commande",
+    order_number: "Numéro de Commande",
+    order_confirmed: "Votre commande a été confirmée!",
+    order_confirmed_message: "Merci pour votre commande. Tous les détails se trouvent ci-dessous.",
+    order_received: "Votre commande a été reçue!",
+    order_received_message: "Nous vous contacterons bientôt concernant votre commande.",
+    order_details: "Détails de la Commande",
+    customer_information: "Informations Client",
+    delivery_address: "Adresse de Livraison",
+    payment_instructions: "Instructions de Paiement",
+    bank_transfer_details: "Coordonnées Bancaires pour Virement",
+    account_holder: "Titulaire du Compte",
+    reference: "Référence",
+    print_confirmation: "Imprimer la Confirmation",
+    new_order: "Nouvelle Commande",
+    product: "Produit",
+    quantity: "Quantité",
+    price_per_liter: "Prix par Litre",
+    invoice_sent_email: "La facture a été envoyée par email",
+    confirmation_sent_email: "Une confirmation a été envoyée par email",
   }
 };
 
