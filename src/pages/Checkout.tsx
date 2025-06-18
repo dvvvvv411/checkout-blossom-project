@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -73,7 +74,28 @@ const Checkout = () => {
     refetchOrder();
   };
 
-  const language = (shopConfig?.language || "DE") as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL";
+  // Improved language processing with debugging and error handling
+  const getValidLanguage = (): "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL" => {
+    console.log("Processing language from shopConfig:", shopConfig);
+    console.log("shopConfig.language:", shopConfig?.language, "type:", typeof shopConfig?.language);
+    
+    const rawLanguage = shopConfig?.language;
+    const validLanguages = ["DE", "EN", "FR", "IT", "ES", "PL", "NL"] as const;
+    
+    if (rawLanguage && typeof rawLanguage === 'string') {
+      const upperLanguage = rawLanguage.toUpperCase();
+      if (validLanguages.includes(upperLanguage as any)) {
+        console.log("Valid language found:", upperLanguage);
+        return upperLanguage as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL";
+      }
+    }
+    
+    console.log("Invalid or missing language, using fallback DE");
+    return "DE";
+  };
+
+  const language = getValidLanguage();
+  console.log("Final language for component:", language);
 
   // Token validation
   if (!token) {
@@ -299,7 +321,7 @@ const Checkout = () => {
               {/* Verified Shop Card - positioned at bottom of right column */}
               <div className="mt-8">
                 <VerifiedShopCard 
-                  language={shopConfig?.language} 
+                  language={language} 
                   shopConfig={shopConfig}
                 />
               </div>

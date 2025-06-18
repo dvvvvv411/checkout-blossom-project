@@ -902,5 +902,35 @@ export const translations = {
 };
 
 export const getTranslation = (key: string, language: "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL" = "DE"): string => {
-  return translations[language][key] || translations.DE[key] || key;
+  console.log("getTranslation called with:", { key, language, type: typeof language });
+  
+  // Defensive programming: handle invalid/undefined language values
+  let validLanguage: "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL" = "DE";
+  
+  if (language && typeof language === 'string' && translations[language]) {
+    validLanguage = language as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL";
+  } else {
+    console.warn("Invalid language provided to getTranslation:", language, "falling back to DE");
+    validLanguage = "DE";
+  }
+  
+  console.log("Using language:", validLanguage);
+  
+  // Try to get translation for the requested language
+  const translation = translations[validLanguage]?.[key];
+  if (translation) {
+    console.log("Found translation:", translation);
+    return translation;
+  }
+  
+  // Fallback to German if key not found in requested language
+  const fallbackTranslation = translations.DE[key];
+  if (fallbackTranslation) {
+    console.log("Using DE fallback for key:", key);
+    return fallbackTranslation;
+  }
+  
+  // Final fallback: return the key itself
+  console.warn("No translation found for key:", key, "in any language");
+  return key;
 };

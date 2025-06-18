@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Star, Lock } from "lucide-react";
+import { getTranslation } from "@/utils/translations";
 
 interface VerifiedShopCardProps {
   language?: string;
@@ -51,33 +52,13 @@ export const VerifiedShopCard = ({ language = "DE", shopConfig }: VerifiedShopCa
     };
   }, []);
 
-  const getTranslation = (key: string) => {
-    const translations = {
-      DE: {
-        title: "Verifizierter Shop",
-        subtitle: "Bewertet mit 4.8 von 5 Sternen",
-        reviews: "12.847 Bewertungen",
-        securePayment: "Sichere Bestellabwicklung",
-        loading: "Bewertungen werden geladen..."
-      },
-      EN: {
-        title: "Verified Shop",
-        subtitle: "Rated 4.8 out of 5 stars",
-        reviews: "12,847 Reviews",
-        securePayment: "100% Secure Payment",
-        loading: "Loading reviews..."
-      },
-      FR: {
-        title: "Boutique Vérifiée",
-        subtitle: "Noté 4.8 sur 5 étoiles",
-        reviews: "12 847 Avis",
-        securePayment: "Paiement 100% Sécurisé",
-        loading: "Chargement des avis..."
-      },
-    };
+  // Ensure we have a valid language for getTranslation
+  const validLanguage = (language && typeof language === 'string' && 
+    ["DE", "EN", "FR", "IT", "ES", "PL", "NL"].includes(language.toUpperCase())) 
+    ? language.toUpperCase() as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL"
+    : "DE";
 
-    return translations[language][key] || translations.DE[key];
-  };
+  console.log("VerifiedShopCard language processing:", { original: language, valid: validLanguage });
 
   const renderStars = () => {
     const stars = [];
@@ -149,7 +130,7 @@ export const VerifiedShopCard = ({ language = "DE", shopConfig }: VerifiedShopCa
               ))}
             </div>
             <p className="text-sm text-gray-600 font-medium">
-              {getTranslation("loading")}
+              {getTranslation("loading", validLanguage)}
             </p>
           </div>
         </CardContent>
@@ -172,10 +153,10 @@ export const VerifiedShopCard = ({ language = "DE", shopConfig }: VerifiedShopCa
 
           <div>
             <h3 className="font-bold text-gray-900 text-lg">
-              {getTranslation("title")}
+              {getTranslation("title", validLanguage)}
             </h3>
             <div className="px-3 py-1 bg-gradient-to-r from-emerald-500 to-green-600 text-white text-xs rounded-full font-semibold shadow-md">
-              {getTranslation("reviews")}
+              {getTranslation("reviews", validLanguage)}
             </div>
           </div>
         </div>
@@ -189,7 +170,7 @@ export const VerifiedShopCard = ({ language = "DE", shopConfig }: VerifiedShopCa
         </div>
 
         <p className="text-sm text-gray-700 mb-4 font-medium">
-          {getTranslation("subtitle")}
+          {getTranslation("subtitle", validLanguage)}
         </p>
 
         {/* Secure payment banner */}
@@ -197,7 +178,7 @@ export const VerifiedShopCard = ({ language = "DE", shopConfig }: VerifiedShopCa
           <div className="flex items-center justify-center space-x-2">
             <Lock className="h-5 w-5" />
             <span className="font-bold text-sm">
-              {getTranslation("securePayment")}
+              {getTranslation("securePayment", validLanguage)}
             </span>
           </div>
         </div>
