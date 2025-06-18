@@ -391,7 +391,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
             onChange={(email) => handleInputChange("email", email)}
             onComplete={() => handleStepComplete("email")}
             isCompleted={completedSteps.email}
-            language={supportedLanguage}
+            language={supportedLanguage as "DE" | "EN" | "FR"}
             error={getFieldError("email")}
             onBlur={() => handleFieldBlur("email")}
           />
@@ -429,7 +429,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
               onChange={(method) => handleInputChange("payment_method", method)}
               onComplete={() => handleStepComplete("payment")}
               isCompleted={completedSteps.payment}
-              language={supportedLanguage}
+              language={supportedLanguage as "DE" | "EN" | "FR"}
             />
           )}
 
@@ -441,7 +441,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
             isSubmitting={isSubmitting}
             allStepsCompleted={allStepsCompleted}
             accentColor={accentColor}
-            language={supportedLanguage}
+            language={supportedLanguage as "DE" | "EN" | "FR"}
             testMode={testMode}
             onTestModeChange={handleTestModeChange}
           />
