@@ -1,4 +1,3 @@
-
 const translations = {
   // Email section
   email_address: {
@@ -1256,7 +1255,7 @@ const translations = {
     FR: "Informations client",
     IT: "Informazioni cliente",
     ES: "Información del cliente",
-    PL: "Informacje o kliencie",
+    PL: "Informazioni o kliencie",
     NL: "Klantinformatie"
   },
   print_confirmation: {
@@ -1335,8 +1334,23 @@ export const getTranslation = (key: string, language: "DE" | "EN" | "FR" | "IT" 
   return translation[upperLanguage] || translation.DE || key;
 };
 
-// Product name translation function - NEW
+// Product name translation function - IMPROVED
 export const getProductNameTranslation = (productName: string, language: "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL"): string => {
+  console.log(`=== PRODUCT NAME TRANSLATION DEBUG ===`);
+  console.log(`Original product name: "${productName}"`);
+  console.log(`Target language: ${language}`);
+  
+  // First, check if the product name is already a valid translation key
+  if (translations[productName]) {
+    console.log(`✅ Direct translation key found: "${productName}"`);
+    const directTranslation = getTranslation(productName, language);
+    console.log(`Direct translation result: "${directTranslation}"`);
+    return directTranslation;
+  }
+  
+  console.log(`❌ No direct translation key found for: "${productName}"`);
+  console.log(`🔄 Attempting transformation...`);
+  
   // Convert product name to a key format (lowercase, replace spaces/special chars with underscores)
   const productKey = productName?.toLowerCase()
     .replace(/ä/g, 'ae')
@@ -1347,16 +1361,18 @@ export const getProductNameTranslation = (productName: string, language: "DE" | 
     .replace(/_+/g, '_')
     .replace(/^_|_$/g, '');
 
-  console.log(`Translating product: "${productName}" -> key: "${productKey}" -> language: ${language}`);
+  console.log(`Transformed product key: "${productKey}"`);
   
-  // Try to get translation, fallback to original name if not found
+  // Try to get translation with transformed key
   const translation = getTranslation(productKey, language);
   
   // If translation key wasn't found (returns the key itself), return original product name
   if (translation === productKey) {
-    console.warn(`No translation found for product: ${productName} (key: ${productKey})`);
+    console.warn(`⚠️ No translation found for product: "${productName}" (transformed key: "${productKey}")`);
+    console.log(`🔙 Falling back to original product name: "${productName}"`);
     return productName;
   }
   
+  console.log(`✅ Transformed translation found: "${translation}"`);
   return translation;
 };
