@@ -20,7 +20,7 @@ export interface FormValues {
   billing_city?: string;
 }
 
-export const useFormValidation = (language: "DE" | "EN" | "FR" = "DE") => {
+export const useFormValidation = (language: "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL" = "DE") => {
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [touched, setTouched] = useState<{ [key: string]: boolean }>({});
 
