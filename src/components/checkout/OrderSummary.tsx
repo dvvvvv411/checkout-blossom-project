@@ -36,7 +36,7 @@ export const OrderSummary = ({ orderData, shopConfig, accentColor }: OrderSummar
   };
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       {/* Product Card */}
       <div className="bg-white rounded-xl border border-gray-200 p-3">
         <div className="flex items-center space-x-2 mb-2">
