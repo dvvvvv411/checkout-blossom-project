@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { OrderData, ShopConfig, CustomerData, submitOrder } from "@/services/api";
