@@ -378,7 +378,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
             onChange={(email) => handleInputChange("email", email)}
             onComplete={() => handleStepComplete("email")}
             isCompleted={completedSteps.email}
-            language={supportedLanguage as "DE" | "EN" | "FR"}
+            language={supportedLanguage}
             error={getFieldError("email")}
             onBlur={() => handleFieldBlur("email")}
           />
@@ -396,6 +396,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
               handleStepComplete("delivery");
             }}
             isCompleted={completedSteps.contact && completedSteps.delivery}
+            language={supportedLanguage}
             // Pass validation errors
             firstNameError={getFieldError("first_name")}
             lastNameError={getFieldError("last_name")}
@@ -421,6 +422,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
             onChange={handleInputChange}
             onComplete={() => handleStepComplete("billing")}
             isCompleted={completedSteps.billing}
+            language={supportedLanguage}
           />
 
           {shopConfig?.payment_methods && shopConfig.payment_methods.length > 1 && (
@@ -430,7 +432,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
               onChange={(method) => handleInputChange("payment_method", method)}
               onComplete={() => handleStepComplete("payment")}
               isCompleted={completedSteps.payment}
-              language={supportedLanguage as "DE" | "EN" | "FR"}
+              language={supportedLanguage}
             />
           )}
 
@@ -441,7 +443,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
             isSubmitting={isSubmitting}
             allStepsCompleted={allStepsCompleted}
             accentColor={accentColor}
-            language={supportedLanguage as "DE" | "EN" | "FR"}
+            language={supportedLanguage}
           />
         </form>
       </div>
