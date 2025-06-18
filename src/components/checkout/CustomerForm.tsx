@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { OrderData, ShopConfig, CustomerData, submitOrder } from "@/services/api";
@@ -63,6 +64,23 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
     getFieldError,
     hasFieldError,
   } = useFormValidation(supportedLanguage);
+
+  // Auto-copy delivery address to billing address when billing address is not shown separately
+  useEffect(() => {
+    if (!showBillingAddress) {
+      console.log("=== AUTO-COPYING DELIVERY TO BILLING ===");
+      console.log("Delivery address:", formData.delivery_address);
+      
+      setFormData(prev => ({
+        ...prev,
+        billing_address: {
+          street: prev.delivery_address.street,
+          postal_code: prev.delivery_address.postal_code,
+          city: prev.delivery_address.city,
+        },
+      }));
+    }
+  }, [showBillingAddress, formData.delivery_address]);
 
   // Check step completion whenever form data changes
   useEffect(() => {
@@ -153,6 +171,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
     console.log("=== BILLING ADDRESS TOGGLE ===", checked);
     setShowBillingAddress(checked);
     if (checked) {
+      // Initialize with empty billing address for separate input
       setFormData(prev => ({
         ...prev,
         billing_address: {
@@ -161,12 +180,8 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
           city: "",
         },
       }));
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        billing_address: undefined,
-      }));
     }
+    // The useEffect above will handle copying delivery address when checked becomes false
   };
 
   const handleStepComplete = (step: string) => {

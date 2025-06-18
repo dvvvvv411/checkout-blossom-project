@@ -102,9 +102,9 @@ export const useFormValidation = (language: "DE" | "EN" | "FR" | "IT" | "ES" | "
       }
     }
     
-    // Rechnungsadresse validieren wenn angezeigt
+    // Rechnungsadresse validieren nur wenn separat angezeigt
     if (showBillingAddress) {
-      console.log("Validating billing address fields");
+      console.log("Validating separate billing address fields");
       const billingFields = ["billing_street", "billing_postal_code", "billing_city"];
       for (const field of billingFields) {
         const error = validateField(field, values[field] || "", showBillingAddress);
@@ -113,6 +113,8 @@ export const useFormValidation = (language: "DE" | "EN" | "FR" | "IT" | "ES" | "
           newErrors[field] = error;
         }
       }
+    } else {
+      console.log("Billing address is same as delivery address - skipping separate validation");
     }
     
     setErrors(newErrors);
