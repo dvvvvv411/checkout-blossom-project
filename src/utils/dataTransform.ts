@@ -1,5 +1,7 @@
 // Data transformation utilities for backend/frontend compatibility
 
+import { logger } from "@/utils/logger";
+
 export interface BackendOrderData {
   shop_id: string;
   product?: string; // Backend uses 'product' instead of 'product_name'
@@ -33,11 +35,11 @@ export interface BackendShopConfig {
 
 // Transform backend order data to frontend format
 export const transformOrderData = (backendData: any): any => {
-  console.log("Transforming backend order data:", backendData);
+  logger.dev("Transforming backend order data:", backendData);
   
   // Validate that we have a shop_id
   if (!backendData.shop_id || typeof backendData.shop_id !== 'string') {
-    console.error('Missing or invalid shop_id in backend data:', backendData);
+    logger.error('Missing or invalid shop_id in backend data:', backendData);
     throw new Error('VALIDATION_ERROR: Missing shop_id');
   }
   
@@ -57,13 +59,13 @@ export const transformOrderData = (backendData: any): any => {
     total_net = backendData.basePrice;
     total_gross = backendData.totalAmount;
     total_tax = total_gross - total_net;
-    console.log("Using provided basePrice and totalAmount:", { total_net, total_gross, total_tax });
+    logger.dev("Using provided basePrice and totalAmount:", { total_net, total_gross, total_tax });
   }
   // If we don't have the totals, calculate them correctly
   else if (!total_net || !total_gross) {
     // Calculate the gross amount first (this is the total price including VAT)
     const gross_amount = (quantity_liters * price_per_liter) + delivery_fee;
-    console.log("Calculated gross amount:", gross_amount);
+    logger.dev("Calculated gross amount:", gross_amount);
     
     // Calculate net amount: gross / (1 + tax_rate)
     const net_amount = gross_amount / (1 + tax_rate);
@@ -75,7 +77,7 @@ export const transformOrderData = (backendData: any): any => {
     total_tax = tax_amount;
     total_gross = gross_amount;
     
-    console.log("Corrected tax calculation:", { 
+    logger.dev("Corrected tax calculation:", { 
       gross_amount, 
       net_amount, 
       tax_amount, 
@@ -86,7 +88,7 @@ export const transformOrderData = (backendData: any): any => {
   // If we only have total_tax missing, calculate it
   else if (!total_tax) {
     total_tax = total_gross - total_net;
-    console.log("Calculated missing total_tax:", total_tax);
+    logger.dev("Calculated missing total_tax:", total_tax);
   }
   
   const transformed = {
@@ -103,16 +105,16 @@ export const transformOrderData = (backendData: any): any => {
     total_gross: Number(total_gross.toFixed(2)),
   };
   
-  console.log("Transformed order data:", transformed);
+  logger.dev("Transformed order data:", transformed);
   return transformed;
 };
 
 // Transform backend shop config to frontend format
 export const transformShopConfig = (backendData: any): any => {
-  console.log("=== SHOP CONFIG TRANSFORMATION DEBUG ===");
-  console.log("Transforming backend shop config:", backendData);
-  console.log("Backend data type:", typeof backendData);
-  console.log("Backend data keys:", Object.keys(backendData || {}));
+  logger.dev("=== SHOP CONFIG TRANSFORMATION DEBUG ===");
+  logger.dev("Transforming backend shop config:", backendData);
+  logger.dev("Backend data type:", typeof backendData);
+  logger.dev("Backend data keys:", Object.keys(backendData || {}));
   
   // Extract shop_id from various possible locations in the backend response
   let shop_id = null;
@@ -120,33 +122,33 @@ export const transformShopConfig = (backendData: any): any => {
   // Check multiple possible locations for shop_id
   if (backendData.shop_id) {
     shop_id = backendData.shop_id;
-    console.log("Found shop_id directly:", shop_id);
+    logger.dev("Found shop_id directly:", shop_id);
   } else if (backendData.shop?.shop_id) {
     shop_id = backendData.shop.shop_id;
-    console.log("Found shop_id in nested shop object:", shop_id);
+    logger.dev("Found shop_id in nested shop object:", shop_id);
   } else if (backendData.shop?.id) {
     shop_id = backendData.shop.id;
-    console.log("Found shop_id as 'id' in nested shop object:", shop_id);
+    logger.dev("Found shop_id as 'id' in nested shop object:", shop_id);
   } else if (backendData.id) {
     shop_id = backendData.id;
-    console.log("Found shop_id as 'id' directly:", shop_id);
+    logger.dev("Found shop_id as 'id' directly:", shop_id);
   } else {
-    console.warn("No shop_id found in any expected location");
-    console.log("Available fields:", Object.keys(backendData || {}));
+    logger.warn("No shop_id found in any expected location");
+    logger.dev("Available fields:", Object.keys(backendData || {}));
     if (backendData.shop) {
-      console.log("Shop object fields:", Object.keys(backendData.shop || {}));
+      logger.dev("Shop object fields:", Object.keys(backendData.shop || {}));
     }
   }
   
   // Validate that we have a valid shop_id
   if (!shop_id || typeof shop_id !== 'string' || shop_id.trim().length === 0) {
-    console.error('Missing or invalid shop_id in backend shop config:', {
+    logger.error('Missing or invalid shop_id in backend shop config:', {
       extracted_shop_id: shop_id,
       backend_data: backendData
     });
     // For shop config, we can be more lenient and provide a fallback
     shop_id = "unknown-shop";
-    console.log("Using fallback shop_id:", shop_id);
+    logger.dev("Using fallback shop_id:", shop_id);
   }
   
   // Extract other fields, also checking nested shop object if available
@@ -154,24 +156,24 @@ export const transformShopConfig = (backendData: any): any => {
   
   // Extract and validate logo URL with detailed debugging
   let logo_url = shopData.logo_url || backendData.logo_url;
-  console.log("=== LOGO URL DEBUG ===");
-  console.log("Raw logo_url from shopData:", shopData.logo_url);
-  console.log("Raw logo_url from backendData:", backendData.logo_url);
-  console.log("Final extracted logo_url:", logo_url);
+  logger.dev("=== LOGO URL DEBUG ===");
+  logger.dev("Raw logo_url from shopData:", shopData.logo_url);
+  logger.dev("Raw logo_url from backendData:", backendData.logo_url);
+  logger.dev("Final extracted logo_url:", logo_url);
   
   // Validate logo URL
   if (logo_url && typeof logo_url === 'string' && logo_url.trim()) {
     // Basic URL validation
     try {
       new URL(logo_url);
-      console.log("Logo URL validation passed:", logo_url);
+      logger.dev("Logo URL validation passed:", logo_url);
     } catch (error) {
-      console.error("Invalid logo URL format:", logo_url, error);
+      logger.error("Invalid logo URL format:", logo_url, error);
       logo_url = "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=200&h=80&fit=crop&crop=center"; // Default logo
-      console.log("Using default logo due to invalid URL");
+      logger.dev("Using default logo due to invalid URL");
     }
   } else {
-    console.log("No valid logo URL provided, using default");
+    logger.dev("No valid logo URL provided, using default");
     logo_url = "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=200&h=80&fit=crop&crop=center"; // Default logo
   }
   
@@ -187,17 +189,17 @@ export const transformShopConfig = (backendData: any): any => {
     checkout_mode: shopData.checkout_mode || backendData.checkout_mode || "standard",
   };
   
-  console.log("=== FINAL SHOP CONFIG ===");
-  console.log("Transformed shop config:", transformed);
-  console.log("Final shop_id for validation:", transformed.shop_id);
-  console.log("Final logo_url:", transformed.logo_url);
-  console.log("==============================");
+  logger.dev("=== FINAL SHOP CONFIG ===");
+  logger.dev("Transformed shop config:", transformed);
+  logger.dev("Final shop_id for validation:", transformed.shop_id);
+  logger.dev("Final logo_url:", transformed.logo_url);
+  logger.dev("==============================");
   return transformed;
 };
 
 // Validate transformed order data
 export const validateOrderData = (data: any): boolean => {
-  console.log("Validating order data:", data);
+  logger.dev("Validating order data:", data);
   
   const requiredFields = [
     'shop_id',
@@ -209,30 +211,30 @@ export const validateOrderData = (data: any): boolean => {
   
   for (const field of requiredFields) {
     if (!data[field] && data[field] !== 0) {
-      console.error(`Missing required field: ${field}`);
+      logger.error(`Missing required field: ${field}`);
       return false;
     }
   }
   
   // Additional validation for shop_id
   if (typeof data.shop_id !== 'string' || data.shop_id.trim().length === 0) {
-    console.error('Invalid shop_id:', data.shop_id);
+    logger.error('Invalid shop_id:', data.shop_id);
     return false;
   }
   
   // Additional validation
   if (typeof data.quantity_liters !== 'number' || data.quantity_liters <= 0) {
-    console.error('Invalid quantity_liters:', data.quantity_liters);
+    logger.error('Invalid quantity_liters:', data.quantity_liters);
     return false;
   }
   
   if (typeof data.price_per_liter !== 'number' || data.price_per_liter <= 0) {
-    console.error('Invalid price_per_liter:', data.price_per_liter);
+    logger.error('Invalid price_per_liter:', data.price_per_liter);
     return false;
   }
   
   if (typeof data.total_gross !== 'number' || data.total_gross <= 0) {
-    console.error('Invalid total_gross:', data.total_gross);
+    logger.error('Invalid total_gross:', data.total_gross);
     return false;
   }
   
@@ -242,7 +244,7 @@ export const validateOrderData = (data: any): boolean => {
     const tolerance = 0.01; // Allow small rounding differences
     
     if (Math.abs(calculated_gross - data.total_gross) > tolerance) {
-      console.error('Total calculation mismatch:', {
+      logger.error('Total calculation mismatch:', {
         calculated_gross,
         provided_gross: data.total_gross,
         difference: Math.abs(calculated_gross - data.total_gross)
@@ -251,21 +253,21 @@ export const validateOrderData = (data: any): boolean => {
     }
   }
   
-  console.log("Order data validation passed");
+  logger.info("Order data validation passed");
   return true;
 };
 
 // Validate transformed shop config
 export const validateShopConfig = (data: any): boolean => {
-  console.log("Validating shop config:", data);
-  console.log("Shop config data type:", typeof data);
-  console.log("Shop config shop_id:", data?.shop_id, "type:", typeof data?.shop_id);
+  logger.dev("Validating shop config:", data);
+  logger.dev("Shop config data type:", typeof data);
+  logger.dev("Shop config shop_id:", data?.shop_id, "type:", typeof data?.shop_id);
   
   const requiredFields = ['shop_id', 'company_name'];
   
   for (const field of requiredFields) {
     if (!data[field]) {
-      console.error(`Missing required field in shop config: ${field}`, {
+      logger.error(`Missing required field in shop config: ${field}`, {
         field_value: data[field],
         all_data: data
       });
@@ -275,7 +277,7 @@ export const validateShopConfig = (data: any): boolean => {
   
   // Additional validation for shop_id
   if (typeof data.shop_id !== 'string' || data.shop_id.trim().length === 0) {
-    console.error('Invalid shop_id in shop config:', {
+    logger.error('Invalid shop_id in shop config:', {
       shop_id: data.shop_id,
       shop_id_type: typeof data.shop_id,
       shop_id_length: data.shop_id?.length,
@@ -284,6 +286,6 @@ export const validateShopConfig = (data: any): boolean => {
     return false;
   }
   
-  console.log("Shop config validation passed");
+  logger.info("Shop config validation passed");
   return true;
 };

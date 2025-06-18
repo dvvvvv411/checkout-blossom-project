@@ -1,4 +1,3 @@
-
 // API Services für Checkout-System
 
 import { 
@@ -7,6 +6,7 @@ import {
   validateOrderData, 
   validateShopConfig 
 } from "@/utils/dataTransform";
+import { logger } from "@/utils/logger";
 
 export interface OrderData {
   shop_id: string;
@@ -140,39 +140,39 @@ const isValidUUID = (uuid: string): boolean => {
 
 // Function to extract shop ID from URL
 const extractShopIdFromUrl = (): string | null => {
-  console.log("=== EXTRACTING SHOP ID FROM URL ===");
-  console.log("Current URL:", window.location.href);
-  console.log("Current pathname:", window.location.pathname);
-  console.log("Current search params:", window.location.search);
+  logger.dev("=== EXTRACTING SHOP ID FROM URL ===");
+  logger.dev("Current URL:", window.location.href);
+  logger.dev("Current pathname:", window.location.pathname);
+  logger.dev("Current search params:", window.location.search);
   
   // Try to get shop ID from URL parameters first
   const urlParams = new URLSearchParams(window.location.search);
   const shopIdFromParams = urlParams.get('shop_id') || urlParams.get('shopId');
   
   if (shopIdFromParams) {
-    console.log("Shop ID found in URL params:", shopIdFromParams);
+    logger.dev("Shop ID found in URL params:", shopIdFromParams);
     if (isValidUUID(shopIdFromParams)) {
-      console.log("✅ Valid UUID found in URL params");
+      logger.dev("✅ Valid UUID found in URL params");
       return shopIdFromParams;
     } else {
-      console.warn("⚠️ Shop ID from URL params is not a valid UUID:", shopIdFromParams);
+      logger.warn("⚠️ Shop ID from URL params is not a valid UUID:", shopIdFromParams);
     }
   }
   
   // Try to extract from path (e.g., /checkout/shop/uuid)
   const pathSegments = window.location.pathname.split('/').filter(segment => segment.length > 0);
-  console.log("Path segments:", pathSegments);
+  logger.dev("Path segments:", pathSegments);
   
   // Look for UUID pattern in path segments
   for (let i = 0; i < pathSegments.length; i++) {
     const segment = pathSegments[i];
     if (isValidUUID(segment)) {
-      console.log("✅ Valid UUID found in path:", segment);
+      logger.dev("✅ Valid UUID found in path:", segment);
       return segment;
     }
   }
   
-  console.warn("❌ No valid shop ID found in URL");
+  logger.warn("❌ No valid shop ID found in URL");
   return null;
 };
 
@@ -230,12 +230,12 @@ const getLocaleFromLanguage = (language: "DE" | "EN" | "FR" | "IT" | "ES" | "PL"
 
 // Enhanced Fetch-Funktion mit verbessertem CORS-Handling und Debugging
 const fetchWithCorsHandling = async (url: string, options: RequestInit = {}): Promise<Response> => {
-  console.log(`=== FETCH REQUEST DEBUG ===`);
-  console.log(`URL: ${url}`);
-  console.log(`Method: ${options.method || 'GET'}`);
-  console.log(`Headers:`, options.headers);
-  console.log(`Body:`, options.body);
-  console.log(`Current Origin: ${window.location.origin}`);
+  logger.dev(`=== FETCH REQUEST DEBUG ===`);
+  logger.dev(`URL: ${url}`);
+  logger.dev(`Method: ${options.method || 'GET'}`);
+  logger.dev(`Headers:`, options.headers);
+  logger.dev(`Body:`, options.body);
+  logger.dev(`Current Origin: ${window.location.origin}`);
   
   const enhancedOptions: RequestInit = {
     ...options,
@@ -248,62 +248,62 @@ const fetchWithCorsHandling = async (url: string, options: RequestInit = {}): Pr
     },
   };
 
-  console.log(`Enhanced options:`, enhancedOptions);
+  logger.dev(`Enhanced options:`, enhancedOptions);
 
   try {
-    console.log(`Making fetch request...`);
+    logger.dev(`Making fetch request...`);
     const response = await fetch(url, enhancedOptions);
     
-    console.log(`=== FETCH RESPONSE DEBUG ===`);
-    console.log(`Status: ${response.status} ${response.statusText}`);
-    console.log(`Headers:`, Object.fromEntries(response.headers.entries()));
-    console.log(`OK: ${response.ok}`);
-    console.log(`Type: ${response.type}`);
-    console.log(`URL: ${response.url}`);
+    logger.dev(`=== FETCH RESPONSE DEBUG ===`);
+    logger.dev(`Status: ${response.status} ${response.statusText}`);
+    logger.dev(`Headers:`, Object.fromEntries(response.headers.entries()));
+    logger.dev(`OK: ${response.ok}`);
+    logger.dev(`Type: ${response.type}`);
+    logger.dev(`URL: ${response.url}`);
     
     return response;
   } catch (error) {
-    console.error(`=== FETCH ERROR DEBUG ===`);
-    console.error('Error object:', error);
-    console.error('Error type:', typeof error);
-    console.error('Error constructor:', error?.constructor?.name);
-    console.error('Error message:', error?.message);
-    console.error('Error stack:', error?.stack);
+    logger.error(`=== FETCH ERROR DEBUG ===`);
+    logger.error('Error object:', error);
+    logger.dev('Error type:', typeof error);
+    logger.dev('Error constructor:', error?.constructor?.name);
+    logger.error('Error message:', error?.message);
+    logger.dev('Error stack:', error?.stack);
     
     if (error instanceof TypeError) {
-      console.error('TypeError detected - likely CORS or network issue');
+      logger.error('TypeError detected - likely CORS or network issue');
       if (error.message.includes('Failed to fetch')) {
-        console.error('Failed to fetch - definitive CORS or network error');
+        logger.error('Failed to fetch - definitive CORS or network error');
         throw new Error('CORS_ERROR');
       }
     }
     
-    console.error('Rethrowing original error');
+    logger.error('Rethrowing original error');
     throw error;
   }
 };
 
 // Modified function to fetch bank data using POST request
 export const fetchBankData = async (shopId?: string): Promise<BankData | null> => {
-  console.log(`=== BANK DATA FETCH START ===`);
+  logger.dev(`=== BANK DATA FETCH START ===`);
   
   // If no shop ID provided, try to extract from URL
   let actualShopId = shopId;
   if (!actualShopId) {
-    console.log("No shop ID provided, attempting to extract from URL...");
+    logger.dev("No shop ID provided, attempting to extract from URL...");
     actualShopId = extractShopIdFromUrl();
   }
   
-  console.log(`Using shop ID: ${actualShopId}`);
+  logger.dev(`Using shop ID: ${actualShopId}`);
   
   if (!actualShopId || actualShopId.trim() === '') {
-    console.error('No valid shop ID available for bank data fetch');
+    logger.error('No valid shop ID available for bank data fetch');
     return null;
   }
 
   // Validate shop ID format
   if (!isValidUUID(actualShopId)) {
-    console.error('Invalid shop ID format (not a UUID):', actualShopId);
+    logger.error('Invalid shop ID format (not a UUID):', actualShopId);
     return null;
   }
 
@@ -313,7 +313,7 @@ export const fetchBankData = async (shopId?: string): Promise<BankData | null> =
     shop_id: actualShopId
   };
   
-  console.log(`POST request body:`, requestBody);
+  logger.dev(`POST request body:`, requestBody);
   
   try {
     const response = await fetchWithCorsHandling(url, {
@@ -322,28 +322,28 @@ export const fetchBankData = async (shopId?: string): Promise<BankData | null> =
     });
     
     if (!response.ok) {
-      console.warn(`=== BANK DATA HTTP ERROR ===`);
-      console.warn(`Status: ${response.status}`);
+      logger.warn(`=== BANK DATA HTTP ERROR ===`);
+      logger.warn(`Status: ${response.status}`);
       
       if (response.status === 404) {
-        console.warn('Bank data not found - this is expected for shops without bank configuration');
+        logger.warn('Bank data not found - this is expected for shops without bank configuration');
         return null;
       } else if (response.status >= 500) {
-        console.error('Server error fetching bank data');
+        logger.error('Server error fetching bank data');
         throw new Error('SERVER_ERROR');
       } else {
-        console.error(`HTTP error fetching bank data: ${response.status}`);
+        logger.error(`HTTP error fetching bank data: ${response.status}`);
         throw new Error('VALIDATION_ERROR');
       }
     }
     
     const rawData = await response.json();
-    console.log("=== BANK DATA SUCCESS ===");
-    console.log("Raw bank data received:", rawData);
+    logger.dev("=== BANK DATA SUCCESS ===");
+    logger.dev("Raw bank data received:", rawData);
     
     // Validate bank data structure
     if (!rawData || typeof rawData !== 'object') {
-      console.warn('Invalid bank data structure received');
+      logger.warn('Invalid bank data structure received');
       return null;
     }
     
@@ -352,16 +352,16 @@ export const fetchBankData = async (shopId?: string): Promise<BankData | null> =
     
     // Check if data is nested in bank_data object
     if (rawData.bank_data && typeof rawData.bank_data === 'object') {
-      console.log("=== NESTED BANK DATA DETECTED ===");
-      console.log("Extracting from bank_data object:", rawData.bank_data);
+      logger.dev("=== NESTED BANK DATA DETECTED ===");
+      logger.dev("Extracting from bank_data object:", rawData.bank_data);
       bankDataSource = rawData.bank_data;
     } else {
-      console.log("=== FLAT BANK DATA STRUCTURE ===");
-      console.log("Using root level data");
+      logger.dev("=== FLAT BANK DATA STRUCTURE ===");
+      logger.dev("Using root level data");
     }
     
-    console.log("=== BANK DATA SOURCE ===");
-    console.log("Bank data source for processing:", bankDataSource);
+    logger.dev("=== BANK DATA SOURCE ===");
+    logger.dev("Bank data source for processing:", bankDataSource);
     
     const bankData: BankData = {
       account_holder: bankDataSource.account_holder || '',
@@ -370,12 +370,12 @@ export const fetchBankData = async (shopId?: string): Promise<BankData | null> =
       bank_name: bankDataSource.bank_name
     };
     
-    console.log("=== PROCESSED BANK DATA ===");
-    console.log("Processed bank data:", bankData);
+    logger.dev("=== PROCESSED BANK DATA ===");
+    logger.dev("Processed bank data:", bankData);
     
     // Validate required fields
     if (!bankData.account_holder || !bankData.iban || !bankData.bic) {
-      console.warn('Bank data missing required fields:', {
+      logger.warn('Bank data missing required fields:', {
         account_holder: !!bankData.account_holder,
         iban: !!bankData.iban,
         bic: !!bankData.bic,
@@ -384,16 +384,16 @@ export const fetchBankData = async (shopId?: string): Promise<BankData | null> =
       return null;
     }
     
-    console.log('✅ Validated bank data:', bankData);
+    logger.info('✅ Validated bank data:', bankData);
     return bankData;
   } catch (error) {
-    console.error("=== BANK DATA ERROR ===");
-    console.error("Error fetching bank data:", error);
+    logger.error("=== BANK DATA ERROR ===");
+    logger.error("Error fetching bank data:", error);
     
     if (error instanceof Error && error.message === 'CORS_ERROR') {
-      console.warn('CORS error fetching bank data - this is expected in development');
+      logger.warn('CORS error fetching bank data - this is expected in development');
     } else {
-      console.warn('Error fetching bank data - bank transfers may not be available');
+      logger.warn('Error fetching bank data - bank transfers may not be available');
     }
     
     return null;
@@ -432,11 +432,11 @@ const getFallbackShopConfig = (shopId: string): ShopConfig => ({
 
 // Updated fetchOrderData function to return both order data and shop ID
 export const fetchOrderDataWithShopId = async (token: string): Promise<OrderDataWithShopId> => {
-  console.log(`=== ORDER DATA FETCH START ===`);
-  console.log(`Token: ${token?.substring(0, 10)}...`);
+  logger.dev(`=== ORDER DATA FETCH START ===`);
+  logger.dev(`Token: ${token?.substring(0, 10)}...`);
   
   if (!token || token.trim() === '') {
-    console.error('Invalid token provided');
+    logger.error('Invalid token provided');
     throw new Error('TOKEN_EXPIRED');
   }
 
@@ -446,65 +446,65 @@ export const fetchOrderDataWithShopId = async (token: string): Promise<OrderData
     const response = await fetchWithCorsHandling(url);
     
     if (!response.ok) {
-      console.error(`=== ORDER DATA HTTP ERROR ===`);
-      console.error(`Status: ${response.status}`);
-      console.error(`Status Text: ${response.statusText}`);
+      logger.error(`=== ORDER DATA HTTP ERROR ===`);
+      logger.error(`Status: ${response.status}`);
+      logger.error(`Status Text: ${response.statusText}`);
       
       if (response.status === 401 || response.status === 403) {
-        console.error('Token expired or unauthorized');
+        logger.error('Token expired or unauthorized');
         throw new Error('TOKEN_EXPIRED');
       } else if (response.status === 404) {
-        console.error('Order not found');
+        logger.error('Order not found');
         throw new Error('TOKEN_EXPIRED');
       } else if (response.status >= 500) {
-        console.error('Server error');
+        logger.error('Server error');
         throw new Error('SERVER_ERROR');
       } else {
-        console.error(`HTTP error: ${response.status}`);
+        logger.error(`HTTP error: ${response.status}`);
         throw new Error('VALIDATION_ERROR');
       }
     }
     
     const rawData = await response.json();
-    console.log("=== ORDER DATA SUCCESS ===");
-    console.log("Raw order data received:", rawData);
+    logger.dev("=== ORDER DATA SUCCESS ===");
+    logger.dev("Raw order data received:", rawData);
     
     // Transform the data to expected format
     const transformedData = transformOrderData(rawData);
     
     // Validate the transformed data
     if (!validateOrderData(transformedData)) {
-      console.error('Order data validation failed after transformation');
+      logger.error('Order data validation failed after transformation');
       throw new Error('VALIDATION_ERROR');
     }
 
     // Extract shop ID from the transformed data
     const shopId = transformedData.shop_id;
     if (!shopId) {
-      console.error('Shop ID missing from order data');
+      logger.error('Shop ID missing from order data');
       throw new Error('VALIDATION_ERROR');
     }
     
-    console.log(`Extracted shop ID: ${shopId}`);
+    logger.dev(`Extracted shop ID: ${shopId}`);
     
     return {
       orderData: transformedData,
       shopId: shopId
     };
   } catch (error) {
-    console.error("=== ORDER DATA ERROR ===");
-    console.error("Error fetching order data:", error);
+    logger.error("=== ORDER DATA ERROR ===");
+    logger.error("Error fetching order data:", error);
     
     if (error instanceof Error) {
       if (error.message === 'CORS_ERROR') {
-        console.warn('CORS error - using fallback data for demo');
+        logger.warn('CORS error - using fallback data for demo');
         return getFallbackOrderDataWithShopId(token);
       } else if (['TOKEN_EXPIRED', 'SERVER_ERROR', 'VALIDATION_ERROR'].includes(error.message)) {
         throw error;
       }
     }
     
-    console.warn('Unknown error - using fallback data for demo');
+    logger.warn('Unknown error - using fallback data for demo');
     return getFallbackOrderDataWithShopId(token);
   }
 };
@@ -516,11 +516,11 @@ export const fetchOrderData = async (token: string): Promise<OrderData> => {
 };
 
 export const fetchShopConfig = async (shopId: string): Promise<ShopConfig> => {
-  console.log(`=== SHOP CONFIG FETCH START ===`);
-  console.log(`Shop ID: ${shopId}`);
+  logger.dev(`=== SHOP CONFIG FETCH START ===`);
+  logger.dev(`Shop ID: ${shopId}`);
   
   if (!shopId || shopId.trim() === '') {
-    console.error('Invalid shop ID provided');
+    logger.error('Invalid shop ID provided');
     return getFallbackShopConfig('demo-shop');
   }
 
@@ -530,43 +530,43 @@ export const fetchShopConfig = async (shopId: string): Promise<ShopConfig> => {
     const response = await fetchWithCorsHandling(url);
     
     if (!response.ok) {
-      console.warn(`=== SHOP CONFIG HTTP ERROR ===`);
-      console.warn(`Status: ${response.status}`);
+      logger.warn(`=== SHOP CONFIG HTTP ERROR ===`);
+      logger.warn(`Status: ${response.status}`);
       
       if (response.status === 404) {
-        console.warn('Shop config not found - using fallback');
+        logger.warn('Shop config not found - using fallback');
         return getFallbackShopConfig(shopId);
       } else if (response.status >= 500) {
-        console.error('Server error');
+        logger.error('Server error');
         throw new Error('SERVER_ERROR');
       } else {
-        console.error(`HTTP error: ${response.status}`);
+        logger.error(`HTTP error: ${response.status}`);
         throw new Error('VALIDATION_ERROR');
       }
     }
     
     const rawData = await response.json();
-    console.log("=== SHOP CONFIG SUCCESS ===");
-    console.log("Raw shop config received:", rawData);
+    logger.dev("=== SHOP CONFIG SUCCESS ===");
+    logger.dev("Raw shop config received:", rawData);
     
     // Transform the data to expected format
     const transformedData = transformShopConfig(rawData);
     
     // Validate the transformed data
     if (!validateShopConfig(transformedData)) {
-      console.warn('Shop config validation failed after transformation - using fallback');
+      logger.warn('Shop config validation failed after transformation - using fallback');
       return getFallbackShopConfig(shopId);
     }
     
     return transformedData;
   } catch (error) {
-    console.error("=== SHOP CONFIG ERROR ===");
-    console.error("Error fetching shop config:", error);
+    logger.error("=== SHOP CONFIG ERROR ===");
+    logger.error("Error fetching shop config:", error);
     
     if (error instanceof Error && error.message === 'CORS_ERROR') {
-      console.warn('CORS error - using fallback shop config');
+      logger.warn('CORS error - using fallback shop config');
     } else {
-      console.warn('Error fetching shop config - using fallback');
+      logger.warn('Error fetching shop config - using fallback');
     }
     
     return getFallbackShopConfig(shopId);
@@ -578,10 +578,10 @@ export const submitOrder = async (
   orderData: OrderData, 
   token: string
 ): Promise<OrderResponse> => {
-  console.log("=== ORDER SUBMISSION START ===");
-  console.log("Customer data:", customerData);
-  console.log("Order data:", orderData);
-  console.log("Token:", token?.substring(0, 10) + "...");
+  logger.dev("=== ORDER SUBMISSION START ===");
+  logger.dev("Customer data:", customerData);
+  logger.dev("Order data:", orderData);
+  logger.dev("Token:", token?.substring(0, 10) + "...");
   
   if (!token || token.trim() === '') {
     throw new Error('TOKEN_EXPIRED');
@@ -614,8 +614,8 @@ export const submitOrder = async (
     terms_accepted: true
   };
 
-  console.log("=== ORDER SUBMISSION PAYLOAD ===");
-  console.log("Payload:", JSON.stringify(payload, null, 2));
+  logger.dev("=== ORDER SUBMISSION PAYLOAD ===");
+  logger.dev("Payload:", JSON.stringify(payload, null, 2));
 
   const url = "https://luhhnsvwtnmxztcmdxyq.supabase.co/functions/v1/create-order";
 
@@ -625,19 +625,19 @@ export const submitOrder = async (
       body: JSON.stringify(payload),
     });
     
-    console.log("=== ORDER SUBMISSION RESPONSE ===");
-    console.log(`Status: ${response.status}`);
-    console.log(`OK: ${response.ok}`);
+    logger.dev("=== ORDER SUBMISSION RESPONSE ===");
+    logger.dev(`Status: ${response.status}`);
+    logger.dev(`OK: ${response.ok}`);
     
     if (!response.ok) {
-      console.error(`=== ORDER SUBMISSION HTTP ERROR ===`);
+      logger.error(`=== ORDER SUBMISSION HTTP ERROR ===`);
       
       let errorData: any = {};
       try {
         errorData = await response.json();
-        console.error("Error response data:", errorData);
+        logger.error("Error response data:", errorData);
       } catch (parseError) {
-        console.error("Could not parse error response:", parseError);
+        logger.error("Could not parse error response:", parseError);
       }
       
       if (response.status === 401 || response.status === 403) {
@@ -650,15 +650,15 @@ export const submitOrder = async (
     }
     
     const result = await response.json();
-    console.log("=== ORDER SUBMISSION SUCCESS ===");
-    console.log("Order submitted successfully:", result);
+    logger.info("=== ORDER SUBMISSION SUCCESS ===");
+    logger.info("Order submitted successfully:", result);
     
     // Enhanced debugging for sessionStorage data
-    console.log("=== SESSION STORAGE DEBUG ===");
-    console.log("About to store in sessionStorage:");
-    console.log("- orderResponse:", JSON.stringify(result, null, 2));
-    console.log("- customerData:", JSON.stringify(customerData, null, 2));
-    console.log("- orderData:", JSON.stringify(orderData, null, 2));
+    logger.dev("=== SESSION STORAGE DEBUG ===");
+    logger.dev("About to store in sessionStorage:");
+    logger.dev("- orderResponse:", JSON.stringify(result, null, 2));
+    logger.dev("- customerData:", JSON.stringify(customerData, null, 2));
+    logger.dev("- orderData:", JSON.stringify(orderData, null, 2));
     
     // Fetch shop config and bank data for sessionStorage
     let shopConfigToStore = null;
@@ -666,23 +666,23 @@ export const submitOrder = async (
     
     if (orderData.shop_id) {
       try {
-        console.log("=== FETCHING ADDITIONAL DATA FOR SESSION STORAGE ===");
+        logger.dev("=== FETCHING ADDITIONAL DATA FOR SESSION STORAGE ===");
         
         // Fetch shop config
-        console.log("Fetching shop config for sessionStorage...");
+        logger.dev("Fetching shop config for sessionStorage...");
         shopConfigToStore = await fetchShopConfig(orderData.shop_id);
-        console.log("Shop config for sessionStorage:", JSON.stringify(shopConfigToStore, null, 2));
+        logger.dev("Shop config for sessionStorage:", JSON.stringify(shopConfigToStore, null, 2));
         
         // Check if this is express/instant mode and fetch bank data if needed
         if (shopConfigToStore && (shopConfigToStore.checkout_mode === "instant")) {
-          console.log("=== INSTANT MODE DETECTED - FETCHING BANK DATA ===");
-          console.log("Checkout mode:", shopConfigToStore.checkout_mode);
+          logger.dev("=== INSTANT MODE DETECTED - FETCHING BANK DATA ===");
+          logger.dev("Checkout mode:", shopConfigToStore.checkout_mode);
           
           bankDataToStore = await fetchBankData(orderData.shop_id);
-          console.log("Bank data for sessionStorage:", JSON.stringify(bankDataToStore, null, 2));
+          logger.dev("Bank data for sessionStorage:", JSON.stringify(bankDataToStore, null, 2));
           
           if (bankDataToStore) {
-            console.log("✅ Bank data successfully fetched for instant mode");
+            logger.info("✅ Bank data successfully fetched for instant mode");
             
             // Inject bank data into the order response for the confirmation page
             // Use order_number as payment reference, fallback to order_id
@@ -697,16 +697,16 @@ export const submitOrder = async (
               }
             };
             
-            console.log("✅ Bank details injected into order response with order_number reference:", result.payment_instructions.bank_details);
-            console.log("Payment reference used:", paymentReference);
+            logger.info("✅ Bank details injected into order response with order_number reference:", result.payment_instructions.bank_details);
+            logger.dev("Payment reference used:", paymentReference);
           } else {
-            console.warn("⚠️ No bank data available for instant mode - bank transfer instructions will not be shown");
+            logger.warn("⚠️ No bank data available for instant mode - bank transfer instructions will not be shown");
           }
         } else {
-          console.log("ℹ️ Not in instant mode or no shop config - checkout_mode:", shopConfigToStore?.checkout_mode);
+          logger.dev("ℹ️ Not in instant mode or no shop config - checkout_mode:", shopConfigToStore?.checkout_mode);
         }
       } catch (error) {
-        console.warn("Could not fetch additional data for sessionStorage:", error);
+        logger.warn("Could not fetch additional data for sessionStorage:", error);
       }
     }
     
@@ -719,27 +719,27 @@ export const submitOrder = async (
       submittedAt: new Date().toISOString()
     };
     
-    console.log("=== FINAL CONFIRMATION DATA ===");
-    console.log("Final confirmation data to store:", JSON.stringify(confirmationData, null, 2));
+    logger.dev("=== FINAL CONFIRMATION DATA ===");
+    logger.dev("Final confirmation data to store:", JSON.stringify(confirmationData, null, 2));
     
     // Enhanced debugging for bank details in the final result
-    console.log("=== BANK DETAILS FINAL CHECK ===");
-    console.log("Order response payment_instructions:", result.payment_instructions);
-    console.log("Bank details in payment_instructions:", result.payment_instructions?.bank_details);
-    console.log("Checkout mode:", shopConfigToStore?.checkout_mode);
-    console.log("Bank data separately stored:", bankDataToStore);
+    logger.dev("=== BANK DETAILS FINAL CHECK ===");
+    logger.dev("Order response payment_instructions:", result.payment_instructions);
+    logger.dev("Bank details in payment_instructions:", result.payment_instructions?.bank_details);
+    logger.dev("Checkout mode:", shopConfigToStore?.checkout_mode);
+    logger.dev("Bank data separately stored:", bankDataToStore);
     
     // Bestelldaten in sessionStorage für Bestätigungsseite speichern
     sessionStorage.setItem('orderConfirmation', JSON.stringify(confirmationData));
     
     // Verify storage
     const storedData = sessionStorage.getItem('orderConfirmation');
-    console.log("Verification - data actually stored:", storedData);
+    logger.dev("Verification - data actually stored:", storedData);
     
     return result;
   } catch (error) {
-    console.error("=== ORDER SUBMISSION ERROR ===");
-    console.error("Error submitting order:", error);
+    logger.error("=== ORDER SUBMISSION ERROR ===");
+    logger.error("Error submitting order:", error);
     
     if (error instanceof Error) {
       if (error.message === 'CORS_ERROR') {
