@@ -63,6 +63,7 @@ export const useFormValidation = (language: "DE" | "EN" | "FR" | "IT" | "ES" | "
         if (!validateRequired(value)) {
           return getTranslation("street_required", language);
         }
+        // Removed text validation - any content is accepted
         break;
       
       case "postal_code":
@@ -70,6 +71,7 @@ export const useFormValidation = (language: "DE" | "EN" | "FR" | "IT" | "ES" | "
         if (!validateRequired(value)) {
           return getTranslation("postal_code_required", language);
         }
+        // Removed text validation - any content is accepted
         break;
       
       case "city":
@@ -77,6 +79,7 @@ export const useFormValidation = (language: "DE" | "EN" | "FR" | "IT" | "ES" | "
         if (!validateRequired(value)) {
           return getTranslation("city_required", language);
         }
+        // Removed text validation - any content is accepted
         break;
     }
     
