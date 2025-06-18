@@ -3,7 +3,6 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { MapPin, Check } from "lucide-react";
 
 interface DeliveryAddressCardProps {
   street: string;
@@ -40,24 +39,7 @@ export const DeliveryAddressCard = ({ street, postalCode, city, onChange, onComp
 
   return (
     <Card className={`transition-all duration-200 ${focused ? "ring-2 ring-blue-500 ring-opacity-50" : ""} ${isCompleted ? "border-green-500" : ""}`}>
-      <CardHeader className="pb-4">
-        <CardTitle className="flex items-center justify-between text-lg">
-          <div className="flex items-center space-x-3">
-            <div className={`p-2 rounded-lg ${isCompleted ? "bg-green-100" : "bg-gray-100"}`}>
-              {isCompleted ? (
-                <Check className="h-5 w-5 text-green-600" />
-              ) : (
-                <MapPin className="h-5 w-5 text-gray-600" />
-              )}
-            </div>
-            <span>Lieferadresse</span>
-          </div>
-          {isCompleted && (
-            <span className="text-sm text-green-600 font-medium">✓ Abgeschlossen</span>
-          )}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
+      <CardContent className="pt-6">
         <div className="space-y-4">
           <div>
             <Label htmlFor="delivery_street" className="text-sm font-medium text-gray-700 mb-2 block">
