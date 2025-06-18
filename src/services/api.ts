@@ -1,3 +1,4 @@
+
 // API Services für Checkout-System
 
 export interface OrderData {
@@ -133,7 +134,7 @@ export const fetchOrderData = async (token: string): Promise<OrderData> => {
   console.log(`Fetching order data for token: ${token}`);
   
   try {
-    const response = await fetch(`https://luhhnsvwtnmxztcmdxyq.supabase.co/functions/v1/order-token/${token}`, {
+    const response = await fetch(`https://luhhnsvwtnmxztcmdxyq.supabase.co/functions/v1/get-order-token?token=${token}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
