@@ -36,6 +36,12 @@ export interface BackendShopConfig {
 export const transformOrderData = (backendData: any): any => {
   console.log("Transforming backend order data:", backendData);
   
+  // Validate that we have a shop_id
+  if (!backendData.shop_id || typeof backendData.shop_id !== 'string') {
+    console.error('Missing or invalid shop_id in backend data:', backendData);
+    throw new Error('VALIDATION_ERROR: Missing shop_id');
+  }
+  
   // Handle both old and new field formats
   const quantity_liters = backendData.quantity_liters || backendData.liters || 0;
   const price_per_liter = backendData.price_per_liter || 0;
@@ -93,6 +99,13 @@ export const transformOrderData = (backendData: any): any => {
 export const transformShopConfig = (backendData: any): any => {
   console.log("Transforming backend shop config:", backendData);
   
+  // Validate that we have a shop_id
+  if (!backendData.shop_id || typeof backendData.shop_id !== 'string') {
+    console.error('Missing or invalid shop_id in backend shop config:', backendData);
+    // For shop config, we can be more lenient and provide a fallback
+    backendData.shop_id = backendData.shop_id || "unknown-shop";
+  }
+  
   const transformed = {
     shop_id: backendData.shop_id,
     accent_color: backendData.accent_color || "#2563eb",
@@ -126,6 +139,12 @@ export const validateOrderData = (data: any): boolean => {
       console.error(`Missing required field: ${field}`);
       return false;
     }
+  }
+  
+  // Additional validation for shop_id
+  if (typeof data.shop_id !== 'string' || data.shop_id.trim().length === 0) {
+    console.error('Invalid shop_id:', data.shop_id);
+    return false;
   }
   
   // Additional validation
@@ -174,6 +193,12 @@ export const validateShopConfig = (data: any): boolean => {
       console.error(`Missing required field in shop config: ${field}`);
       return false;
     }
+  }
+  
+  // Additional validation for shop_id
+  if (typeof data.shop_id !== 'string' || data.shop_id.trim().length === 0) {
+    console.error('Invalid shop_id in shop config:', data.shop_id);
+    return false;
   }
   
   console.log("Shop config validation passed");

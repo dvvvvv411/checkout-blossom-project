@@ -5,7 +5,7 @@ import { Loader2, ArrowLeft, Phone, AlertTriangle, Wifi, WifiOff } from "lucide-
 import { OrderSummary } from "@/components/checkout/OrderSummary";
 import { CustomerForm } from "@/components/checkout/CustomerForm";
 import { VerifiedShopCard } from "@/components/checkout/VerifiedShopCard";
-import { fetchOrderData, fetchShopConfig } from "@/services/api";
+import { fetchOrderDataWithShopId, fetchShopConfig } from "@/services/api";
 import { getTranslation } from "@/utils/translations";
 import { Button } from "@/components/ui/button";
 
@@ -17,9 +17,10 @@ const Checkout = () => {
   const [corsError, setCorsError] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
 
-  const { data: orderData, isLoading: orderLoading, error: orderError, refetch: refetchOrder } = useQuery({
-    queryKey: ["order", token],
-    queryFn: () => fetchOrderData(token!),
+  // First query: Get order data and shop ID from token
+  const { data: orderDataWithShopId, isLoading: orderLoading, error: orderError, refetch: refetchOrder } = useQuery({
+    queryKey: ["orderWithShopId", token],
+    queryFn: () => fetchOrderDataWithShopId(token!),
     enabled: !!token,
     retry: (failureCount, error) => {
       // Bei CORS-Fehlern nicht automatisch wiederholen
@@ -37,10 +38,15 @@ const Checkout = () => {
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 
+  // Extract order data and shop ID from the first query
+  const orderData = orderDataWithShopId?.orderData;
+  const shopId = orderDataWithShopId?.shopId;
+
+  // Second query: Get shop config using the shop ID
   const { data: shopConfig, isLoading: configLoading } = useQuery({
-    queryKey: ["shopConfig", orderData?.shop_id],
-    queryFn: () => fetchShopConfig(orderData!.shop_id),
-    enabled: !!orderData?.shop_id,
+    queryKey: ["shopConfig", shopId],
+    queryFn: () => fetchShopConfig(shopId!),
+    enabled: !!shopId, // Only run when we have a shop ID
     retry: (failureCount, error) => {
       // Bei CORS-Fehlern Shop-Config-Fehler ignorieren und Fallback verwenden
       if (error instanceof Error && error.message === 'CORS_ERROR') {
@@ -92,7 +98,7 @@ const Checkout = () => {
   }
 
   // Loading state
-  if (orderLoading || configLoading) {
+  if (orderLoading || (orderData && configLoading)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="flex flex-col items-center space-y-4">

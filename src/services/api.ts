@@ -93,6 +93,12 @@ export interface OrderResponse {
   currency: string;
 }
 
+// New interface for the combined order data and shop ID response
+export interface OrderDataWithShopId {
+  orderData: OrderData;
+  shopId: string;
+}
+
 // Error types für bessere Fehlerbehandlung
 export interface ApiError {
   type: 'CORS_ERROR' | 'TOKEN_EXPIRED' | 'VALIDATION_ERROR' | 'SERVER_ERROR' | 'NETWORK_ERROR';
@@ -182,19 +188,22 @@ const fetchWithCorsHandling = async (url: string, options: RequestInit = {}): Pr
   }
 };
 
-// Fallback-Daten für Demo-Zwecke
-const getFallbackOrderData = (token: string): OrderData => ({
-  shop_id: "demo-shop-123",
-  product_name: "Premium Heizöl",
-  product_type: "premium",
-  quantity_liters: 1000,
-  price_per_liter: 1.05,
-  delivery_fee: 0,
-  tax_rate: 0.19,
-  currency: "EUR",
-  total_net: 882.35,
-  total_tax: 167.65,
-  total_gross: 1050.00
+// Updated fallback data functions
+const getFallbackOrderDataWithShopId = (token: string): OrderDataWithShopId => ({
+  orderData: {
+    shop_id: "demo-shop-123",
+    product_name: "Premium Heizöl",
+    product_type: "premium",
+    quantity_liters: 1000,
+    price_per_liter: 1.05,
+    delivery_fee: 0,
+    tax_rate: 0.19,
+    currency: "EUR",
+    total_net: 882.35,
+    total_tax: 167.65,
+    total_gross: 1050.00
+  },
+  shopId: "demo-shop-123"
 });
 
 const getFallbackShopConfig = (shopId: string): ShopConfig => ({
@@ -209,8 +218,9 @@ const getFallbackShopConfig = (shopId: string): ShopConfig => ({
   checkout_mode: "standard"
 });
 
-export const fetchOrderData = async (token: string): Promise<OrderData> => {
-  console.log(`Fetching order data for token: ${token}`);
+// Updated fetchOrderData function to return both order data and shop ID
+export const fetchOrderDataWithShopId = async (token: string): Promise<OrderDataWithShopId> => {
+  console.log(`Fetching order data with shop ID for token: ${token}`);
   
   if (!token || token.trim() === '') {
     console.error('Invalid token provided');
@@ -249,23 +259,41 @@ export const fetchOrderData = async (token: string): Promise<OrderData> => {
       console.error('Order data validation failed after transformation');
       throw new Error('VALIDATION_ERROR');
     }
+
+    // Extract shop ID from the transformed data
+    const shopId = transformedData.shop_id;
+    if (!shopId) {
+      console.error('Shop ID missing from order data');
+      throw new Error('VALIDATION_ERROR');
+    }
     
-    return transformedData;
+    console.log(`Extracted shop ID: ${shopId}`);
+    
+    return {
+      orderData: transformedData,
+      shopId: shopId
+    };
   } catch (error) {
     console.error("Error fetching order data:", error);
     
     if (error instanceof Error) {
       if (error.message === 'CORS_ERROR') {
         console.warn('CORS error - using fallback data for demo');
-        return getFallbackOrderData(token);
+        return getFallbackOrderDataWithShopId(token);
       } else if (['TOKEN_EXPIRED', 'SERVER_ERROR', 'VALIDATION_ERROR'].includes(error.message)) {
         throw error;
       }
     }
     
     console.warn('Unknown error - using fallback data for demo');
-    return getFallbackOrderData(token);
+    return getFallbackOrderDataWithShopId(token);
   }
+};
+
+// Keep the old fetchOrderData function for backward compatibility
+export const fetchOrderData = async (token: string): Promise<OrderData> => {
+  const result = await fetchOrderDataWithShopId(token);
+  return result.orderData;
 };
 
 export const fetchShopConfig = async (shopId: string): Promise<ShopConfig> => {
