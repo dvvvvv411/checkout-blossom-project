@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { OrderData, ShopConfig, CustomerData, submitOrder } from "@/services/api";
@@ -230,7 +229,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
     if (testMode) {
       console.log("Testmodus aktiviert - simuliere erfolgreiche Bestellung");
       
-      // Simuliere Bestelldaten für Testmodus
+      // Simuliere Bestelldaten für Testmodus - IMMER als Manual/Standard Mode
       const mockOrderResponse = {
         order_id: "TEST-" + Date.now(),
         status: "confirmed",
@@ -247,11 +246,17 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
         currency: orderData.currency
       };
 
-      // Testdaten in sessionStorage speichern
+      // Testdaten in sessionStorage speichern - shopConfig auf manual/standard setzen
+      const testShopConfig = {
+        ...shopConfig,
+        checkout_mode: "standard" // Force standard mode für Testmodus
+      };
+
       sessionStorage.setItem('orderConfirmation', JSON.stringify({
         orderResponse: mockOrderResponse,
         customerData: formData,
         orderData: orderData,
+        shopConfig: testShopConfig, // Überschreibe shopConfig für Standard-Modus
         submittedAt: new Date().toISOString()
       }));
       
