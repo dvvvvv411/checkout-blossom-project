@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { OrderData, ShopConfig, CustomerData, submitOrder } from "@/services/api";
@@ -44,7 +43,6 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
   const [showBillingAddress, setShowBillingAddress] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
-  const [testMode, setTestMode] = useState(false);
   const [completedSteps, setCompletedSteps] = useState({
     email: false,
     contact: false,
@@ -199,11 +197,6 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
     setCompletedSteps(prev => ({ ...prev, terms: accepted }));
   };
 
-  const handleTestModeChange = (enabled: boolean) => {
-    console.log("=== CUSTOMER FORM: Test mode changed ===", enabled);
-    setTestMode(enabled);
-  };
-
   const handleBack = () => {
     navigate(-1);
   };
@@ -218,7 +211,6 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
     console.log("=== FORM SUBMISSION START ===");
     console.log("Token:", token);
     console.log("Terms accepted:", termsAccepted);
-    console.log("Test mode:", testMode);
     console.log("Form data:", formData);
     console.log("All steps completed:", allStepsCompleted);
     
@@ -239,55 +231,6 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
         description: getTranslation("terms_required", supportedLanguage),
         variant: "destructive",
       });
-      return;
-    }
-
-    // Testmodus: Direkt zur Bestätigungsseite ohne API-Call
-    if (testMode) {
-      console.log("=== TEST MODE ACTIVATED ===");
-      console.log("Simulating successful order submission");
-      
-      // Simuliere Bestelldaten für Testmodus - IMMER als Manual/Standard Mode
-      const mockOrderResponse = {
-        order_id: "TEST-" + Date.now(),
-        status: "confirmed",
-        confirmation_number: "TEST-" + Math.random().toString(36).substr(2, 9).toUpperCase(),
-        payment_instructions: {
-          bank_details: {
-            account_holder: "Test Firma GmbH",
-            iban: "DE89 3704 0044 0532 0130 00",
-            bic: "COBADEFFXXX",
-            reference: "TEST-REF-" + Math.random().toString(36).substr(2, 9).toUpperCase()
-          }
-        },
-        total_amount: orderData.total_gross,
-        currency: orderData.currency
-      };
-
-      // Testdaten in sessionStorage speichern - shopConfig auf manual/standard setzen
-      const testShopConfig = {
-        ...shopConfig,
-        checkout_mode: "standard" // Force standard mode für Testmodus
-      };
-
-      sessionStorage.setItem('orderConfirmation', JSON.stringify({
-        orderResponse: mockOrderResponse,
-        customerData: formData,
-        orderData: orderData,
-        shopConfig: testShopConfig, // Überschreibe shopConfig für Standard-Modus
-        submittedAt: new Date().toISOString()
-      }));
-      
-      toast({
-        title: "Testmodus",
-        description: "Simulation erfolgreich - weiterleitung zur Bestätigungsseite",
-      });
-      
-      // Zur Bestätigungsseite weiterleiten
-      setTimeout(() => {
-        window.location.href = '/confirmation';
-      }, 1500);
-      
       return;
     }
 
@@ -352,7 +295,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
         console.error("CORS error detected");
         toast({
           title: "Verbindungsfehler (CORS)",
-          description: "Die Verbindung zum Server wurde durch Browser-Sicherheitsrichtlinien blockiert. Dies ist ein CORS-Problem. Bitte verwenden Sie den Testmodus oder kontaktieren Sie den Support.",
+          description: "Die Verbindung zum Server wurde durch Browser-Sicherheitsrichtlinien blockiert. Dies ist ein CORS-Problem. Bitte kontaktieren Sie den Support.",
           variant: "destructive",
         });
       } else if (errorMessage === "TOKEN_EXPIRED") {
@@ -390,7 +333,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
         console.error("Unknown error");
         toast({
           title: getTranslation("order_error", supportedLanguage),
-          description: "Ein unbekannter Fehler ist aufgetreten. Bitte versuchen Sie es erneut oder verwenden Sie den Testmodus.",
+          description: "Ein unbekannter Fehler ist aufgetreten. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
           variant: "destructive",
         });
       }
@@ -488,8 +431,6 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
             allStepsCompleted={allStepsCompleted}
             accentColor={accentColor}
             language={supportedLanguage as "DE" | "EN" | "FR"}
-            testMode={testMode}
-            onTestModeChange={handleTestModeChange}
           />
         </form>
       </div>
