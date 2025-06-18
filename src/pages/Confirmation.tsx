@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -32,7 +33,7 @@ const Confirmation = () => {
   const navigate = useNavigate();
   const [confirmationData, setConfirmationData] = useState<OrderConfirmationData | null>(null);
   const [shopConfig, setShopConfig] = useState<ShopConfig | null>(null);
-  const [language, setLanguage] = useState<"DE" | "EN" | "FR">("DE");
+  const [language, setLanguage] = useState<"DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL">("DE");
 
   useEffect(() => {
     const storedData = sessionStorage.getItem('orderConfirmation');
@@ -48,20 +49,32 @@ const Confirmation = () => {
       
       // Sprache aus den Daten setzen falls verfügbar
       if (data.orderData?.language) {
-        setLanguage(data.orderData.language);
+        const validLanguages = ["DE", "EN", "FR", "IT", "ES", "PL", "NL"] as const;
+        const upperLanguage = data.orderData.language.toUpperCase();
+        if (validLanguages.includes(upperLanguage as any)) {
+          setLanguage(upperLanguage as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL");
+        }
       }
 
       // Shop-Konfiguration verwenden - zuerst aus sessionStorage, dann API
       if (data.shopConfig) {
         setShopConfig(data.shopConfig);
         if (data.shopConfig.language) {
-          setLanguage(data.shopConfig.language);
+          const validLanguages = ["DE", "EN", "FR", "IT", "ES", "PL", "NL"] as const;
+          const upperLanguage = data.shopConfig.language.toUpperCase();
+          if (validLanguages.includes(upperLanguage as any)) {
+            setLanguage(upperLanguage as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL");
+          }
         }
       } else if (data.orderData?.shop_id) {
         fetchShopConfig(data.orderData.shop_id).then(config => {
           setShopConfig(config);
           if (config.language) {
-            setLanguage(config.language);
+            const validLanguages = ["DE", "EN", "FR", "IT", "ES", "PL", "NL"] as const;
+            const upperLanguage = config.language.toUpperCase();
+            if (validLanguages.includes(upperLanguage as any)) {
+              setLanguage(upperLanguage as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL");
+            }
           }
         });
       }
@@ -128,7 +141,7 @@ const Confirmation = () => {
             {shopConfig?.logo_url && (
               <img 
                 src={shopConfig.logo_url} 
-                alt={shopConfig.company_name}
+                alt={shopConfig.company_name || "Shop Logo"}
                 className="h-12 object-contain"
               />
             )}

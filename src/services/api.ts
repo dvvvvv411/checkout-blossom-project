@@ -1,3 +1,4 @@
+
 import { QueryClient } from "@tanstack/react-query";
 
 export interface OrderData {
@@ -30,12 +31,16 @@ export interface CustomerData {
 
 export interface ShopConfig {
   shop_name?: string;
+  company_name?: string;
   logo_url?: string;
   primary_color?: string;
+  accent_color?: string;
   language?: string;
   payment_methods?: string[];
   terms_url?: string;
   privacy_url?: string;
+  support_phone?: string;
+  checkout_mode?: string;
 }
 
 export interface OrderResponse {
@@ -43,6 +48,27 @@ export interface OrderResponse {
   order_id?: string;
   error?: string;
 }
+
+export interface OrderDataWithShopId {
+  orderData: OrderData;
+  shopId: string;
+}
+
+// Validation functions
+export const validateRequired = (value: string): boolean => {
+  return value.trim().length > 0;
+};
+
+export const validateEmail = (email: string): boolean => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+export const validatePhone = (phone: string): boolean => {
+  // Basic phone validation - at least 6 digits
+  const phoneRegex = /^[\+]?[\d\s\-\(\)]{6,}$/;
+  return phoneRegex.test(phone);
+};
 
 // Updated to support all 7 languages
 export const formatCurrency = (amount: number, currency: string = "EUR", language: "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL" = "DE"): string => {
@@ -78,6 +104,51 @@ export const formatLiters = (liters: number, language: "DE" | "EN" | "FR" | "IT"
     minimumFractionDigits: 0,
     maximumFractionDigits: 2,
   }).format(liters);
+};
+
+export const fetchOrderDataWithShopId = async (token: string): Promise<OrderDataWithShopId> => {
+  console.log("=== FETCHING ORDER DATA WITH SHOP ID ===");
+  console.log("Token:", token);
+  
+  try {
+    const response = await fetch(`https://api.heizoel24.de/api/v1/checkout/${token}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("API Error Response:", errorText);
+      
+      if (response.status === 404) {
+        throw new Error("TOKEN_EXPIRED");
+      } else if (response.status >= 500) {
+        throw new Error("SERVER_ERROR");
+      } else {
+        throw new Error(`API_ERROR_${response.status}`);
+      }
+    }
+
+    const data = await response.json();
+    console.log("Order data with shop ID received:", data);
+    
+    // Assuming the API returns both order data and shop ID
+    return {
+      orderData: data.orderData || data,
+      shopId: data.shopId || data.shop_id || "default"
+    };
+  } catch (error) {
+    console.error("=== FETCH ORDER DATA WITH SHOP ID ERROR ===");
+    console.error("Error details:", error);
+    
+    if (error instanceof TypeError && error.message.includes("Failed to fetch")) {
+      throw new Error("CORS_ERROR");
+    }
+    
+    throw error;
+  }
 };
 
 export const fetchOrderData = async (token: string): Promise<OrderData> => {
@@ -120,12 +191,12 @@ export const fetchOrderData = async (token: string): Promise<OrderData> => {
   }
 };
 
-export const fetchShopConfig = async (token: string): Promise<ShopConfig> => {
+export const fetchShopConfig = async (shopId: string): Promise<ShopConfig> => {
   console.log("=== FETCHING SHOP CONFIG ===");
-  console.log("Token:", token);
+  console.log("Shop ID:", shopId);
   
   try {
-    const response = await fetch(`https://api.heizoel24.de/api/v1/shop-config/${token}`, {
+    const response = await fetch(`https://api.heizoel24.de/api/v1/shop-config/${shopId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
