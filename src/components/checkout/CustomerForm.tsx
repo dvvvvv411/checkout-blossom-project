@@ -452,7 +452,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
             isSubmitting={isSubmitting}
             allStepsCompleted={allStepsCompleted}
             accentColor={accentColor}
-            language={getTermsLanguage(supportedLanguage)}
+            language={supportedLanguage}
           />
         </form>
       </div>

@@ -348,6 +348,53 @@ export const translations: Record<string, Record<SupportedLanguage, string>> = {
     NL: "Verzending"
   },
 
+  // Terms and conditions translations
+  terms_conditions: {
+    DE: "Allgemeine Geschäftsbedingungen",
+    EN: "Terms and Conditions",
+    FR: "Conditions Générales",
+    IT: "Termini e Condizioni",
+    ES: "Términos y Condiciones",
+    PL: "Warunki i Postanowienia",
+    NL: "Algemene Voorwaarden"
+  },
+  terms_description: {
+    DE: "Bestätigen Sie die Bedingungen",
+    EN: "Confirm the conditions",
+    FR: "Confirmez les conditions",
+    IT: "Conferma le condizioni",
+    ES: "Confirmar las condiciones",
+    PL: "Potwierdź warunki",
+    NL: "Bevestig de voorwaarden"
+  },
+  terms_text: {
+    DE: "Ich akzeptiere die Allgemeinen Geschäftsbedingungen und stimme der Verarbeitung meiner Daten zu.",
+    EN: "I accept the Terms and Conditions and agree to the processing of my data.",
+    FR: "J'accepte les Conditions Générales et consens au traitement de mes données.",
+    IT: "Accetto i Termini e le Condizioni e acconsento al trattamento dei miei dati.",
+    ES: "Acepto los Términos y Condiciones y consiento el procesamiento de mis datos.",
+    PL: "Akceptuję Warunki i Postanowienia oraz wyrażam zgodę na przetwarzanie moich danych.",
+    NL: "Ik accepteer de Algemene Voorwaarden en stem in met de verwerking van mijn gegevens."
+  },
+  processing_order: {
+    DE: "Bestellung wird verarbeitet...",
+    EN: "Processing order...",
+    FR: "Traitement de la commande...",
+    IT: "Elaborazione ordine...",
+    ES: "Procesando pedido...",
+    PL: "Przetwarzanie zamówienia...",
+    NL: "Bestelling verwerken..."
+  },
+  submit_order: {
+    DE: "Bestellung abschicken",
+    EN: "Submit order",
+    FR: "Soumettre la commande",
+    IT: "Invia ordine",
+    ES: "Enviar pedido",
+    PL: "Złóż zamówienie",
+    NL: "Bestelling verzenden"
+  },
+
   // Error and success messages
   order_error: {
     DE: "Bestellfehler",
