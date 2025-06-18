@@ -1,4 +1,3 @@
-
 const translations = {
   // Email section
   email_address: {
@@ -170,7 +169,227 @@ const translations = {
     NL: "Ik ga akkoord met de Algemene Voorwaarden en het Privacybeleid en bevestig dat ik deze heb gelezen en begrepen."
   },
 
-  // Placeholders
+  // Order Summary translations - NEW
+  your_order: {
+    DE: "Ihre Bestellung",
+    EN: "Your Order",
+    FR: "Votre commande",
+    IT: "Il tuo ordine",
+    ES: "Su pedido",
+    PL: "Twoje zamówienie",
+    NL: "Uw bestelling"
+  },
+  discount_code: {
+    DE: "Rabattcode",
+    EN: "Discount Code",
+    FR: "Code de réduction",
+    IT: "Codice sconto",
+    ES: "Código de descuento",
+    PL: "Kod rabatowy",
+    NL: "Kortingscode"
+  },
+  apply: {
+    DE: "Anwenden",
+    EN: "Apply",
+    FR: "Appliquer",
+    IT: "Applica",
+    ES: "Aplicar",
+    PL: "Zastosuj",
+    NL: "Toepassen"
+  },
+  discount_invalid: {
+    DE: "Ungültiger Rabattcode",
+    EN: "Invalid discount code",
+    FR: "Code de réduction invalide",
+    IT: "Codice sconto non valido",
+    ES: "Código de descuento inválido",
+    PL: "Nieprawidłowy kod rabatowy",
+    NL: "Ongeldige kortingscode"
+  },
+  cost_breakdown: {
+    DE: "Kostenaufschlüsselung",
+    EN: "Cost Breakdown",
+    FR: "Répartition des coûts",
+    IT: "Ripartizione dei costi",
+    ES: "Desglose de costos",
+    PL: "Podział kosztów",
+    NL: "Kostenverdeling"
+  },
+  subtotal: {
+    DE: "Zwischensumme",
+    EN: "Subtotal",
+    FR: "Sous-total",
+    IT: "Subtotale",
+    ES: "Subtotal",
+    PL: "Suma częściowa",
+    NL: "Subtotaal"
+  },
+  delivery: {
+    DE: "Lieferung",
+    EN: "Delivery",
+    FR: "Livraison",
+    IT: "Consegna",
+    ES: "Entrega",
+    PL: "Dostawa",
+    NL: "Levering"
+  },
+  free: {
+    DE: "Kostenlos",
+    EN: "Free",
+    FR: "Gratuit",
+    IT: "Gratuito",
+    ES: "Gratis",
+    PL: "Za darmo",
+    NL: "Gratis"
+  },
+  net_amount: {
+    DE: "Nettobetrag",
+    EN: "Net Amount",
+    FR: "Montant net",
+    IT: "Importo netto",
+    ES: "Importe neto",
+    PL: "Kwota netto",
+    NL: "Netto bedrag"
+  },
+  vat: {
+    DE: "MwSt",
+    EN: "VAT",
+    FR: "TVA",
+    IT: "IVA",
+    ES: "IVA",
+    PL: "VAT",
+    NL: "BTW"
+  },
+  total: {
+    DE: "Gesamt",
+    EN: "Total",
+    FR: "Total",
+    IT: "Totale",
+    ES: "Total",
+    PL: "Razem",
+    NL: "Totaal"
+  },
+
+  // VerifiedShopCard translations - NEW
+  loading: {
+    DE: "Wird geladen...",
+    EN: "Loading...",
+    FR: "Chargement...",
+    IT: "Caricamento...",
+    ES: "Cargando...",
+    PL: "Ładowanie...",
+    NL: "Laden..."
+  },
+  title: {
+    DE: "Verifizierter Shop",
+    EN: "Verified Shop",
+    FR: "Boutique vérifiée",
+    IT: "Negozio verificato",
+    ES: "Tienda verificada",
+    PL: "Zweryfikowany sklep",
+    NL: "Geverifieerde winkel"
+  },
+  reviews: {
+    DE: "1.200+ Bewertungen",
+    EN: "1,200+ Reviews",
+    FR: "1 200+ avis",
+    IT: "1.200+ recensioni",
+    ES: "1.200+ reseñas",
+    PL: "1 200+ opinii",
+    NL: "1.200+ beoordelingen"
+  },
+  subtitle: {
+    DE: "Vertrauenswürdiger Partner mit ausgezeichneten Bewertungen",
+    EN: "Trusted partner with excellent reviews",
+    FR: "Partenaire de confiance avec d'excellents avis",
+    IT: "Partner affidabile con recensioni eccellenti",
+    ES: "Socio confiable con excelentes reseñas",
+    PL: "Zaufany partner z doskonałymi opiniami",
+    NL: "Vertrouwde partner met uitstekende beoordelingen"
+  },
+  securePayment: {
+    DE: "Sichere Zahlung & SSL-Verschlüsselung",
+    EN: "Secure Payment & SSL Encryption",
+    FR: "Paiement sécurisé et cryptage SSL",
+    IT: "Pagamento sicuro e crittografia SSL",
+    ES: "Pago seguro y cifrado SSL",
+    PL: "Bezpieczna płatność i szyfrowanie SSL",
+    NL: "Veilige betaling en SSL-versleuteling"
+  },
+
+  // PaymentMethodCard translations - NEW
+  vorkasse: {
+    DE: "Vorkasse/Überweisung",
+    EN: "Prepayment/Bank Transfer",
+    FR: "Paiement anticipé/Virement",
+    IT: "Pagamento anticipato/Bonifico",
+    ES: "Pago anticipado/Transferencia",
+    PL: "Przedpłata/Przelew",
+    NL: "Vooruitbetaling/Overschrijving"
+  },
+  vorkasse_description: {
+    DE: "Bezahlung per Überweisung vor Lieferung",
+    EN: "Payment by bank transfer before delivery",
+    FR: "Paiement par virement avant livraison",
+    IT: "Pagamento tramite bonifico prima della consegna",
+    ES: "Pago por transferencia antes de la entrega",
+    PL: "Płatność przelewem przed dostawą",
+    NL: "Betaling per overschrijving voor levering"
+  },
+  rechnung: {
+    DE: "Kauf auf Rechnung",
+    EN: "Invoice Payment",
+    FR: "Paiement sur facture",
+    IT: "Pagamento su fattura",
+    ES: "Pago contra factura",
+    PL: "Płatność na fakturę",
+    NL: "Betaling op factuur"
+  },
+  rechnung_description: {
+    DE: "Bezahlung nach Erhalt der Rechnung",
+    EN: "Payment after receiving the invoice",
+    FR: "Paiement après réception de la facture",
+    IT: "Pagamento dopo aver ricevuto la fattura",
+    ES: "Pago después de recibir la factura",
+    PL: "Płatność po otrzymaniu faktury",
+    NL: "Betaling na ontvangst van factuur"
+  },
+  recommended: {
+    DE: "Empfohlen",
+    EN: "Recommended",
+    FR: "Recommandé",
+    IT: "Raccomandato",
+    ES: "Recomendado",
+    PL: "Zalecane",
+    NL: "Aanbevolen"
+  },
+  existing_customers_only: {
+    DE: "Nur Bestandskunden",
+    EN: "Existing customers only",
+    FR: "Clients existants uniquement",
+    IT: "Solo clienti esistenti",
+    ES: "Solo clientes existentes",
+    PL: "Tylko istniejący klienci",
+    NL: "Alleen bestaande klanten"
+  },
+  payment_method: {
+    DE: "Zahlungsart",
+    EN: "Payment Method",
+    FR: "Mode de paiement",
+    IT: "Metodo di pagamento",
+    ES: "Método de pago",
+    PL: "Metoda płatności",
+    NL: "Betaalmethode"
+  },
+  payment_description: {
+    DE: "Wählen Sie Ihre bevorzugte Zahlungsart",
+    EN: "Choose your preferred payment method",
+    FR: "Choisissez votre mode de paiement préféré",
+    IT: "Scegli il tuo metodo di pagamento preferito",
+    ES: "Elija su método de pago preferido",
+    PL: "Wybierz preferowaną metodę płatności",
+    NL: "Kies uw gewenste betaalmethode"
+  },
   first_name_placeholder: {
     DE: "Vorname",
     EN: "First name", 
