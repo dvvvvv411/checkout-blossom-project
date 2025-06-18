@@ -270,7 +270,7 @@ const translations = {
     NL: "Totaal"
   },
 
-  // VerifiedShopCard translations - NEW
+  // VerifiedShopCard translations - CORRECTED
   loading: {
     DE: "Wird geladen...",
     EN: "Loading...",
@@ -290,31 +290,31 @@ const translations = {
     NL: "Geverifieerde winkel"
   },
   reviews: {
-    DE: "1.200+ Bewertungen",
-    EN: "1,200+ Reviews",
-    FR: "1 200+ avis",
-    IT: "1.200+ recensioni",
-    ES: "1.200+ reseñas",
-    PL: "1 200+ opinii",
-    NL: "1.200+ beoordelingen"
+    DE: "Über 12.000 Bestellungen",
+    EN: "Over 12,000 Orders",
+    FR: "Plus de 12 000 commandes",
+    IT: "Oltre 12.000 ordini",
+    ES: "Más de 12.000 pedidos",
+    PL: "Ponad 12 000 zamówień",
+    NL: "Meer dan 12.000 bestellingen"
   },
   subtitle: {
     DE: "Vertrauenswürdiger Partner mit ausgezeichneten Bewertungen",
     EN: "Trusted partner with excellent reviews",
-    FR: "Partenaire de confiance avec d'excellents avis",
+    FR: "Partenaire de confiance avec d'excellentes évaluations",
     IT: "Partner affidabile con recensioni eccellenti",
     ES: "Socio confiable con excelentes reseñas",
     PL: "Zaufany partner z doskonałymi opiniami",
     NL: "Vertrouwde partner met uitstekende beoordelingen"
   },
   securePayment: {
-    DE: "Sichere Zahlung & SSL-Verschlüsselung",
-    EN: "Secure Payment & SSL Encryption",
-    FR: "Paiement sécurisé et cryptage SSL",
-    IT: "Pagamento sicuro e crittografia SSL",
-    ES: "Pago seguro y cifrado SSL",
-    PL: "Bezpieczna płatność i szyfrowanie SSL",
-    NL: "Veilige betaling en SSL-versleuteling"
+    DE: "Sicherer Bestellvorgang",
+    EN: "Secure Order Process",
+    FR: "Processus de commande sécurisé",
+    IT: "Processo d'ordine sicuro",
+    ES: "Proceso de pedido seguro",
+    PL: "Bezpieczny proces zamówienia",
+    NL: "Veilig bestelproces"
   },
 
   // PaymentMethodCard translations - NEW
