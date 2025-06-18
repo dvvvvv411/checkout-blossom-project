@@ -12,9 +12,12 @@ export interface BackendOrderData {
   delivery_fee: number;
   tax_rate: number;
   currency: string;
-  total_net: number;
-  total_tax: number;
-  total_gross: number;
+  basePrice?: number; // Backend field for net total
+  totalAmount?: number; // Backend field for gross total
+  // Legacy fields for backwards compatibility
+  total_net?: number;
+  total_tax?: number;
+  total_gross?: number;
 }
 
 export interface BackendShopConfig {
@@ -34,18 +37,52 @@ export const transformOrderData = (backendData: any): any => {
   console.log("Transforming backend order data:", backendData);
   
   // Handle both old and new field formats
+  const quantity_liters = backendData.quantity_liters || backendData.liters || 0;
+  const price_per_liter = backendData.price_per_liter || 0;
+  const delivery_fee = backendData.delivery_fee || 0;
+  const tax_rate = backendData.tax_rate || 0.19;
+  
+  // Use new field names (basePrice, totalAmount) or fall back to legacy fields
+  let total_net = backendData.basePrice || backendData.total_net;
+  let total_gross = backendData.totalAmount || backendData.total_gross;
+  let total_tax = backendData.total_tax;
+  
+  // If we have basePrice and totalAmount, calculate total_tax
+  if (backendData.basePrice !== undefined && backendData.totalAmount !== undefined) {
+    total_net = backendData.basePrice;
+    total_gross = backendData.totalAmount;
+    total_tax = total_gross - total_net;
+    console.log("Calculated total_tax from basePrice and totalAmount:", total_tax);
+  }
+  // If we don't have the totals, calculate them
+  else if (!total_net || !total_gross) {
+    const net_amount = (quantity_liters * price_per_liter) + delivery_fee;
+    const tax_amount = net_amount * tax_rate;
+    
+    total_net = net_amount;
+    total_tax = tax_amount;
+    total_gross = net_amount + tax_amount;
+    
+    console.log("Calculated missing totals:", { total_net, total_tax, total_gross });
+  }
+  // If we only have total_tax missing, calculate it
+  else if (!total_tax) {
+    total_tax = total_gross - total_net;
+    console.log("Calculated missing total_tax:", total_tax);
+  }
+  
   const transformed = {
     shop_id: backendData.shop_id,
     product_name: backendData.product_name || backendData.product || "Heizöl",
     product_type: backendData.product_type || "standard",
-    quantity_liters: backendData.quantity_liters || backendData.liters || 0,
-    price_per_liter: backendData.price_per_liter || 0,
-    delivery_fee: backendData.delivery_fee || 0,
-    tax_rate: backendData.tax_rate || 0.19,
+    quantity_liters,
+    price_per_liter,
+    delivery_fee,
+    tax_rate,
     currency: backendData.currency || "EUR",
-    total_net: backendData.total_net || 0,
-    total_tax: backendData.total_tax || 0,
-    total_gross: backendData.total_gross || 0,
+    total_net: Number(total_net.toFixed(2)),
+    total_tax: Number(total_tax.toFixed(2)),
+    total_gross: Number(total_gross.toFixed(2)),
   };
   
   console.log("Transformed order data:", transformed);
@@ -105,6 +142,21 @@ export const validateOrderData = (data: any): boolean => {
   if (typeof data.total_gross !== 'number' || data.total_gross <= 0) {
     console.error('Invalid total_gross:', data.total_gross);
     return false;
+  }
+  
+  // Validate that totals make sense
+  if (typeof data.total_net === 'number' && typeof data.total_tax === 'number') {
+    const calculated_gross = data.total_net + data.total_tax;
+    const tolerance = 0.01; // Allow small rounding differences
+    
+    if (Math.abs(calculated_gross - data.total_gross) > tolerance) {
+      console.error('Total calculation mismatch:', {
+        calculated_gross,
+        provided_gross: data.total_gross,
+        difference: Math.abs(calculated_gross - data.total_gross)
+      });
+      return false;
+    }
   }
   
   console.log("Order data validation passed");
