@@ -1,30 +1,53 @@
-
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2, ArrowLeft, Phone } from "lucide-react";
+import { Loader2, ArrowLeft, Phone, AlertTriangle, Wifi, WifiOff } from "lucide-react";
 import { OrderSummary } from "@/components/checkout/OrderSummary";
 import { CustomerForm } from "@/components/checkout/CustomerForm";
 import { VerifiedShopCard } from "@/components/checkout/VerifiedShopCard";
 import { fetchOrderData, fetchShopConfig } from "@/services/api";
 import { getTranslation } from "@/utils/translations";
+import { Button } from "@/components/ui/button";
 
 const Checkout = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const token = searchParams.get("token");
   const [accentColor, setAccentColor] = useState("#000000");
+  const [corsError, setCorsError] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
 
-  const { data: orderData, isLoading: orderLoading, error: orderError } = useQuery({
+  const { data: orderData, isLoading: orderLoading, error: orderError, refetch: refetchOrder } = useQuery({
     queryKey: ["order", token],
     queryFn: () => fetchOrderData(token!),
     enabled: !!token,
+    retry: (failureCount, error) => {
+      // Bei CORS-Fehlern nicht automatisch wiederholen
+      if (error instanceof Error && error.message === 'CORS_ERROR') {
+        setCorsError(true);
+        return false;
+      }
+      // Bei TOKEN_EXPIRED nicht wiederholen
+      if (error instanceof Error && error.message === 'TOKEN_EXPIRED') {
+        return false;
+      }
+      // Maximal 2 Wiederholungen für andere Fehler
+      return failureCount < 2;
+    },
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 
   const { data: shopConfig, isLoading: configLoading } = useQuery({
     queryKey: ["shopConfig", orderData?.shop_id],
     queryFn: () => fetchShopConfig(orderData!.shop_id),
     enabled: !!orderData?.shop_id,
+    retry: (failureCount, error) => {
+      // Bei CORS-Fehlern Shop-Config-Fehler ignorieren und Fallback verwenden
+      if (error instanceof Error && error.message === 'CORS_ERROR') {
+        return false;
+      }
+      return failureCount < 1;
+    },
   });
 
   useEffect(() => {
@@ -38,25 +61,37 @@ const Checkout = () => {
     navigate(-1);
   };
 
+  const handleRetry = () => {
+    setCorsError(false);
+    setRetryCount(prev => prev + 1);
+    refetchOrder();
+  };
+
   const language = (shopConfig?.language || "DE") as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL";
 
+  // Token validation
   if (!token) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center max-w-md mx-auto px-6">
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+            <AlertTriangle className="h-12 w-12 text-orange-500 mx-auto mb-4" />
             <h1 className="text-2xl font-semibold text-gray-900 mb-3">
               {getTranslation("invalid_checkout_link", language)}
             </h1>
-            <p className="text-gray-600 leading-relaxed">
+            <p className="text-gray-600 leading-relaxed mb-6">
               {getTranslation("invalid_checkout_message", language)}
             </p>
+            <Button onClick={() => navigate('/')} className="w-full">
+              Zur Startseite
+            </Button>
           </div>
         </div>
       </div>
     );
   }
 
+  // Loading state
   if (orderLoading || configLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -65,30 +100,114 @@ const Checkout = () => {
           <span className="text-lg text-gray-600 font-medium">
             {getTranslation("loading_checkout", language)}
           </span>
+          {corsError && (
+            <div className="text-center mt-4">
+              <WifiOff className="h-6 w-6 text-orange-500 mx-auto mb-2" />
+              <p className="text-sm text-gray-600 mb-3">
+                Verbindungsprobleme erkannt. Fallback-Modus wird geladen...
+              </p>
+            </div>
+          )}
         </div>
       </div>
     );
   }
 
-  if (orderError || !orderData) {
+  // CORS Error handling
+  if (corsError && !orderData) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center max-w-md mx-auto px-6">
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-            <h1 className="text-2xl font-semibold text-red-600 mb-3">
-              {getTranslation("error_loading_order", language)}
+            <WifiOff className="h-12 w-12 text-orange-500 mx-auto mb-4" />
+            <h1 className="text-2xl font-semibold text-gray-900 mb-3">
+              Verbindungsproblem
             </h1>
-            <p className="text-gray-600 leading-relaxed">
-              {getTranslation("error_loading_message", language)}
+            <p className="text-gray-600 leading-relaxed mb-6">
+              Es gibt ein Problem mit der Serververbindung. Dies kann an CORS-Einstellungen liegen. 
+              Versuchen Sie es erneut oder kontaktieren Sie den Support.
             </p>
+            <div className="space-y-3">
+              <Button onClick={handleRetry} className="w-full">
+                <Wifi className="h-4 w-4 mr-2" />
+                Erneut versuchen ({retryCount + 1})
+              </Button>
+              <Button variant="outline" onClick={() => navigate('/')} className="w-full">
+                Zur Startseite
+              </Button>
+            </div>
           </div>
         </div>
       </div>
     );
   }
 
+  // Token expired error
+  if (orderError && orderError instanceof Error && orderError.message === 'TOKEN_EXPIRED') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center max-w-md mx-auto px-6">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+            <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+            <h1 className="text-2xl font-semibold text-red-600 mb-3">
+              {getTranslation("error_loading_order", language)}
+            </h1>
+            <p className="text-gray-600 leading-relaxed mb-6">
+              Der Checkout-Link ist abgelaufen oder ungültig. Bitte erstellen Sie einen neuen Link.
+            </p>
+            <Button onClick={() => navigate('/')} className="w-full">
+              Zur Startseite
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Other errors
+  if (orderError && !orderData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center max-w-md mx-auto px-6">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+            <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+            <h1 className="text-2xl font-semibold text-red-600 mb-3">
+              {getTranslation("error_loading_order", language)}
+            </h1>
+            <p className="text-gray-600 leading-relaxed mb-6">
+              {getTranslation("error_loading_message", language)}
+            </p>
+            <div className="space-y-3">
+              <Button onClick={handleRetry} className="w-full">
+                Erneut versuchen
+              </Button>
+              <Button variant="outline" onClick={() => navigate('/')} className="w-full">
+                Zur Startseite
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Success state - show checkout form
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      {/* CORS Warning Banner */}
+      {corsError && (
+        <div className="bg-orange-50 border-b border-orange-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <div className="flex items-center justify-center space-x-2 text-sm">
+              <WifiOff className="h-4 w-4 text-orange-600" />
+              <span className="text-orange-800">
+                Demo-Modus: Verbindung zum Server nicht verfügbar. Alle Funktionen arbeiten mit Beispieldaten.
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -165,7 +284,7 @@ const Checkout = () => {
             <div className="lg:sticky lg:top-8 space-y-6">
               <div className="[&_.bg-white]:bg-transparent [&_.border]:border-transparent [&_.shadow-sm]:shadow-none">
                 <OrderSummary 
-                  orderData={orderData} 
+                  orderData={orderData!} 
                   shopConfig={shopConfig}
                   accentColor={accentColor}
                 />
@@ -184,7 +303,7 @@ const Checkout = () => {
           {/* Customer Form - Second on Mobile */}
           <div className="lg:col-span-7 lg:order-1">
             <CustomerForm 
-              orderData={orderData}
+              orderData={orderData!}
               shopConfig={shopConfig}
               accentColor={accentColor}
             />

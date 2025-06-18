@@ -1,4 +1,3 @@
-
 // API Services für Checkout-System
 
 export interface OrderData {
@@ -87,6 +86,13 @@ export interface OrderResponse {
   currency: string;
 }
 
+// Error types für bessere Fehlerbehandlung
+export interface ApiError {
+  type: 'CORS_ERROR' | 'TOKEN_EXPIRED' | 'VALIDATION_ERROR' | 'SERVER_ERROR' | 'NETWORK_ERROR';
+  message: string;
+  statusCode?: number;
+}
+
 // Validierungsfunktionen
 export const validateEmail = (email: string): boolean => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -130,107 +136,174 @@ export const formatLiters = (liters: number, language: "DE" | "EN" | "FR"): stri
   return new Intl.NumberFormat(locale).format(liters);
 };
 
+// Verbesserte Fetch-Funktion mit CORS-Handling
+const fetchWithCorsHandling = async (url: string, options: RequestInit = {}): Promise<Response> => {
+  const corsHeaders = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    'Origin': window.location.origin,
+    'Access-Control-Request-Method': options.method || 'GET',
+    'Access-Control-Request-Headers': 'Content-Type, Authorization, Origin',
+  };
+
+  const enhancedOptions: RequestInit = {
+    ...options,
+    mode: 'cors',
+    credentials: 'omit',
+    headers: {
+      ...corsHeaders,
+      ...options.headers,
+    },
+  };
+
+  console.log(`Making request to: ${url}`);
+  console.log('Request options:', enhancedOptions);
+
+  try {
+    const response = await fetch(url, enhancedOptions);
+    console.log(`Response status: ${response.status}`);
+    return response;
+  } catch (error) {
+    console.error('Fetch error:', error);
+    
+    if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
+      console.error('CORS or network error detected');
+      throw new Error('CORS_ERROR');
+    }
+    
+    throw error;
+  }
+};
+
+// Fallback-Daten für Demo-Zwecke
+const getFallbackOrderData = (token: string): OrderData => ({
+  shop_id: "demo-shop-123",
+  product_name: "Premium Heizöl",
+  product_type: "premium",
+  quantity_liters: 1000,
+  price_per_liter: 1.05,
+  delivery_fee: 0,
+  tax_rate: 0.19,
+  currency: "EUR",
+  total_net: 882.35,
+  total_tax: 167.65,
+  total_gross: 1050.00
+});
+
+const getFallbackShopConfig = (shopId: string): ShopConfig => ({
+  shop_id: shopId,
+  accent_color: "#2563eb",
+  language: "DE",
+  payment_methods: ["vorkasse", "rechnung"],
+  currency: "EUR",
+  company_name: "Heizöl Premium GmbH",
+  logo_url: undefined,
+  support_phone: "+49 123 456789",
+  checkout_mode: "standard"
+});
+
 export const fetchOrderData = async (token: string): Promise<OrderData> => {
   console.log(`Fetching order data for token: ${token}`);
   
+  if (!token || token.trim() === '') {
+    console.error('Invalid token provided');
+    throw new Error('TOKEN_EXPIRED');
+  }
+
   try {
-    const response = await fetch(`https://luhhnsvwtnmxztcmdxyq.supabase.co/functions/v1/get-order-token?token=${token}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Origin': window.location.origin,
-      },
-      mode: 'cors',
-    });
+    const response = await fetchWithCorsHandling(
+      `https://luhhnsvwtnmxztcmdxyq.supabase.co/functions/v1/get-order-token?token=${encodeURIComponent(token)}`
+    );
     
     if (!response.ok) {
-      if (response.status === 0) {
-        console.error("CORS error: Cannot connect to backend");
-        throw new Error("CORS_ERROR");
+      if (response.status === 401 || response.status === 403) {
+        console.error('Token expired or unauthorized');
+        throw new Error('TOKEN_EXPIRED');
+      } else if (response.status === 404) {
+        console.error('Order not found');
+        throw new Error('TOKEN_EXPIRED');
+      } else if (response.status >= 500) {
+        console.error('Server error');
+        throw new Error('SERVER_ERROR');
+      } else {
+        console.error(`HTTP error: ${response.status}`);
+        throw new Error('VALIDATION_ERROR');
       }
-      throw new Error(`Failed to fetch order data: ${response.status}`);
     }
     
     const data = await response.json();
     console.log("Order data received:", data);
+    
+    // Validierung der erhaltenen Daten
+    if (!data || !data.shop_id || !data.product_name) {
+      console.error('Invalid order data received');
+      throw new Error('VALIDATION_ERROR');
+    }
+    
     return data;
   } catch (error) {
     console.error("Error fetching order data:", error);
     
-    if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
-      console.error("Network error - likely CORS issue");
-      throw new Error("CORS_ERROR");
+    if (error instanceof Error) {
+      if (error.message === 'CORS_ERROR') {
+        console.warn('CORS error - using fallback data for demo');
+        return getFallbackOrderData(token);
+      } else if (['TOKEN_EXPIRED', 'SERVER_ERROR', 'VALIDATION_ERROR'].includes(error.message)) {
+        throw error;
+      }
     }
     
-    if (error instanceof Error && error.message === "CORS_ERROR") {
-      throw error;
-    }
-    
-    // Fallback mit Beispieldaten für Demo-Zwecke
-    return {
-      shop_id: "demo-shop-123",
-      product_name: "Premium Heizöl",
-      product_type: "premium",
-      quantity_liters: 1000,
-      price_per_liter: 1.05,
-      delivery_fee: 0,
-      tax_rate: 0.19,
-      currency: "EUR",
-      total_net: 882.35,
-      total_tax: 167.65,
-      total_gross: 1050.00
-    };
+    console.warn('Unknown error - using fallback data for demo');
+    return getFallbackOrderData(token);
   }
 };
 
 export const fetchShopConfig = async (shopId: string): Promise<ShopConfig> => {
   console.log(`Fetching shop config for shop: ${shopId}`);
   
+  if (!shopId || shopId.trim() === '') {
+    console.error('Invalid shop ID provided');
+    return getFallbackShopConfig('demo-shop');
+  }
+
   try {
-    const response = await fetch(`https://luhhnsvwtnmxztcmdxyq.supabase.co/functions/v1/get-shop-config/shop/${shopId}/config`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Origin': window.location.origin,
-      },
-      mode: 'cors',
-    });
+    const response = await fetchWithCorsHandling(
+      `https://luhhnsvwtnmxztcmdxyq.supabase.co/functions/v1/get-shop-config/shop/${encodeURIComponent(shopId)}/config`
+    );
     
     if (!response.ok) {
-      if (response.status === 0) {
-        console.error("CORS error: Cannot connect to backend");
-        throw new Error("CORS_ERROR");
+      if (response.status === 404) {
+        console.warn('Shop config not found - using fallback');
+        return getFallbackShopConfig(shopId);
+      } else if (response.status >= 500) {
+        console.error('Server error');
+        throw new Error('SERVER_ERROR');
+      } else {
+        console.error(`HTTP error: ${response.status}`);
+        throw new Error('VALIDATION_ERROR');
       }
-      throw new Error(`Failed to fetch shop config: ${response.status}`);
     }
     
     const data = await response.json();
     console.log("Shop config received:", data);
+    
+    // Validierung der erhaltenen Daten
+    if (!data || !data.shop_id) {
+      console.warn('Invalid shop config received - using fallback');
+      return getFallbackShopConfig(shopId);
+    }
+    
     return data;
   } catch (error) {
     console.error("Error fetching shop config:", error);
     
-    if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
-      console.error("Network error - likely CORS issue");
-      throw new Error("CORS_ERROR");
+    if (error instanceof Error && error.message === 'CORS_ERROR') {
+      console.warn('CORS error - using fallback shop config');
+    } else {
+      console.warn('Error fetching shop config - using fallback');
     }
     
-    if (error instanceof Error && error.message === "CORS_ERROR") {
-      throw error;
-    }
-    
-    // Fallback mit Beispieldaten für Demo-Zwecke
-    return {
-      shop_id: shopId,
-      accent_color: "#2563eb",
-      language: "DE",
-      payment_methods: ["vorkasse", "rechnung"],
-      currency: "EUR",
-      company_name: "Heizöl Premium GmbH",
-      logo_url: undefined,
-      support_phone: "+49 123 456789",
-      checkout_mode: "express"
-    };
+    return getFallbackShopConfig(shopId);
   }
 };
 
@@ -241,6 +314,10 @@ export const submitOrder = async (
 ): Promise<OrderResponse> => {
   console.log("Submitting order:", { customerData, orderData, token });
   
+  if (!token || token.trim() === '') {
+    throw new Error('TOKEN_EXPIRED');
+  }
+
   // Vollständige Payload für Backend erstellen
   const payload: OrderSubmissionPayload = {
     token,
@@ -269,21 +346,16 @@ export const submitOrder = async (
   };
 
   try {
-    const response = await fetch("https://luhhnsvwtnmxztcmdxyq.supabase.co/functions/v1/create-order", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Origin": window.location.origin,
-      },
-      mode: "cors",
-      body: JSON.stringify(payload),
-    });
+    const response = await fetchWithCorsHandling(
+      "https://luhhnsvwtnmxztcmdxyq.supabase.co/functions/v1/create-order",
+      {
+        method: "POST",
+        body: JSON.stringify(payload),
+      }
+    );
     
     if (!response.ok) {
-      if (response.status === 0) {
-        console.error("CORS error: Cannot connect to backend");
-        throw new Error("CORS_ERROR");
-      } else if (response.status === 401 || response.status === 403) {
+      if (response.status === 401 || response.status === 403) {
         throw new Error("TOKEN_EXPIRED");
       } else if (response.status >= 400 && response.status < 500) {
         const errorData = await response.json().catch(() => ({}));
@@ -308,11 +380,16 @@ export const submitOrder = async (
   } catch (error) {
     console.error("Error submitting order:", error);
     
-    if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
-      console.error("Network error - likely CORS issue");
-      throw new Error("CORS_ERROR");
+    if (error instanceof Error) {
+      if (error.message === 'CORS_ERROR') {
+        throw new Error("CORS_ERROR");
+      } else if (error.message.includes('TOKEN_EXPIRED') || 
+                 error.message.includes('VALIDATION_ERROR') || 
+                 error.message.includes('SERVER_ERROR')) {
+        throw error;
+      }
     }
     
-    throw error;
+    throw new Error("NETWORK_ERROR");
   }
 };

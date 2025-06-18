@@ -327,14 +327,15 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
       if (errorMessage === "CORS_ERROR") {
         toast({
           title: "Verbindungsfehler",
-          description: "Die Verbindung zum Server ist fehlgeschlagen. Bitte versuchen Sie es später erneut oder kontaktieren Sie den Support.",
+          description: "Die Verbindung zum Server ist derzeit nicht verfügbar. Dies liegt an CORS-Konfigurationsproblemen. Bitte versuchen Sie es später erneut oder kontaktieren Sie den Support.",
           variant: "destructive",
         });
         // Bei CORS-Fehlern NICHT zur Startseite redirecten - Benutzer soll auf der Checkout-Seite bleiben
+        // und kann den Testmodus verwenden
       } else if (errorMessage === "TOKEN_EXPIRED") {
         toast({
           title: getTranslation("order_error", supportedLanguage),
-          description: getTranslation("token_expired", supportedLanguage),
+          description: "Der Checkout-Link ist abgelaufen. Sie werden zur Startseite weitergeleitet.",
           variant: "destructive",
         });
         // Nach 3 Sekunden zur Startseite redirecten
@@ -344,19 +345,25 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
       } else if (errorMessage.startsWith("VALIDATION_ERROR")) {
         toast({
           title: getTranslation("order_error", supportedLanguage),
-          description: getTranslation("validation_error", supportedLanguage),
+          description: "Die eingegebenen Daten sind ungültig. Bitte überprüfen Sie Ihre Eingaben.",
           variant: "destructive",
         });
       } else if (errorMessage.startsWith("SERVER_ERROR")) {
         toast({
           title: getTranslation("order_error", supportedLanguage),
-          description: getTranslation("server_error", supportedLanguage),
+          description: "Es gibt ein Problem mit dem Server. Bitte versuchen Sie es später erneut.",
+          variant: "destructive",
+        });
+      } else if (errorMessage === "NETWORK_ERROR") {
+        toast({
+          title: getTranslation("order_error", supportedLanguage),
+          description: "Netzwerkfehler. Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.",
           variant: "destructive",
         });
       } else {
         toast({
           title: getTranslation("order_error", supportedLanguage),
-          description: getTranslation("network_error", supportedLanguage),
+          description: "Ein unbekannter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
           variant: "destructive",
         });
       }
