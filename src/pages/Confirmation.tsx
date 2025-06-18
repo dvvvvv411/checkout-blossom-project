@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle, Info, CreditCard, MapPin, Mail, Phone, ArrowLeft, Truck, Copy } from "lucide-react";
 import { formatCurrency, fetchShopConfig, fetchBankData, ShopConfig, BankData } from "@/services/api";
 import { getTranslation, getProductNameTranslation } from "@/utils/translations";
+import { formatIBAN } from "@/utils/formatters";
 
 interface OrderConfirmationData {
   orderResponse: {
@@ -193,8 +194,10 @@ const Confirmation = () => {
 
   const handleCopyToClipboard = async (text: string, label: string) => {
     try {
-      await navigator.clipboard.writeText(text);
-      console.log(`${label} copied to clipboard: ${text}`);
+      // For IBAN, copy the clean version without spaces
+      const cleanText = label === "IBAN" ? text.replace(/\s/g, '') : text;
+      await navigator.clipboard.writeText(cleanText);
+      console.log(`${label} copied to clipboard: ${cleanText}`);
     } catch (err) {
       console.error('Failed to copy to clipboard:', err);
     }
@@ -433,10 +436,10 @@ const Confirmation = () => {
                             <span className="text-blue-700 font-semibold text-sm block mb-1">IBAN:</span>
                             <div className="flex items-center justify-between">
                               <p className="text-blue-900 font-mono text-lg font-medium">
-                                {bankDetails.iban}
+                                {formatIBAN(bankDetails.iban)}
                               </p>
                               <button
-                                onClick={() => handleCopyToClipboard(bankDetails.iban, "IBAN")}
+                                onClick={() => handleCopyToClipboard(formatIBAN(bankDetails.iban), "IBAN")}
                                 className="ml-2 p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded transition-colors"
                                 title={getTranslation("copy_tooltip", language)}
                               >
