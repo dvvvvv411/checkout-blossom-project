@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -105,10 +104,6 @@ export const ContactDeliveryCard = ({
         <div className="space-y-6">
           {/* Personal Data Section */}
           <div>
-            <h4 className="text-sm font-semibold text-gray-800 mb-4 flex items-center">
-              <User className="h-4 w-4 mr-2 text-gray-600" />
-              Persönliche Daten
-            </h4>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
