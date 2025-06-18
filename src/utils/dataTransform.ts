@@ -1,3 +1,4 @@
+
 // Data transformation utilities for backend/frontend compatibility
 
 import { logger } from "@/utils/logger";
@@ -168,7 +169,7 @@ export const transformShopConfig = (backendData: any): any => {
       new URL(logo_url);
       logger.dev("Logo URL validation passed:", logo_url);
     } catch (error) {
-      logger.error("Invalid logo URL format:", logo_url, error);
+      logger.error("Invalid logo URL format:", logo_url);
       logo_url = "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=200&h=80&fit=crop&crop=center"; // Default logo
       logger.dev("Using default logo due to invalid URL");
     }
@@ -261,7 +262,7 @@ export const validateOrderData = (data: any): boolean => {
 export const validateShopConfig = (data: any): boolean => {
   logger.dev("Validating shop config:", data);
   logger.dev("Shop config data type:", typeof data);
-  logger.dev("Shop config shop_id:", data?.shop_id, "type:", typeof data?.shop_id);
+  logger.dev("Shop config shop_id:", data?.shop_id);
   
   const requiredFields = ['shop_id', 'company_name'];
   
