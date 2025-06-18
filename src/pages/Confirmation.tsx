@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, Info, CreditCard, MapPin, Mail, Phone, ArrowLeft, Truck, Copy } from "lucide-react";
-import { formatCurrency, fetchShopConfig, ShopConfig, BankData } from "@/services/api";
+import { formatCurrency, fetchShopConfig, fetchBankData, ShopConfig, BankData } from "@/services/api";
 import { getTranslation } from "@/utils/translations";
 
 interface OrderConfirmationData {
@@ -33,6 +33,7 @@ const Confirmation = () => {
   const navigate = useNavigate();
   const [confirmationData, setConfirmationData] = useState<OrderConfirmationData | null>(null);
   const [shopConfig, setShopConfig] = useState<ShopConfig | null>(null);
+  const [loadedBankData, setLoadedBankData] = useState<BankData | null>(null);
   const [language, setLanguage] = useState<"DE" | "EN" | "FR">("DE");
 
   useEffect(() => {
@@ -141,6 +142,44 @@ const Confirmation = () => {
     }
   }, [confirmationData, shopConfig]);
 
+  // New useEffect to fetch bank data when in instant mode and no bank data is available
+  useEffect(() => {
+    if (confirmationData && shopConfig) {
+      const isInstantMode = shopConfig.checkout_mode === "instant";
+      const bankDetailsFromResponse = confirmationData.orderResponse.payment_instructions?.bank_details;
+      const bankDataFromStorage = confirmationData.bankData;
+      const hasBankDetails = !!(bankDetailsFromResponse || bankDataFromStorage || loadedBankData);
+      
+      console.log("=== BANK DATA FETCH DECISION ===");
+      console.log("isInstantMode:", isInstantMode);
+      console.log("hasBankDetails:", hasBankDetails);
+      console.log("shop_id:", confirmationData.orderData?.shop_id);
+      console.log("loadedBankData:", loadedBankData);
+      
+      if (isInstantMode && !hasBankDetails && confirmationData.orderData?.shop_id) {
+        console.log("=== FETCHING BANK DATA FOR INSTANT MODE ===");
+        console.log("Fetching bank data for shop:", confirmationData.orderData.shop_id);
+        
+        fetchBankData(confirmationData.orderData.shop_id)
+          .then(bankData => {
+            console.log("=== BANK DATA FETCH RESULT ===");
+            console.log("Fetched bank data:", bankData);
+            
+            if (bankData) {
+              setLoadedBankData(bankData);
+              console.log("✅ Bank data successfully loaded and set to state");
+            } else {
+              console.warn("⚠️ No bank data returned from API");
+            }
+          })
+          .catch(error => {
+            console.error("=== BANK DATA FETCH ERROR ===");
+            console.error("Error fetching bank data:", error);
+          });
+      }
+    }
+  }, [confirmationData, shopConfig, loadedBankData]);
+
   const handleNewOrder = () => {
     // Bestätigungsdaten löschen und zur Startseite
     sessionStorage.removeItem('orderConfirmation');
@@ -175,18 +214,25 @@ const Confirmation = () => {
   const isInstantMode = checkoutMode === "instant";
   const accentColor = shopConfig?.accent_color || "#2563eb";
 
-  // Enhanced bank details detection - check both sources
+  // Enhanced bank details detection - check all sources including loaded bank data
   const bankDetailsFromResponse = orderResponse.payment_instructions?.bank_details;
   const bankDataFromStorage = confirmationData.bankData;
-  const hasBankDetails = !!(bankDetailsFromResponse || bankDataFromStorage);
+  const hasBankDetails = !!(bankDetailsFromResponse || bankDataFromStorage || loadedBankData);
 
-  // Get bank details from the best available source
-  const bankDetails = bankDetailsFromResponse || (bankDataFromStorage ? {
-    account_holder: bankDataFromStorage.account_holder,
-    iban: bankDataFromStorage.iban,
-    bic: bankDataFromStorage.bic,
-    reference: orderResponse.confirmation_number || orderResponse.order_id
-  } : null);
+  // Get bank details from the best available source, with loaded data taking priority
+  const bankDetails = bankDetailsFromResponse || 
+    (loadedBankData ? {
+      account_holder: loadedBankData.account_holder,
+      iban: loadedBankData.iban,
+      bic: loadedBankData.bic,
+      reference: orderResponse.confirmation_number || orderResponse.order_id
+    } : null) ||
+    (bankDataFromStorage ? {
+      account_holder: bankDataFromStorage.account_holder,
+      iban: bankDataFromStorage.iban,
+      bic: bankDataFromStorage.bic,
+      reference: orderResponse.confirmation_number || orderResponse.order_id
+    } : null);
 
   // Additional runtime debugging
   console.log("=== RENDER TIME DEBUG ===");
@@ -194,6 +240,7 @@ const Confirmation = () => {
   console.log("Final shopConfig:", shopConfig);
   console.log("Bank details from response:", bankDetailsFromResponse);
   console.log("Bank data from storage:", bankDataFromStorage);
+  console.log("Loaded bank data:", loadedBankData);
   console.log("Has bank details (any source):", hasBankDetails);
   console.log("Final bank details to display:", bankDetails);
 
@@ -207,6 +254,7 @@ const Confirmation = () => {
           <p><strong>Checkout Mode:</strong> {shopConfig?.checkout_mode || "undefined"}</p>
           <p><strong>Bank Details in Response:</strong> {bankDetailsFromResponse ? "✅ YES" : "❌ NO"}</p>
           <p><strong>Bank Data in Storage:</strong> {bankDataFromStorage ? "✅ YES" : "❌ NO"}</p>
+          <p><strong>Loaded Bank Data:</strong> {loadedBankData ? "✅ YES" : "❌ NO"}</p>
           <p><strong>Has Bank Details (Any Source):</strong> {hasBankDetails ? "✅ YES" : "❌ NO"}</p>
           <p><strong>Payment Instructions:</strong> {orderResponse.payment_instructions ? "✅ YES" : "❌ NO"}</p>
           <p><strong>Shop Config Loaded:</strong> {shopConfig ? "✅ YES" : "❌ NO"}</p>
@@ -449,6 +497,7 @@ const Confirmation = () => {
                           <p><strong>Checkout Mode:</strong> {shopConfig?.checkout_mode}</p>
                           <p><strong>Bank details in order response:</strong> {JSON.stringify(bankDetailsFromResponse)}</p>
                           <p><strong>Bank data in sessionStorage:</strong> {JSON.stringify(bankDataFromStorage)}</p>
+                          <p><strong>Loaded bank data:</strong> {JSON.stringify(loadedBankData)}</p>
                           <p><strong>Order response payment_instructions:</strong> {JSON.stringify(orderResponse.payment_instructions)}</p>
                         </div>
                       </div>
