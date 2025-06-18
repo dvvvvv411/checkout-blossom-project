@@ -1280,10 +1280,12 @@ const translations = {
 };
 
 export const getTranslation = (key: string, language: "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL"): string => {
-  // Ensure we have a valid language parameter
-  if (!language || !["DE", "EN", "FR", "IT", "ES", "PL", "NL"].includes(language)) {
+  // Convert to uppercase and ensure we have a valid language parameter
+  const upperLanguage = language?.toUpperCase() as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL";
+  
+  if (!upperLanguage || !["DE", "EN", "FR", "IT", "ES", "PL", "NL"].includes(upperLanguage)) {
     console.warn(`Invalid language parameter: ${language}, falling back to DE`);
-    language = "DE";
+    return getTranslation(key, "DE");
   }
   
   const translation = translations[key];
@@ -1292,5 +1294,5 @@ export const getTranslation = (key: string, language: "DE" | "EN" | "FR" | "IT" 
     return key;
   }
   
-  return translation[language] || translation.DE || key;
+  return translation[upperLanguage] || translation.DE || key;
 };
