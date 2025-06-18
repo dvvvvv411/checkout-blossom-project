@@ -122,9 +122,9 @@ const Confirmation = () => {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-6">
-          {/* Success Message - Modernized */}
+          {/* Success Message - Centered at top */}
           <div className="text-center py-12">
             <div className="flex justify-center mb-6">
               {isExpressMode ? (
@@ -144,253 +144,260 @@ const Confirmation = () => {
             </p>
           </div>
 
+          {/* Two Column Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Order Details */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <CreditCard className="h-5 w-5" style={{ color: accentColor }} />
-                  <span>{getTranslation("order_details", language)}</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
-                  <div className="flex justify-between items-start mb-3">
+            {/* Left Column - Payment Instructions and Delivery Information */}
+            <div className="space-y-6">
+              {/* Payment Instructions */}
+              <Card>
+                <CardHeader>
+                  <CardTitle style={{ color: accentColor }}>
+                    {getTranslation("payment_instructions", language)}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    {/* Next Steps */}
                     <div>
-                      <h3 className="font-semibold text-gray-900 text-lg">
-                        {orderData.product_name}
-                      </h3>
-                      <p className="text-gray-600 mt-1">
-                        {orderData.quantity_liters} L × {formatCurrency(orderData.price_per_liter, orderData.currency, language)}
-                      </p>
+                      <h4 className="font-bold text-gray-900 mb-4 text-lg">
+                        Nächste Schritte
+                      </h4>
+                      
+                      {isExpressMode ? (
+                        <div className="space-y-4">
+                          <div className="flex items-start space-x-3">
+                            <div className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                              1
+                            </div>
+                            <div>
+                              <h5 className="font-semibold text-gray-900 mb-1">Überweisung</h5>
+                              <p className="text-gray-700">
+                                Sie überweisen den Betrag von{' '}
+                                <span className="font-bold">
+                                  {formatCurrency(orderResponse.total_amount, orderResponse.currency, language)}
+                                </span>{' '}
+                                auf unser Konto.
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-start space-x-3">
+                            <div className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                              2
+                            </div>
+                            <div>
+                              <h5 className="font-semibold text-gray-900 mb-1">Lieferung</h5>
+                              <p className="text-gray-700">
+                                Nach Zahlungseingang erfolgt die Lieferung innerhalb weniger Werktage.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          <div className="flex items-start space-x-3">
+                            <div className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                              1
+                            </div>
+                            <div>
+                              <h5 className="font-semibold text-gray-900 mb-1">Telefonischer Kontakt</h5>
+                              <p className="text-gray-700">
+                                Wir rufen Sie in den nächsten 24 Stunden an, um Ihre Bestellung zu bestätigen.
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-start space-x-3">
+                            <div className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                              2
+                            </div>
+                            <div>
+                              <h5 className="font-semibold text-gray-900 mb-1">Überweisung</h5>
+                              <p className="text-gray-700">
+                                Sie überweisen den Betrag von{' '}
+                                <span className="font-bold">
+                                  {formatCurrency(orderResponse.total_amount, orderResponse.currency, language)}
+                                </span>{' '}
+                                auf unser Konto.
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-start space-x-3">
+                            <div className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                              3
+                            </div>
+                            <div>
+                              <h5 className="font-semibold text-gray-900 mb-1">Lieferung</h5>
+                              <p className="text-gray-700">
+                                Nach Zahlungseingang erfolgt die Lieferung in 4-7 Werktagen.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                    <span className="text-xl font-bold text-gray-900">
-                      {formatCurrency(orderData.price_per_liter * orderData.quantity_liters, orderData.currency, language)}
-                    </span>
+
+                    {/* Bank Details */}
+                    {orderResponse.payment_instructions?.bank_details && (
+                      <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-6 mt-6">
+                        <h4 className="font-bold text-blue-900 mb-4 text-lg">
+                          {getTranslation("bank_transfer_details", language)}
+                        </h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div>
+                            <span className="text-blue-700 font-semibold text-sm block mb-1">
+                              {getTranslation("account_holder", language)}:
+                            </span>
+                            <p className="text-blue-900 font-medium text-lg">
+                              {orderResponse.payment_instructions.bank_details.account_holder}
+                            </p>
+                          </div>
+                          <div>
+                            <span className="text-blue-700 font-semibold text-sm block mb-1">IBAN:</span>
+                            <p className="text-blue-900 font-mono text-lg font-medium">
+                              {orderResponse.payment_instructions.bank_details.iban}
+                            </p>
+                          </div>
+                          <div>
+                            <span className="text-blue-700 font-semibold text-sm block mb-1">BIC:</span>
+                            <p className="text-blue-900 font-mono text-lg font-medium">
+                              {orderResponse.payment_instructions.bank_details.bic}
+                            </p>
+                          </div>
+                          <div>
+                            <span className="text-blue-700 font-semibold text-sm block mb-1">
+                              {getTranslation("reference", language)}:
+                            </span>
+                            <p className="text-blue-900 font-mono text-lg font-bold bg-yellow-100 px-2 py-1 rounded">
+                              {orderResponse.payment_instructions.bank_details.reference}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                </div>
-                
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between py-1 border-b border-gray-100">
-                    <span className="text-gray-600">{getTranslation("net_amount", language)}:</span>
-                    <span className="font-medium">
-                      {formatCurrency(orderData.total_net, orderData.currency, language)}
-                    </span>
+                </CardContent>
+              </Card>
+
+              {/* Delivery Information */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Truck className="h-5 w-5" style={{ color: accentColor }} />
+                    <span>Lieferinformationen</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="bg-amber-50 border-2 border-amber-200 rounded-lg p-6">
+                    <h4 className="font-bold text-amber-900 mb-3 text-lg">
+                      Wichtiger Hinweis zur Lieferung
+                    </h4>
+                    <p className="text-amber-800">
+                      Unser Fahrer wird Sie am Liefertag telefonisch kontaktieren. Bitte stellen Sie sicher, dass Sie unter{' '}
+                      <span className="font-bold">{customerData.phone}</span> erreichbar sind.
+                    </p>
                   </div>
-                  {orderData.delivery_cost && orderData.delivery_cost > 0 && (
-                    <div className="flex justify-between py-1 border-b border-gray-100">
-                      <span className="text-gray-600">{getTranslation("delivery", language)}:</span>
-                      <span className="font-medium">
-                        {formatCurrency(orderData.delivery_cost, orderData.currency, language)}
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Right Column - Order Details and Customer Information */}
+            <div className="space-y-6">
+              {/* Order Details */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <CreditCard className="h-5 w-5" style={{ color: accentColor }} />
+                    <span>{getTranslation("order_details", language)}</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <h3 className="font-semibold text-gray-900 text-lg">
+                          {orderData.product_name}
+                        </h3>
+                        <p className="text-gray-600 mt-1">
+                          {orderData.quantity_liters} L × {formatCurrency(orderData.price_per_liter, orderData.currency, language)}
+                        </p>
+                      </div>
+                      <span className="text-xl font-bold text-gray-900">
+                        {formatCurrency(orderData.price_per_liter * orderData.quantity_liters, orderData.currency, language)}
                       </span>
                     </div>
-                  )}
-                  <div className="flex justify-between py-1 border-b border-gray-100">
-                    <span className="text-gray-600">
-                      {getTranslation("vat", language)} ({Math.round(orderData.tax_rate * 100)}%):
-                    </span>
-                    <span className="font-medium">
-                      {formatCurrency(orderData.total_tax, orderData.currency, language)}
-                    </span>
                   </div>
-                  <div className="flex justify-between py-2 border-t-2 border-gray-200 text-lg font-bold">
-                    <span>{getTranslation("total", language)}:</span>
-                    <span style={{ color: accentColor }}>
-                      {formatCurrency(orderResponse.total_amount, orderResponse.currency, language)}
-                    </span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Customer Information */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <MapPin className="h-5 w-5" style={{ color: accentColor }} />
-                  <span>{getTranslation("customer_information", language)}</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <Mail className="h-4 w-4 text-gray-400" />
-                  <span className="text-gray-900">{customerData.email}</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <Phone className="h-4 w-4 text-gray-400" />
-                  <span className="text-gray-900">{customerData.phone}</span>
-                </div>
-                <div className="pt-2">
-                  <p className="text-sm text-gray-600 mb-2 font-medium">
-                    {getTranslation("delivery_address", language)}:
-                  </p>
-                  <div className="text-gray-900 leading-relaxed">
-                    <p className="font-medium">{customerData.first_name} {customerData.last_name}</p>
-                    <p>{customerData.delivery_address.street}</p>
-                    <p>{customerData.delivery_address.postal_code} {customerData.delivery_address.city}</p>
-                  </div>
-                </div>
-                <div className="pt-2 border-t border-gray-100">
-                  <p className="text-sm text-gray-600 mb-1 font-medium">
-                    {getTranslation("payment_method", language)}:
-                  </p>
-                  <p className="text-gray-900">
-                    {getTranslation(customerData.payment_method, language)}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Payment Instructions */}
-          <Card>
-            <CardHeader>
-              <CardTitle style={{ color: accentColor }}>
-                {getTranslation("payment_instructions", language)}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                {/* Next Steps */}
-                <div>
-                  <h4 className="font-bold text-gray-900 mb-4 text-lg">
-                    Nächste Schritte
-                  </h4>
                   
-                  {isExpressMode ? (
-                    <div className="space-y-4">
-                      <div className="flex items-start space-x-3">
-                        <div className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
-                          1
-                        </div>
-                        <div>
-                          <h5 className="font-semibold text-gray-900 mb-1">Überweisung</h5>
-                          <p className="text-gray-700">
-                            Sie überweisen den Betrag von{' '}
-                            <span className="font-bold">
-                              {formatCurrency(orderResponse.total_amount, orderResponse.currency, language)}
-                            </span>{' '}
-                            auf unser Konto.
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-start space-x-3">
-                        <div className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
-                          2
-                        </div>
-                        <div>
-                          <h5 className="font-semibold text-gray-900 mb-1">Lieferung</h5>
-                          <p className="text-gray-700">
-                            Nach Zahlungseingang erfolgt die Lieferung innerhalb weniger Werktage.
-                          </p>
-                        </div>
-                      </div>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between py-1 border-b border-gray-100">
+                      <span className="text-gray-600">{getTranslation("net_amount", language)}:</span>
+                      <span className="font-medium">
+                        {formatCurrency(orderData.total_net, orderData.currency, language)}
+                      </span>
                     </div>
-                  ) : (
-                    <div className="space-y-4">
-                      <div className="flex items-start space-x-3">
-                        <div className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
-                          1
-                        </div>
-                        <div>
-                          <h5 className="font-semibold text-gray-900 mb-1">Telefonischer Kontakt</h5>
-                          <p className="text-gray-700">
-                            Wir rufen Sie in den nächsten 24 Stunden an, um Ihre Bestellung zu bestätigen.
-                          </p>
-                        </div>
+                    {orderData.delivery_cost && orderData.delivery_cost > 0 && (
+                      <div className="flex justify-between py-1 border-b border-gray-100">
+                        <span className="text-gray-600">{getTranslation("delivery", language)}:</span>
+                        <span className="font-medium">
+                          {formatCurrency(orderData.delivery_cost, orderData.currency, language)}
+                        </span>
                       </div>
-                      <div className="flex items-start space-x-3">
-                        <div className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
-                          2
-                        </div>
-                        <div>
-                          <h5 className="font-semibold text-gray-900 mb-1">Überweisung</h5>
-                          <p className="text-gray-700">
-                            Nach unserem Anruf überweisen Sie den Betrag von{' '}
-                            <span className="font-bold">
-                              {formatCurrency(orderResponse.total_amount, orderResponse.currency, language)}
-                            </span>{' '}
-                            auf unser Konto.
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-start space-x-3">
-                        <div className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
-                          3
-                        </div>
-                        <div>
-                          <h5 className="font-semibold text-gray-900 mb-1">Lieferung</h5>
-                          <p className="text-gray-700">
-                            Nach Zahlungseingang erfolgt die Lieferung in 4-7 Werktagen.
-                          </p>
-                        </div>
-                      </div>
+                    )}
+                    <div className="flex justify-between py-1 border-b border-gray-100">
+                      <span className="text-gray-600">
+                        {getTranslation("vat", language)} ({Math.round(orderData.tax_rate * 100)}%):
+                      </span>
+                      <span className="font-medium">
+                        {formatCurrency(orderData.total_tax, orderData.currency, language)}
+                      </span>
                     </div>
-                  )}
-                </div>
-
-                {/* Bank Details */}
-                {orderResponse.payment_instructions?.bank_details && (
-                  <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-6 mt-6">
-                    <h4 className="font-bold text-blue-900 mb-4 text-lg">
-                      {getTranslation("bank_transfer_details", language)}
-                    </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <span className="text-blue-700 font-semibold text-sm block mb-1">
-                          {getTranslation("account_holder", language)}:
-                        </span>
-                        <p className="text-blue-900 font-medium text-lg">
-                          {orderResponse.payment_instructions.bank_details.account_holder}
-                        </p>
-                      </div>
-                      <div>
-                        <span className="text-blue-700 font-semibold text-sm block mb-1">IBAN:</span>
-                        <p className="text-blue-900 font-mono text-lg font-medium">
-                          {orderResponse.payment_instructions.bank_details.iban}
-                        </p>
-                      </div>
-                      <div>
-                        <span className="text-blue-700 font-semibold text-sm block mb-1">BIC:</span>
-                        <p className="text-blue-900 font-mono text-lg font-medium">
-                          {orderResponse.payment_instructions.bank_details.bic}
-                        </p>
-                      </div>
-                      <div>
-                        <span className="text-blue-700 font-semibold text-sm block mb-1">
-                          {getTranslation("reference", language)}:
-                        </span>
-                        <p className="text-blue-900 font-mono text-lg font-bold bg-yellow-100 px-2 py-1 rounded">
-                          {orderResponse.payment_instructions.bank_details.reference}
-                        </p>
-                      </div>
+                    <div className="flex justify-between py-2 border-t-2 border-gray-200 text-lg font-bold">
+                      <span>{getTranslation("total", language)}:</span>
+                      <span style={{ color: accentColor }}>
+                        {formatCurrency(orderResponse.total_amount, orderResponse.currency, language)}
+                      </span>
                     </div>
                   </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+                </CardContent>
+              </Card>
 
-          {/* Delivery Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Truck className="h-5 w-5" style={{ color: accentColor }} />
-                <span>Lieferinformationen</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="bg-amber-50 border-2 border-amber-200 rounded-lg p-6">
-                <h4 className="font-bold text-amber-900 mb-3 text-lg">
-                  Wichtiger Hinweis zur Lieferung
-                </h4>
-                <p className="text-amber-800">
-                  Unser Fahrer wird Sie am Liefertag telefonisch kontaktieren. Bitte stellen Sie sicher, dass Sie unter{' '}
-                  <span className="font-bold">{customerData.phone}</span> erreichbar sind.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+              {/* Customer Information */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <MapPin className="h-5 w-5" style={{ color: accentColor }} />
+                    <span>{getTranslation("customer_information", language)}</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center space-x-3">
+                    <Mail className="h-4 w-4 text-gray-400" />
+                    <span className="text-gray-900">{customerData.email}</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <Phone className="h-4 w-4 text-gray-400" />
+                    <span className="text-gray-900">{customerData.phone}</span>
+                  </div>
+                  <div className="pt-2">
+                    <p className="text-sm text-gray-600 mb-2 font-medium">
+                      {getTranslation("delivery_address", language)}:
+                    </p>
+                    <div className="text-gray-900 leading-relaxed">
+                      <p className="font-medium">{customerData.first_name} {customerData.last_name}</p>
+                      <p>{customerData.delivery_address.street}</p>
+                      <p>{customerData.delivery_address.postal_code} {customerData.delivery_address.city}</p>
+                    </div>
+                  </div>
+                  <div className="pt-2 border-t border-gray-100">
+                    <p className="text-sm text-gray-600 mb-1 font-medium">
+                      {getTranslation("payment_method", language)}:
+                    </p>
+                    <p className="text-gray-900">
+                      {getTranslation(customerData.payment_method, language)}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
 
           {/* Actions */}
           <div className="flex flex-col sm:flex-row gap-4 pt-6">
