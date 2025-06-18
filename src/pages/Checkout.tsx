@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -148,7 +147,6 @@ const Checkout = () => {
               orderData={orderData}
               shopConfig={shopConfig}
               accentColor={accentColor}
-              showMobileNavigation={false}
             />
           </div>
         </div>

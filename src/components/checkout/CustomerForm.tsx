@@ -224,28 +224,26 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
 
   return (
     <div className="space-y-4">
-      {/* Back Button and Progress Indicator - Only show if showMobileNavigation is true and on desktop */}
-      {showMobileNavigation && (
-        <div className="px-4 space-y-3 lg:block hidden">
-          <button
-            onClick={handleBack}
-            className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
-          >
-            <ArrowLeft className="h-5 w-5" />
-            <span>Zurück</span>
-          </button>
-          
-          <div className="flex items-center text-sm">
-            <span className="text-gray-500">Warenkorb</span>
-            <span className="mx-2 text-gray-400">{'>'}</span>
-            <span className="font-semibold text-gray-900">Informationen</span>
-            <span className="mx-2 text-gray-400">{'>'}</span>
-            <span className="text-gray-500">Versand</span>
-            <span className="mx-2 text-gray-400">{'>'}</span>
-            <span className="text-gray-500">Zahlung</span>
-          </div>
+      {/* Back Button and Progress Indicator - Show on desktop, hide on mobile since it's at page top */}
+      <div className="px-4 space-y-3 hidden lg:block">
+        <button
+          onClick={handleBack}
+          className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
+        >
+          <ArrowLeft className="h-5 w-5" />
+          <span>Zurück</span>
+        </button>
+        
+        <div className="flex items-center text-sm">
+          <span className="text-gray-500">Warenkorb</span>
+          <span className="mx-2 text-gray-400">{'>'}</span>
+          <span className="font-semibold text-gray-900">Informationen</span>
+          <span className="mx-2 text-gray-400">{'>'}</span>
+          <span className="text-gray-500">Versand</span>
+          <span className="mx-2 text-gray-400">{'>'}</span>
+          <span className="text-gray-500">Zahlung</span>
         </div>
-      )}
+      </div>
       
       <form onSubmit={handleSubmit} className="space-y-6">
         <EmailCard
