@@ -1007,13 +1007,13 @@ const translations = {
     NL: "Bestelling ontvangen!"
   },
   order_confirmed_message: {
-    DE: "Vielen Dank für Ihre Bestellung! Wir haben Ihre Zahlung erhalten und Ihre Bestellung wird bearbeitet.",
-    EN: "Thank you for your order! We have received your payment and your order is being processed.",
-    FR: "Merci pour votre commande! Nous avons reçu votre paiement et votre commande est en cours de traitement.",
-    IT: "Grazie per il tuo ordine! Abbiamo ricevuto il tuo pagamento e il tuo ordine è in elaborazione.",
-    ES: "¡Gracias por su pedido! Hemos recibido su pago y su pedido está siendo procesado.",
-    PL: "Dziękujemy za zamówienie! Otrzymaliśmy Twoją płatność i Twoje zamówienie jest przetwarzane.",
-    NL: "Bedankt voor uw bestelling! We hebben uw betaling ontvangen en uw bestelling wordt verwerkt."
+    DE: "Vielen Dank für Ihre Bestellung! Nachdem wir Ihre Zahlung erhalten haben, wird Ihre Bestellung bearbeitet.",
+    EN: "Thank you for your order! After we receive your payment, your order will be processed.",
+    FR: "Merci pour votre commande! Après réception de votre paiement, votre commande sera traitée.",
+    IT: "Grazie per il tuo ordine! Dopo aver ricevuto il tuo pagamento, il tuo ordine sarà elaborato.",
+    ES: "¡Gracias por su pedido! Después de recibir su pago, su pedido será procesado.",
+    PL: "Dziękujemy za zamówienie! Po otrzymaniu Twojej płatności Twoje zamówienie zostanie przetworzone.",
+    NL: "Bedankt voor uw bestelling! Nadat we uw betaling hebben ontvangen, wordt uw bestelling verwerkt."
   },
   order_received_message: {
     DE: "Vielen Dank für Ihre Bestellung! Wir werden Sie in Kürze kontaktieren, um die Details zu besprechen.",
@@ -1088,13 +1088,13 @@ const translations = {
     NL: "naar de onderstaande rekening."
   },
   delivery_after_payment: {
-    DE: "Nach Eingang der Zahlung wird Ihre Bestellung innerhalb von 1-3 Werktagen geliefert.",
-    EN: "After receipt of payment, your order will be delivered within 1-3 business days.",
-    FR: "Après réception du paiement, votre commande sera livrée dans un délai de 1 à 3 jours ouvrables.",
-    IT: "Dopo la ricezione del pagamento, il tuo ordine sarà consegnato entro 1-3 giorni lavorativi.",
-    ES: "Después de recibir el pago, su pedido será entregado dentro de 1-3 días hábiles.",
-    PL: "Po otrzymaniu płatności Twoje zamówienie zostanie dostarczone w ciągu 1-3 dni roboczych.",
-    NL: "Na ontvangst van de betaling wordt uw bestelling binnen 1-3 werkdagen geleverd."
+    DE: "Nach Eingang der Zahlung wird Ihre Bestellung innerhalb von 2-5 Werktagen geliefert.",
+    EN: "After receipt of payment, your order will be delivered within 2-5 business days.",
+    FR: "Après réception du paiement, votre commande sera livrée dans un délai de 2 à 5 jours ouvrables.",
+    IT: "Dopo la ricezione del pagamento, il tuo ordine sarà consegnato entro 2-5 giorni lavorativi.",
+    ES: "Después de recibir el pago, su pedido será entregado dentro de 2-5 días hábiles.",
+    PL: "Po otrzymaniu płatności Twoje zamówienie zostanie dostarczone w ciągu 2-5 dni roboczych.",
+    NL: "Na ontvangst van de betaling wordt uw bestelling binnen 2-5 werkdagen geleverd."
   },
   order_review: {
     DE: "Bestellprüfung",
@@ -1133,13 +1133,13 @@ const translations = {
     NL: "We bellen u om de leveringsdatum af te spreken en eventuele vragen te verduidelijken."
   },
   delivery_timeframe: {
-    DE: "Die Lieferung erfolgt nach telefonischer Absprache, in der Regel innerhalb von 1-5 Werktagen.",
-    EN: "Delivery takes place after telephone consultation, usually within 1-5 business days.",
-    FR: "La livraison a lieu après consultation téléphonique, généralement dans un délai de 1 à 5 jours ouvrables.",
-    IT: "La consegna avviene dopo consultazione telefonica, di solito entro 1-5 giorni lavorativi.",
-    ES: "La entrega tiene lugar después de la consulta telefónica, generalmente dentro de 1-5 días hábiles.",
-    PL: "Dostawa odbywa się po konsultacji telefonicznej, zwykle w ciągu 1-5 dni roboczych.",
-    NL: "Levering vindt plaats na telefonisch overleg, meestal binnen 1-5 werkdagen."
+    DE: "Die Lieferung erfolgt nach telefonischer Absprache, in der Regel innerhalb von 2-5 Werktagen.",
+    EN: "Delivery takes place after telephone consultation, usually within 2-5 business days.",
+    FR: "La livraison a lieu après consultation téléphonique, généralement dans un délai de 2 à 5 jours ouvrables.",
+    IT: "La consegna avviene dopo consultazione telefonica, di solito entro 2-5 giorni lavorativi.",
+    ES: "La entrega tiene lugar después de la consulta telefónica, generalmente dentro de 2-5 días hábiles.",
+    PL: "Dostawa odbywa się po konsultacji telefonicznej, zwykle w ciągu 2-5 dni roboczych.",
+    NL: "Levering vindt plaats na telefonisch overleg, meestal binnen 2-5 werkdagen."
   },
   bank_transfer_details: {
     DE: "Bankverbindung für die Überweisung",
@@ -1255,7 +1255,7 @@ const translations = {
     FR: "Informations client",
     IT: "Informazioni cliente",
     ES: "Información del cliente",
-    PL: "Informacje o kliencie",
+    PL: "Informazioni o kliencie",
     NL: "Klantinformatie"
   },
   print_confirmation: {
@@ -1360,7 +1360,7 @@ export const getProductNameTranslation = (productName: string, language: "DE" | 
     .replace(/[^a-z0-9]/g, '_')
     .replace(/_+/g, '_')
     .replace(/^_|_$/g, '');
-
+  
   console.log(`Transformed product key: "${productKey}"`);
   
   // Try to get translation with transformed key
