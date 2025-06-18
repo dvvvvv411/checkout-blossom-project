@@ -268,13 +268,13 @@ const Checkout = () => {
               <ArrowLeft className="h-6 w-6" />
             </button>
             <div className="text-center">
-              {/* Enhanced Logo with better error handling and debugging */}
+              {/* Enhanced Logo with better error handling and debugging - made twice as large */}
               {shopConfig?.logo_url && (
                 <div className="mb-4">
                   <img 
                     src={shopConfig.logo_url} 
                     alt={shopConfig.company_name || "Shop Logo"}
-                    className="h-12 mx-auto object-contain transition-opacity duration-200"
+                    className="h-24 mx-auto object-contain transition-opacity duration-200"
                     onLoad={() => {
                       console.log("Logo loaded successfully:", shopConfig.logo_url);
                     }}
