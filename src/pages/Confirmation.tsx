@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,6 +25,7 @@ interface OrderConfirmationData {
   };
   customerData: any;
   orderData: any;
+  shopConfig?: ShopConfig;
   submittedAt: string;
 }
 
@@ -50,8 +52,13 @@ const Confirmation = () => {
         setLanguage(data.orderData.language);
       }
 
-      // Shop-Konfiguration laden
-      if (data.orderData?.shop_id) {
+      // Shop-Konfiguration verwenden - zuerst aus sessionStorage, dann API
+      if (data.shopConfig) {
+        setShopConfig(data.shopConfig);
+        if (data.shopConfig.language) {
+          setLanguage(data.shopConfig.language);
+        }
+      } else if (data.orderData?.shop_id) {
         fetchShopConfig(data.orderData.shop_id).then(config => {
           setShopConfig(config);
           if (config.language) {
@@ -208,9 +215,9 @@ const Confirmation = () => {
                               1
                             </div>
                             <div>
-                              <h5 className="font-semibold text-gray-900 mb-1">Telefonischer Kontakt</h5>
+                              <h5 className="font-semibold text-gray-900 mb-1">Bestellungsüberprüfung</h5>
                               <p className="text-gray-700">
-                                Wir rufen Sie in den nächsten 24 Stunden an, um Ihre Bestellung zu bestätigen.
+                                Ihre Bestellung wird überprüft. Wir werden Sie in Kürze telefonisch kontaktieren um die weiteren Schritte zu besprechen.
                               </p>
                             </div>
                           </div>
@@ -219,13 +226,9 @@ const Confirmation = () => {
                               2
                             </div>
                             <div>
-                              <h5 className="font-semibold text-gray-900 mb-1">Überweisung</h5>
+                              <h5 className="font-semibold text-gray-900 mb-1">Telefonischer Kontakt</h5>
                               <p className="text-gray-700">
-                                Sie überweisen den Betrag von{' '}
-                                <span className="font-bold">
-                                  {formatCurrency(orderResponse.total_amount, orderResponse.currency, language)}
-                                </span>{' '}
-                                auf unser Konto.
+                                Wir rufen Sie in den nächsten 24 Stunden an, um Ihre Bestellung zu bestätigen und die Zahlungsdetails zu besprechen.
                               </p>
                             </div>
                           </div>
@@ -244,8 +247,8 @@ const Confirmation = () => {
                       )}
                     </div>
 
-                    {/* Bank Details */}
-                    {orderResponse.payment_instructions?.bank_details && (
+                    {/* Bank Details - Only show in Express Mode */}
+                    {isExpressMode && orderResponse.payment_instructions?.bank_details && (
                       <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-6 mt-6">
                         <h4 className="font-bold text-blue-900 mb-4 text-lg">
                           {getTranslation("bank_transfer_details", language)}
@@ -328,6 +331,22 @@ const Confirmation = () => {
                             </div>
                           </div>
                         </div>
+                      </div>
+                    )}
+
+                    {/* Standard/Manual Mode Message - Only show when NOT in Express Mode */}
+                    {!isExpressMode && (
+                      <div className="bg-amber-50 border-2 border-amber-200 rounded-lg p-6 mt-6">
+                        <h4 className="font-bold text-amber-900 mb-3 text-lg">
+                          Wichtiger Hinweis
+                        </h4>
+                        <p className="text-amber-800">
+                          Ihre Bestellung wird nun überprüft. Wir werden Sie in den nächsten 24 Stunden telefonisch kontaktieren, 
+                          um Ihre Bestellung zu bestätigen und die weiteren Schritte bezüglich der Zahlung und Lieferung zu besprechen.
+                        </p>
+                        <p className="text-amber-800 mt-2">
+                          Bitte stellen Sie sicher, dass Sie unter <span className="font-bold">{customerData.phone}</span> erreichbar sind.
+                        </p>
                       </div>
                     )}
                   </div>
