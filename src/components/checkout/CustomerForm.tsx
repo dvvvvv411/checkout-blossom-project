@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { OrderData, ShopConfig, CustomerData, submitOrder } from "@/services/api";
@@ -224,8 +223,8 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor }: CustomerFor
 
   return (
     <div className="space-y-4">
-      {/* Back Button - No card background */}
-      <div className="p-4">
+      {/* Back Button and Progress Indicator - Combined with minimal spacing */}
+      <div className="px-4 space-y-2">
         <button
           onClick={handleBack}
           className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
@@ -233,10 +232,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor }: CustomerFor
           <ArrowLeft className="h-5 w-5" />
           <span>Zurück</span>
         </button>
-      </div>
-
-      {/* Progress Indicator - No card background */}
-      <div className="p-4">
+        
         <div className="flex items-center text-sm">
           <span className="text-gray-500">Warenkorb</span>
           <span className="mx-2 text-gray-400">{'>'}</span>
