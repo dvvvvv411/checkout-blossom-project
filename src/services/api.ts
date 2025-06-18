@@ -30,7 +30,7 @@ export interface ShopConfig {
   company_name: string;
   logo_url?: string;
   support_phone?: string;
-  checkout_mode?: "express" | "standard";
+  checkout_mode?: "instant" | "standard";
 }
 
 export interface CustomerData {
@@ -581,15 +581,15 @@ export const submitOrder = async (
         console.log("Shop config for sessionStorage:", JSON.stringify(shopConfigToStore, null, 2));
         
         // Check if this is express/instant mode and fetch bank data if needed
-        if (shopConfigToStore && (shopConfigToStore.checkout_mode === "express" || shopConfigToStore.checkout_mode === "instant")) {
-          console.log("=== EXPRESS/INSTANT MODE DETECTED - FETCHING BANK DATA ===");
+        if (shopConfigToStore && (shopConfigToStore.checkout_mode === "instant")) {
+          console.log("=== INSTANT MODE DETECTED - FETCHING BANK DATA ===");
           console.log("Checkout mode:", shopConfigToStore.checkout_mode);
           
           bankDataToStore = await fetchBankData(orderData.shop_id);
           console.log("Bank data for sessionStorage:", JSON.stringify(bankDataToStore, null, 2));
           
           if (bankDataToStore) {
-            console.log("✅ Bank data successfully fetched for express mode");
+            console.log("✅ Bank data successfully fetched for instant mode");
             
             // Inject bank data into the order response for the confirmation page
             result.payment_instructions = {
@@ -604,10 +604,10 @@ export const submitOrder = async (
             
             console.log("✅ Bank details injected into order response:", result.payment_instructions.bank_details);
           } else {
-            console.warn("⚠️ No bank data available for express mode - bank transfer instructions will not be shown");
+            console.warn("⚠️ No bank data available for instant mode - bank transfer instructions will not be shown");
           }
         } else {
-          console.log("ℹ️ Not in express/instant mode or no shop config - checkout_mode:", shopConfigToStore?.checkout_mode);
+          console.log("ℹ️ Not in instant mode or no shop config - checkout_mode:", shopConfigToStore?.checkout_mode);
         }
       } catch (error) {
         console.warn("Could not fetch additional data for sessionStorage:", error);

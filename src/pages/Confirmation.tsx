@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -100,14 +99,14 @@ const Confirmation = () => {
   // Enhanced Express Mode detection with comprehensive debugging
   useEffect(() => {
     if (confirmationData && shopConfig) {
-      console.log("=== ENHANCED EXPRESS MODE DETECTION DEBUG ===");
+      console.log("=== ENHANCED INSTANT MODE DETECTION DEBUG ===");
       console.log("shopConfig:", JSON.stringify(shopConfig, null, 2));
       console.log("shopConfig.checkout_mode:", shopConfig.checkout_mode);
       
-      // Check for both "express" and "instant" modes - fix TypeScript issue
+      // Check for "instant" mode only
       const checkoutMode = shopConfig.checkout_mode;
-      const isExpressMode = checkoutMode === "express" || checkoutMode === "instant";
-      console.log("isExpressMode check (express OR instant):", isExpressMode);
+      const isInstantMode = checkoutMode === "instant";
+      console.log("isInstantMode check:", isInstantMode);
       
       console.log("=== BANK DETAILS AVAILABILITY DEBUG ===");
       console.log("orderResponse:", JSON.stringify(confirmationData.orderResponse, null, 2));
@@ -123,21 +122,21 @@ const Confirmation = () => {
       const bankDetailsAvailable = bankDetailsFromResponse || bankDataFromStorage;
       console.log("Bank details available (from either source):", !!bankDetailsAvailable);
       
-      const shouldShowBankDetails = isExpressMode && bankDetailsAvailable;
+      const shouldShowBankDetails = isInstantMode && bankDetailsAvailable;
       console.log("Should show bank details:", shouldShowBankDetails);
       
-      if (isExpressMode && !bankDetailsAvailable) {
-        console.warn("⚠️ EXPRESS/INSTANT MODE IS ENABLED BUT NO BANK DETAILS FOUND!");
+      if (isInstantMode && !bankDetailsAvailable) {
+        console.warn("⚠️ INSTANT MODE IS ENABLED BUT NO BANK DETAILS FOUND!");
         console.warn("This might indicate an API issue or missing bank account configuration");
         console.warn("Checkout mode:", shopConfig.checkout_mode);
         console.warn("Bank details in response:", bankDetailsFromResponse);
         console.warn("Bank data in storage:", bankDataFromStorage);
       }
       
-      if (!isExpressMode) {
-        console.info("ℹ️ Not in Express/Instant Mode - checkout_mode is:", shopConfig.checkout_mode);
+      if (!isInstantMode) {
+        console.info("ℹ️ Not in Instant Mode - checkout_mode is:", shopConfig.checkout_mode);
       } else {
-        console.info("✅ Express/Instant Mode detected - checkout_mode is:", shopConfig.checkout_mode);
+        console.info("✅ Instant Mode detected - checkout_mode is:", shopConfig.checkout_mode);
       }
     }
   }, [confirmationData, shopConfig]);
@@ -171,9 +170,9 @@ const Confirmation = () => {
 
   const { orderResponse, customerData, orderData } = confirmationData;
   
-  // Enhanced Express Mode detection - check for both "express" and "instant" - fix TypeScript issue
+  // Enhanced Instant Mode detection - check for "instant" mode only
   const checkoutMode = shopConfig?.checkout_mode;
-  const isExpressMode = checkoutMode === "express" || checkoutMode === "instant";
+  const isInstantMode = checkoutMode === "instant";
   const accentColor = shopConfig?.accent_color || "#2563eb";
 
   // Enhanced bank details detection - check both sources
@@ -191,7 +190,7 @@ const Confirmation = () => {
 
   // Additional runtime debugging
   console.log("=== RENDER TIME DEBUG ===");
-  console.log("Final isExpressMode value:", isExpressMode);
+  console.log("Final isInstantMode value:", isInstantMode);
   console.log("Final shopConfig:", shopConfig);
   console.log("Bank details from response:", bankDetailsFromResponse);
   console.log("Bank data from storage:", bankDataFromStorage);
@@ -204,14 +203,14 @@ const Confirmation = () => {
       <div className="bg-yellow-100 border-2 border-yellow-400 p-4 m-4 rounded-lg">
         <h3 className="font-bold text-yellow-800 mb-2">🐛 ENHANCED DEBUG INFORMATION</h3>
         <div className="text-sm text-yellow-900 space-y-1">
-          <p><strong>Express Mode:</strong> {isExpressMode ? "✅ YES" : "❌ NO"}</p>
+          <p><strong>Instant Mode:</strong> {isInstantMode ? "✅ YES" : "❌ NO"}</p>
           <p><strong>Checkout Mode:</strong> {shopConfig?.checkout_mode || "undefined"}</p>
           <p><strong>Bank Details in Response:</strong> {bankDetailsFromResponse ? "✅ YES" : "❌ NO"}</p>
           <p><strong>Bank Data in Storage:</strong> {bankDataFromStorage ? "✅ YES" : "❌ NO"}</p>
           <p><strong>Has Bank Details (Any Source):</strong> {hasBankDetails ? "✅ YES" : "❌ NO"}</p>
           <p><strong>Payment Instructions:</strong> {orderResponse.payment_instructions ? "✅ YES" : "❌ NO"}</p>
           <p><strong>Shop Config Loaded:</strong> {shopConfig ? "✅ YES" : "❌ NO"}</p>
-          <p><strong>Should Show Bank Details:</strong> {isExpressMode && hasBankDetails ? "✅ YES" : "❌ NO"}</p>
+          <p><strong>Should Show Bank Details:</strong> {isInstantMode && hasBankDetails ? "✅ YES" : "❌ NO"}</p>
         </div>
       </div>
 
@@ -252,20 +251,20 @@ const Confirmation = () => {
           {/* Success Message - Centered at top */}
           <div className="text-center py-12">
             <div className="flex justify-center mb-6">
-              {isExpressMode ? (
+              {isInstantMode ? (
                 <CheckCircle className="h-24 w-24 text-green-600" />
               ) : (
                 <Info className="h-24 w-24 text-blue-600" />
               )}
             </div>
-            <h2 className={`text-4xl font-bold mb-4 ${isExpressMode ? 'text-green-900' : 'text-blue-900'}`}>
-              {getTranslation(isExpressMode ? "order_confirmed" : "order_received", language)}
+            <h2 className={`text-4xl font-bold mb-4 ${isInstantMode ? 'text-green-900' : 'text-blue-900'}`}>
+              {getTranslation(isInstantMode ? "order_confirmed" : "order_received", language)}
             </h2>
-            <p className={`text-xl mb-6 ${isExpressMode ? 'text-green-700' : 'text-blue-700'}`}>
-              {getTranslation(isExpressMode ? "order_confirmed_message" : "order_received_message", language)}
+            <p className={`text-xl mb-6 ${isInstantMode ? 'text-green-700' : 'text-blue-700'}`}>
+              {getTranslation(isInstantMode ? "order_confirmed_message" : "order_received_message", language)}
             </p>
-            <p className={`text-lg font-medium ${isExpressMode ? 'text-green-600' : 'text-blue-600'}`}>
-              {getTranslation(isExpressMode ? "invoice_sent_email" : "confirmation_sent_email", language)}
+            <p className={`text-lg font-medium ${isInstantMode ? 'text-green-600' : 'text-blue-600'}`}>
+              {getTranslation(isInstantMode ? "invoice_sent_email" : "confirmation_sent_email", language)}
             </p>
           </div>
 
@@ -288,7 +287,7 @@ const Confirmation = () => {
                         {getTranslation("next_steps", language)}
                       </h4>
                       
-                      {isExpressMode ? (
+                      {isInstantMode ? (
                         <div className="space-y-4">
                           <div className="flex items-start space-x-3">
                             <div className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
@@ -356,8 +355,8 @@ const Confirmation = () => {
                       )}
                     </div>
 
-                    {/* Bank Details - Show in Express Mode when available */}
-                    {isExpressMode && bankDetails && (
+                    {/* Bank Details - Show in Instant Mode when available */}
+                    {isInstantMode && bankDetails && (
                       <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-6 mt-6">
                         <h4 className="font-bold text-blue-900 mb-4 text-lg">
                           {getTranslation("bank_transfer_details", language)}
@@ -437,14 +436,14 @@ const Confirmation = () => {
                       </div>
                     )}
 
-                    {/* Enhanced debug section for missing bank details in Express Mode */}
-                    {isExpressMode && !hasBankDetails && (
+                    {/* Enhanced debug section for missing bank details in Instant Mode */}
+                    {isInstantMode && !hasBankDetails && (
                       <div className="bg-red-50 border-2 border-red-200 rounded-lg p-6 mt-6">
                         <h4 className="font-bold text-red-900 mb-3 text-lg">
-                          🐛 DEBUG: Missing Bank Details in Express Mode
+                          🐛 DEBUG: Missing Bank Details in Instant Mode
                         </h4>
                         <p className="text-red-800 mb-2">
-                          Express/Instant Mode is enabled but no bank details were found from any source.
+                          Instant Mode is enabled but no bank details were found from any source.
                         </p>
                         <div className="text-sm text-red-700 space-y-1">
                           <p><strong>Checkout Mode:</strong> {shopConfig?.checkout_mode}</p>
@@ -455,8 +454,8 @@ const Confirmation = () => {
                       </div>
                     )}
 
-                    {/* Standard/Manual Mode Message - Only show when NOT in Express Mode */}
-                    {!isExpressMode && (
+                    {/* Standard/Manual Mode Message - Only show when NOT in Instant Mode */}
+                    {!isInstantMode && (
                       <div className="bg-amber-50 border-2 border-amber-200 rounded-lg p-6 mt-6">
                         <h4 className="font-bold text-amber-900 mb-3 text-lg">
                           {getTranslation("important_notice", language)}
