@@ -6,7 +6,6 @@ import { Loader2 } from "lucide-react";
 import { OrderSummary } from "@/components/checkout/OrderSummary";
 import { CustomerForm } from "@/components/checkout/CustomerForm";
 import { VerifiedShopCard } from "@/components/checkout/VerifiedShopCard";
-import { MobileHeader } from "@/components/checkout/MobileHeader";
 import { fetchOrderData, fetchShopConfig } from "@/services/api";
 
 const Checkout = () => {
@@ -94,9 +93,6 @@ const Checkout = () => {
         </div>
       </div>
 
-      {/* Mobile Header - Only visible on mobile, positioned under main header */}
-      <MobileHeader />
-
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -124,7 +120,6 @@ const Checkout = () => {
               orderData={orderData}
               shopConfig={shopConfig}
               accentColor={accentColor}
-              showBackAndProgress={false}
             />
           </div>
         </div>
