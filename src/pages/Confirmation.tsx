@@ -144,12 +144,12 @@ const Confirmation = () => {
             </p>
           </div>
 
-          {/* Two Column Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Left Column - Payment Instructions and Delivery Information */}
-            <div className="space-y-6">
+          {/* Two Column Layout - Adjusted widths */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Left Column - Payment Instructions and Delivery Information (wider - 2/3) */}
+            <div className="lg:col-span-2 flex flex-col space-y-6">
               {/* Payment Instructions */}
-              <Card>
+              <Card className="flex-1">
                 <CardHeader>
                   <CardTitle style={{ color: accentColor }}>
                     {getTranslation("payment_instructions", language)}
@@ -299,10 +299,10 @@ const Confirmation = () => {
               </Card>
             </div>
 
-            {/* Right Column - Order Details and Customer Information */}
-            <div className="space-y-6">
+            {/* Right Column - Order Details and Customer Information (narrower - 1/3) */}
+            <div className="lg:col-span-1 flex flex-col space-y-6">
               {/* Order Details */}
-              <Card>
+              <Card className="flex-1">
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
                     <CreditCard className="h-5 w-5" style={{ color: accentColor }} />
