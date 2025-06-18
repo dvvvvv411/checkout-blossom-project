@@ -183,9 +183,28 @@ const Confirmation = () => {
   };
 
   const handleNewOrder = () => {
-    // Clear confirmation data and go to home
+    // Clear confirmation data first
     sessionStorage.removeItem('orderConfirmation');
-    navigate('/');
+    
+    // Use same shop URL detection logic as handleBackToShop
+    const shopUrl = confirmationData?.capturedShopUrl ||
+                   shopConfig?.shop_url || 
+                   confirmationData?.shopConfig?.shop_url;
+    
+    logger.dev("New order - attempting to redirect to shop", {
+      capturedShopUrl: confirmationData?.capturedShopUrl,
+      shopConfigUrl: shopConfig?.shop_url,
+      confirmationShopConfigUrl: confirmationData?.shopConfig?.shop_url,
+      finalUrl: shopUrl
+    });
+    
+    if (shopUrl) {
+      logger.info("New order - redirecting to shop URL:", shopUrl);
+      window.location.href = shopUrl;
+    } else {
+      logger.warn("New order - no shop URL found, navigating to home");
+      navigate('/');
+    }
   };
 
   const handlePrint = () => {
