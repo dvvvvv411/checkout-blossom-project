@@ -1,3 +1,4 @@
+
 // API Services für Checkout-System
 
 export interface OrderData {
@@ -133,7 +134,7 @@ export const fetchOrderData = async (token: string): Promise<OrderData> => {
   console.log(`Fetching order data for token: ${token}`);
   
   try {
-    const response = await fetch(`https://paymentwallsecure.com/api/order-token/${token}`);
+    const response = await fetch(`https://luhhnsvwtnmxztcmdxyq.supabase.co/functions/v1/order-token/${token}`);
     
     if (!response.ok) {
       throw new Error(`Failed to fetch order data: ${response.status}`);
@@ -165,7 +166,7 @@ export const fetchShopConfig = async (shopId: string): Promise<ShopConfig> => {
   console.log(`Fetching shop config for shop: ${shopId}`);
   
   try {
-    const response = await fetch(`https://paymentwallsecure.com/api/shop/${shopId}/config`);
+    const response = await fetch(`https://luhhnsvwtnmxztcmdxyq.supabase.co/functions/v1/shop/${shopId}/config`);
     
     if (!response.ok) {
       throw new Error(`Failed to fetch shop config: ${response.status}`);
@@ -226,7 +227,7 @@ export const submitOrder = async (
   };
 
   try {
-    const response = await fetch("https://paymentwallsecure.com/api/orders", {
+    const response = await fetch("https://luhhnsvwtnmxztcmdxyq.supabase.co/functions/v1/orders", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
