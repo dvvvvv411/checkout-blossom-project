@@ -1,3 +1,4 @@
+
 // API Services für Checkout-System
 
 import { 
@@ -281,7 +282,7 @@ const fetchWithCorsHandling = async (url: string, options: RequestInit = {}): Pr
   }
 };
 
-// New function to fetch bank data with improved shop ID handling
+// Modified function to fetch bank data using POST request
 export const fetchBankData = async (shopId?: string): Promise<BankData | null> => {
   console.log(`=== BANK DATA FETCH START ===`);
   
@@ -305,10 +306,19 @@ export const fetchBankData = async (shopId?: string): Promise<BankData | null> =
     return null;
   }
 
-  const url = `https://luhhnsvwtnmxztcmdxyq.supabase.co/functions/v1/get-shop-bankdata/${encodeURIComponent(actualShopId)}`;
+  // Changed to POST request with shop ID in body
+  const url = `https://luhhnsvwtnmxztcmdxyq.supabase.co/functions/v1/get-shop-bankdata`;
+  const requestBody = {
+    shop_id: actualShopId
+  };
+  
+  console.log(`POST request body:`, requestBody);
   
   try {
-    const response = await fetchWithCorsHandling(url);
+    const response = await fetchWithCorsHandling(url, {
+      method: 'POST',
+      body: JSON.stringify(requestBody)
+    });
     
     if (!response.ok) {
       console.warn(`=== BANK DATA HTTP ERROR ===`);
