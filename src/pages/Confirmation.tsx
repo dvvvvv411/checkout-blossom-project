@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, Info, CreditCard, MapPin, Mail, Phone, ArrowLeft, Truck } from "lucide-react";
+import { CheckCircle, Info, CreditCard, MapPin, Mail, Phone, ArrowLeft, Truck, Copy } from "lucide-react";
 import { formatCurrency, fetchShopConfig, ShopConfig } from "@/services/api";
 import { getTranslation } from "@/utils/translations";
 
@@ -73,6 +73,16 @@ const Confirmation = () => {
 
   const handlePrint = () => {
     window.print();
+  };
+
+  const handleCopyToClipboard = async (text: string, label: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      // You could add a toast notification here if desired
+      console.log(`${label} copied to clipboard: ${text}`);
+    } catch (err) {
+      console.error('Failed to copy to clipboard:', err);
+    }
   };
 
   if (!confirmationData) {
@@ -245,29 +255,77 @@ const Confirmation = () => {
                             <span className="text-blue-700 font-semibold text-sm block mb-1">
                               {getTranslation("account_holder", language)}:
                             </span>
-                            <p className="text-blue-900 font-medium text-lg">
-                              {orderResponse.payment_instructions.bank_details.account_holder}
-                            </p>
+                            <div className="flex items-center justify-between">
+                              <p className="text-blue-900 font-medium text-lg">
+                                {orderResponse.payment_instructions.bank_details.account_holder}
+                              </p>
+                              <button
+                                onClick={() => handleCopyToClipboard(
+                                  orderResponse.payment_instructions.bank_details.account_holder,
+                                  "Kontoinhaber"
+                                )}
+                                className="ml-2 p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded transition-colors"
+                                title="Kopieren"
+                              >
+                                <Copy className="h-4 w-4" />
+                              </button>
+                            </div>
                           </div>
                           <div>
                             <span className="text-blue-700 font-semibold text-sm block mb-1">IBAN:</span>
-                            <p className="text-blue-900 font-mono text-lg font-medium">
-                              {orderResponse.payment_instructions.bank_details.iban}
-                            </p>
+                            <div className="flex items-center justify-between">
+                              <p className="text-blue-900 font-mono text-lg font-medium">
+                                {orderResponse.payment_instructions.bank_details.iban}
+                              </p>
+                              <button
+                                onClick={() => handleCopyToClipboard(
+                                  orderResponse.payment_instructions.bank_details.iban,
+                                  "IBAN"
+                                )}
+                                className="ml-2 p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded transition-colors"
+                                title="Kopieren"
+                              >
+                                <Copy className="h-4 w-4" />
+                              </button>
+                            </div>
                           </div>
                           <div>
                             <span className="text-blue-700 font-semibold text-sm block mb-1">BIC:</span>
-                            <p className="text-blue-900 font-mono text-lg font-medium">
-                              {orderResponse.payment_instructions.bank_details.bic}
-                            </p>
+                            <div className="flex items-center justify-between">
+                              <p className="text-blue-900 font-mono text-lg font-medium">
+                                {orderResponse.payment_instructions.bank_details.bic}
+                              </p>
+                              <button
+                                onClick={() => handleCopyToClipboard(
+                                  orderResponse.payment_instructions.bank_details.bic,
+                                  "BIC"
+                                )}
+                                className="ml-2 p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded transition-colors"
+                                title="Kopieren"
+                              >
+                                <Copy className="h-4 w-4" />
+                              </button>
+                            </div>
                           </div>
                           <div>
                             <span className="text-blue-700 font-semibold text-sm block mb-1">
                               {getTranslation("reference", language)}:
                             </span>
-                            <p className="text-blue-900 font-mono text-lg font-bold bg-yellow-100 px-2 py-1 rounded">
-                              {orderResponse.confirmation_number}
-                            </p>
+                            <div className="flex items-center justify-between">
+                              <p className="text-blue-900 font-mono text-lg font-bold bg-yellow-100 px-2 py-1 rounded">
+                                {orderResponse.confirmation_number}
+                              </p>
+                              <button
+                                onClick={() => handleCopyToClipboard(
+                                  orderResponse.confirmation_number,
+                                  "Verwendungszweck"
+                                )}
+                                className="ml-2 p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded transition-colors"
+                                title="Kopieren"
+                              >
+                                <Copy className="h-4 w-4" />
+                              </button>
+                            </div>
                           </div>
                         </div>
                       </div>
