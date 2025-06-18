@@ -1,3 +1,4 @@
+
 export interface Translations {
   [key: string]: string;
 }
@@ -109,6 +110,26 @@ export const translations = {
     price_per_liter: "Preis pro Liter",
     invoice_sent_email: "Die Rechnung wurde per E-Mail versendet",
     confirmation_sent_email: "Eine Bestätigung wurde per E-Mail versendet",
+    
+    // Neue Übersetzungen für Bestätigungsseite
+    next_steps: "Nächste Schritte",
+    bank_transfer: "Überweisung",
+    bank_transfer_description: "Sie überweisen den Betrag von",
+    bank_transfer_to_account: "auf unser Konto.",
+    delivery_after_payment: "Nach Zahlungseingang erfolgt die Lieferung innerhalb weniger Werktage.",
+    order_review: "Bestellungsüberprüfung",
+    order_review_description: "Ihre Bestellung wird überprüft. Wir werden Sie in Kürze telefonisch kontaktieren um die weiteren Schritte zu besprechen.",
+    phone_contact: "Telefonischer Kontakt",
+    phone_contact_description: "Wir rufen Sie in den nächsten 24 Stunden an, um Ihre Bestellung zu bestätigen und die Zahlungsdetails zu besprechen.",
+    delivery_info: "Lieferinformationen",
+    delivery_notice_title: "Wichtiger Hinweis zur Lieferung",
+    delivery_notice_description: "Unser Fahrer wird Sie am Liefertag telefonisch kontaktieren. Bitte stellen Sie sicher, dass Sie unter",
+    delivery_notice_reachable: "erreichbar sind.",
+    important_notice: "Wichtiger Hinweis",
+    manual_mode_notice: "Ihre Bestellung wird nun überprüft. Wir werden Sie in den nächsten 24 Stunden telefonisch kontaktieren, um Ihre Bestellung zu bestätigen und die weiteren Schritte bezüglich der Zahlung und Lieferung zu besprechen.",
+    manual_mode_phone_notice: "Bitte stellen Sie sicher, dass Sie unter",
+    delivery_timeframe: "Nach Zahlungseingang erfolgt die Lieferung in 4-7 Werktagen.",
+    copy_tooltip: "Kopieren",
   },
   
   EN: {
@@ -217,6 +238,26 @@ export const translations = {
     price_per_liter: "Price per Liter",
     invoice_sent_email: "The invoice has been sent by email",
     confirmation_sent_email: "A confirmation has been sent by email",
+    
+    // New translations for confirmation page
+    next_steps: "Next Steps",
+    bank_transfer: "Bank Transfer",
+    bank_transfer_description: "You transfer the amount of",
+    bank_transfer_to_account: "to our account.",
+    delivery_after_payment: "Delivery will take place within a few working days after payment is received.",
+    order_review: "Order Review",
+    order_review_description: "Your order is being reviewed. We will contact you by phone shortly to discuss the next steps.",
+    phone_contact: "Phone Contact",
+    phone_contact_description: "We will call you within the next 24 hours to confirm your order and discuss payment details.",
+    delivery_info: "Delivery Information",
+    delivery_notice_title: "Important Notice for Delivery",
+    delivery_notice_description: "Our driver will contact you by phone on the delivery day. Please ensure you are reachable at",
+    delivery_notice_reachable: ".",
+    important_notice: "Important Notice",
+    manual_mode_notice: "Your order is now being reviewed. We will contact you by phone within the next 24 hours to confirm your order and discuss the next steps regarding payment and delivery.",
+    manual_mode_phone_notice: "Please ensure you are reachable at",
+    delivery_timeframe: "Delivery will take place within 4-7 working days after payment is received.",
+    copy_tooltip: "Copy",
   },
   
   FR: {
@@ -325,6 +366,26 @@ export const translations = {
     price_per_liter: "Prix par Litre",
     invoice_sent_email: "La facture a été envoyée par email",
     confirmation_sent_email: "Une confirmation a été envoyée par email",
+    
+    // Nouvelles traductions pour la page de confirmation
+    next_steps: "Étapes Suivantes",
+    bank_transfer: "Virement Bancaire",
+    bank_transfer_description: "Vous transférez le montant de",
+    bank_transfer_to_account: "sur notre compte.",
+    delivery_after_payment: "La livraison aura lieu dans quelques jours ouvrés après réception du paiement.",
+    order_review: "Révision de Commande",
+    order_review_description: "Votre commande est en cours de révision. Nous vous contacterons par téléphone sous peu pour discuter des prochaines étapes.",
+    phone_contact: "Contact Téléphonique",
+    phone_contact_description: "Nous vous appellerons dans les prochaines 24 heures pour confirmer votre commande et discuter des détails de paiement.",
+    delivery_info: "Informations de Livraison",
+    delivery_notice_title: "Avis Important pour la Livraison",
+    delivery_notice_description: "Notre chauffeur vous contactera par téléphone le jour de la livraison. Veuillez vous assurer d'être joignable au",
+    delivery_notice_reachable: ".",
+    important_notice: "Avis Important",
+    manual_mode_notice: "Votre commande est maintenant en cours de révision. Nous vous contacterons par téléphone dans les prochaines 24 heures pour confirmer votre commande et discuter des prochaines étapes concernant le paiement et la livraison.",
+    manual_mode_phone_notice: "Veuillez vous assurer d'être joignable au",
+    delivery_timeframe: "La livraison aura lieu dans 4-7 jours ouvrés après réception du paiement.",
+    copy_tooltip: "Copier",
   }
 };
 

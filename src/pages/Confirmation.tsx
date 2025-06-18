@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -176,7 +175,7 @@ const Confirmation = () => {
                     {/* Next Steps */}
                     <div>
                       <h4 className="font-bold text-gray-900 mb-4 text-lg">
-                        Nächste Schritte
+                        {getTranslation("next_steps", language)}
                       </h4>
                       
                       {isExpressMode ? (
@@ -186,13 +185,13 @@ const Confirmation = () => {
                               1
                             </div>
                             <div>
-                              <h5 className="font-semibold text-gray-900 mb-1">Überweisung</h5>
+                              <h5 className="font-semibold text-gray-900 mb-1">{getTranslation("bank_transfer", language)}</h5>
                               <p className="text-gray-700">
-                                Sie überweisen den Betrag von{' '}
+                                {getTranslation("bank_transfer_description", language)}{' '}
                                 <span className="font-bold">
                                   {formatCurrency(orderResponse.total_amount, orderResponse.currency, language)}
                                 </span>{' '}
-                                auf unser Konto.
+                                {getTranslation("bank_transfer_to_account", language)}
                               </p>
                             </div>
                           </div>
@@ -201,9 +200,9 @@ const Confirmation = () => {
                               2
                             </div>
                             <div>
-                              <h5 className="font-semibold text-gray-900 mb-1">Lieferung</h5>
+                              <h5 className="font-semibold text-gray-900 mb-1">{getTranslation("delivery", language)}</h5>
                               <p className="text-gray-700">
-                                Nach Zahlungseingang erfolgt die Lieferung innerhalb weniger Werktage.
+                                {getTranslation("delivery_after_payment", language)}
                               </p>
                             </div>
                           </div>
@@ -215,9 +214,9 @@ const Confirmation = () => {
                               1
                             </div>
                             <div>
-                              <h5 className="font-semibold text-gray-900 mb-1">Bestellungsüberprüfung</h5>
+                              <h5 className="font-semibold text-gray-900 mb-1">{getTranslation("order_review", language)}</h5>
                               <p className="text-gray-700">
-                                Ihre Bestellung wird überprüft. Wir werden Sie in Kürze telefonisch kontaktieren um die weiteren Schritte zu besprechen.
+                                {getTranslation("order_review_description", language)}
                               </p>
                             </div>
                           </div>
@@ -226,9 +225,9 @@ const Confirmation = () => {
                               2
                             </div>
                             <div>
-                              <h5 className="font-semibold text-gray-900 mb-1">Telefonischer Kontakt</h5>
+                              <h5 className="font-semibold text-gray-900 mb-1">{getTranslation("phone_contact", language)}</h5>
                               <p className="text-gray-700">
-                                Wir rufen Sie in den nächsten 24 Stunden an, um Ihre Bestellung zu bestätigen und die Zahlungsdetails zu besprechen.
+                                {getTranslation("phone_contact_description", language)}
                               </p>
                             </div>
                           </div>
@@ -237,9 +236,9 @@ const Confirmation = () => {
                               3
                             </div>
                             <div>
-                              <h5 className="font-semibold text-gray-900 mb-1">Lieferung</h5>
+                              <h5 className="font-semibold text-gray-900 mb-1">{getTranslation("delivery", language)}</h5>
                               <p className="text-gray-700">
-                                Nach Zahlungseingang erfolgt die Lieferung in 4-7 Werktagen.
+                                {getTranslation("delivery_timeframe", language)}
                               </p>
                             </div>
                           </div>
@@ -265,10 +264,10 @@ const Confirmation = () => {
                               <button
                                 onClick={() => handleCopyToClipboard(
                                   orderResponse.payment_instructions.bank_details.account_holder,
-                                  "Kontoinhaber"
+                                  getTranslation("account_holder", language)
                                 )}
                                 className="ml-2 p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded transition-colors"
-                                title="Kopieren"
+                                title={getTranslation("copy_tooltip", language)}
                               >
                                 <Copy className="h-4 w-4" />
                               </button>
@@ -286,7 +285,7 @@ const Confirmation = () => {
                                   "IBAN"
                                 )}
                                 className="ml-2 p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded transition-colors"
-                                title="Kopieren"
+                                title={getTranslation("copy_tooltip", language)}
                               >
                                 <Copy className="h-4 w-4" />
                               </button>
@@ -304,7 +303,7 @@ const Confirmation = () => {
                                   "BIC"
                                 )}
                                 className="ml-2 p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded transition-colors"
-                                title="Kopieren"
+                                title={getTranslation("copy_tooltip", language)}
                               >
                                 <Copy className="h-4 w-4" />
                               </button>
@@ -321,10 +320,10 @@ const Confirmation = () => {
                               <button
                                 onClick={() => handleCopyToClipboard(
                                   orderResponse.confirmation_number,
-                                  "Verwendungszweck"
+                                  getTranslation("reference", language)
                                 )}
                                 className="ml-2 p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded transition-colors"
-                                title="Kopieren"
+                                title={getTranslation("copy_tooltip", language)}
                               >
                                 <Copy className="h-4 w-4" />
                               </button>
@@ -338,14 +337,13 @@ const Confirmation = () => {
                     {!isExpressMode && (
                       <div className="bg-amber-50 border-2 border-amber-200 rounded-lg p-6 mt-6">
                         <h4 className="font-bold text-amber-900 mb-3 text-lg">
-                          Wichtiger Hinweis
+                          {getTranslation("important_notice", language)}
                         </h4>
                         <p className="text-amber-800">
-                          Ihre Bestellung wird nun überprüft. Wir werden Sie in den nächsten 24 Stunden telefonisch kontaktieren, 
-                          um Ihre Bestellung zu bestätigen und die weiteren Schritte bezüglich der Zahlung und Lieferung zu besprechen.
+                          {getTranslation("manual_mode_notice", language)}
                         </p>
                         <p className="text-amber-800 mt-2">
-                          Bitte stellen Sie sicher, dass Sie unter <span className="font-bold">{customerData.phone}</span> erreichbar sind.
+                          {getTranslation("manual_mode_phone_notice", language)} <span className="font-bold">{customerData.phone}</span> {getTranslation("delivery_notice_reachable", language)}
                         </p>
                       </div>
                     )}
@@ -358,17 +356,17 @@ const Confirmation = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
                     <Truck className="h-5 w-5" style={{ color: accentColor }} />
-                    <span>Lieferinformationen</span>
+                    <span>{getTranslation("delivery_info", language)}</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="bg-amber-50 border-2 border-amber-200 rounded-lg p-6">
                     <h4 className="font-bold text-amber-900 mb-3 text-lg">
-                      Wichtiger Hinweis zur Lieferung
+                      {getTranslation("delivery_notice_title", language)}
                     </h4>
                     <p className="text-amber-800">
-                      Unser Fahrer wird Sie am Liefertag telefonisch kontaktieren. Bitte stellen Sie sicher, dass Sie unter{' '}
-                      <span className="font-bold">{customerData.phone}</span> erreichbar sind.
+                      {getTranslation("delivery_notice_description", language)}{' '}
+                      <span className="font-bold">{customerData.phone}</span> {getTranslation("delivery_notice_reachable", language)}
                     </p>
                   </div>
                 </CardContent>
