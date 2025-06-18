@@ -1,5 +1,12 @@
 // API Services für Checkout-System
 
+import { 
+  transformOrderData, 
+  transformShopConfig, 
+  validateOrderData, 
+  validateShopConfig 
+} from "@/utils/dataTransform";
+
 export interface OrderData {
   shop_id: string;
   product_name: string;
@@ -231,16 +238,19 @@ export const fetchOrderData = async (token: string): Promise<OrderData> => {
       }
     }
     
-    const data = await response.json();
-    console.log("Order data received:", data);
+    const rawData = await response.json();
+    console.log("Raw order data received:", rawData);
     
-    // Validierung der erhaltenen Daten
-    if (!data || !data.shop_id || !data.product_name) {
-      console.error('Invalid order data received');
+    // Transform the data to expected format
+    const transformedData = transformOrderData(rawData);
+    
+    // Validate the transformed data
+    if (!validateOrderData(transformedData)) {
+      console.error('Order data validation failed after transformation');
       throw new Error('VALIDATION_ERROR');
     }
     
-    return data;
+    return transformedData;
   } catch (error) {
     console.error("Error fetching order data:", error);
     
@@ -284,16 +294,19 @@ export const fetchShopConfig = async (shopId: string): Promise<ShopConfig> => {
       }
     }
     
-    const data = await response.json();
-    console.log("Shop config received:", data);
+    const rawData = await response.json();
+    console.log("Raw shop config received:", rawData);
     
-    // Validierung der erhaltenen Daten
-    if (!data || !data.shop_id) {
-      console.warn('Invalid shop config received - using fallback');
+    // Transform the data to expected format
+    const transformedData = transformShopConfig(rawData);
+    
+    // Validate the transformed data
+    if (!validateShopConfig(transformedData)) {
+      console.warn('Shop config validation failed after transformation - using fallback');
       return getFallbackShopConfig(shopId);
     }
     
-    return data;
+    return transformedData;
   } catch (error) {
     console.error("Error fetching shop config:", error);
     
