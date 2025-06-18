@@ -16,6 +16,8 @@ interface TermsCardProps {
   allStepsCompleted: boolean;
   accentColor: string;
   language?: "DE" | "EN" | "FR";
+  testMode?: boolean;
+  onTestModeChange?: (enabled: boolean) => void;
 }
 
 export const TermsCard = ({ 
@@ -26,12 +28,20 @@ export const TermsCard = ({
   isSubmitting,
   allStepsCompleted,
   accentColor,
-  language = "DE"
+  language = "DE",
+  testMode = false,
+  onTestModeChange
 }: TermsCardProps) => {
   const [focused, setFocused] = useState(false);
 
   const handleChange = (checked: boolean) => {
     onChange(checked);
+  };
+
+  const handleTestModeChange = (checked: boolean) => {
+    if (onTestModeChange) {
+      onTestModeChange(checked);
+    }
   };
 
   return (
@@ -83,6 +93,23 @@ export const TermsCard = ({
             <div className="flex-1">
               <Label htmlFor="terms_accepted" className="text-sm text-gray-800 leading-relaxed cursor-pointer">
                 {getTranslation("terms_text", language)}
+              </Label>
+            </div>
+          </div>
+        </div>
+
+        {/* Testmodus Checkbox */}
+        <div className="p-4 rounded-lg border border-orange-200 bg-orange-50 mb-6">
+          <div className="flex items-start space-x-4">
+            <Checkbox
+              id="test_mode"
+              checked={testMode}
+              onCheckedChange={handleTestModeChange}
+              className="border-2 border-orange-300 mt-1"
+            />
+            <div className="flex-1">
+              <Label htmlFor="test_mode" className="text-sm text-orange-800 leading-relaxed cursor-pointer">
+                Testmodus aktivieren (ohne API-Verbindung zur Bestätigungsseite)
               </Label>
             </div>
           </div>

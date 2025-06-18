@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { OrderData, ShopConfig, CustomerData, submitOrder } from "@/services/api";
@@ -42,6 +43,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
   const [showBillingAddress, setShowBillingAddress] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [testMode, setTestMode] = useState(false);
   const [completedSteps, setCompletedSteps] = useState({
     email: false,
     contact: false,
@@ -195,6 +197,10 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
     setCompletedSteps(prev => ({ ...prev, terms: accepted }));
   };
 
+  const handleTestModeChange = (enabled: boolean) => {
+    setTestMode(enabled);
+  };
+
   const handleBack = () => {
     navigate(-1);
   };
@@ -217,6 +223,48 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
         description: getTranslation("terms_required", language),
         variant: "destructive",
       });
+      return;
+    }
+
+    // Testmodus: Direkt zur Bestätigungsseite ohne API-Call
+    if (testMode) {
+      console.log("Testmodus aktiviert - simuliere erfolgreiche Bestellung");
+      
+      // Simuliere Bestelldaten für Testmodus
+      const mockOrderResponse = {
+        order_id: "TEST-" + Date.now(),
+        status: "confirmed",
+        confirmation_number: "TEST-" + Math.random().toString(36).substr(2, 9).toUpperCase(),
+        payment_instructions: {
+          bank_details: {
+            account_holder: "Test Firma GmbH",
+            iban: "DE89 3704 0044 0532 0130 00",
+            bic: "COBADEFFXXX",
+            reference: "TEST-REF-" + Math.random().toString(36).substr(2, 9).toUpperCase()
+          }
+        },
+        total_amount: orderData.total_gross,
+        currency: orderData.currency
+      };
+
+      // Testdaten in sessionStorage speichern
+      sessionStorage.setItem('orderConfirmation', JSON.stringify({
+        orderResponse: mockOrderResponse,
+        customerData: formData,
+        orderData: orderData,
+        submittedAt: new Date().toISOString()
+      }));
+      
+      toast({
+        title: "Testmodus",
+        description: "Simulation erfolgreich - weiterleitung zur Bestätigungsseite",
+      });
+      
+      // Zur Bestätigungsseite weiterleiten
+      setTimeout(() => {
+        window.location.href = '/confirmation';
+      }, 1500);
+      
       return;
     }
 
@@ -387,6 +435,8 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
             allStepsCompleted={allStepsCompleted}
             accentColor={accentColor}
             language={language}
+            testMode={testMode}
+            onTestModeChange={handleTestModeChange}
           />
         </form>
       </div>
