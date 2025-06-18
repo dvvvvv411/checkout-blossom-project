@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { OrderData, ShopConfig } from "@/services/api";
 import { Package, AlertCircle } from "lucide-react";
@@ -75,13 +74,12 @@ export const OrderSummary = ({ orderData, shopConfig, accentColor }: OrderSummar
             value={discountCode}
             onChange={(e) => setDiscountCode(e.target.value)}
             placeholder="Rabattcode eingeben"
-            className="flex-1"
+            className="flex-1 border-2 border-gray-300 focus-visible:ring-2 focus-visible:ring-gray-400"
           />
           <Button 
             onClick={handleDiscountSubmit}
             variant="default"
             size="sm"
-            disabled={!discountCode.trim()}
             className="bg-black text-white hover:bg-gray-800"
           >
             Anwenden
