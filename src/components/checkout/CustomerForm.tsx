@@ -381,10 +381,16 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
           )}
 
           <TermsCard
-            termsAccepted={terms
-
-    setFormData(prev => ({
-      ...prev,
-      payment_method: "vorkasse"
-    }));
-  }, []);
+            termsAccepted={termsAccepted}
+            onChange={handleTermsAccepted}
+            isCompleted={completedSteps.terms}
+            isSubmitting={isSubmitting}
+            allStepsCompleted={allStepsCompleted}
+            accentColor={accentColor}
+            language={language}
+          />
+        </form>
+      </div>
+    </div>
+  );
+};
