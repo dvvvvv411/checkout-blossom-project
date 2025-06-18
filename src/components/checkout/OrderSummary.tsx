@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { OrderData, ShopConfig } from "@/services/api";
 import { Package, AlertCircle } from "lucide-react";
@@ -132,10 +131,7 @@ export const OrderSummary = ({ orderData, shopConfig, accentColor }: OrderSummar
         <div className="mt-2 pt-2 border-t-2 border-gray-200">
           <div className="flex justify-between items-center">
             <span className="text-xl font-bold text-gray-900">Gesamtpreis</span>
-            <span 
-              className="text-2xl font-bold"
-              style={{ color: accentColor }}
-            >
+            <span className="text-2xl font-bold bg-gradient-to-r from-green-500 to-emerald-600 bg-clip-text text-transparent">
               {formatCurrency(orderData.total_gross)}
             </span>
           </div>
