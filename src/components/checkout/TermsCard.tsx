@@ -6,6 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { FileText, Shield, Check } from "lucide-react";
 import { getTranslation } from "@/utils/translations";
+import { logger } from "@/utils/logger";
 
 interface TermsCardProps {
   termsAccepted: boolean;
@@ -29,17 +30,18 @@ export const TermsCard = ({
   const [focused, setFocused] = useState(false);
 
   const handleChange = (checked: boolean | string) => {
-    console.log("=== TERMS CARD: Terms checkbox changed ===", checked);
+    logger.dev("Terms checkbox changed", { checked });
     const isChecked = checked === true;
     onChange(isChecked);
   };
 
   const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    console.log("=== TERMS CARD: Submit button clicked ===");
-    console.log("Button event:", e.type);
-    console.log("All steps completed:", allStepsCompleted);
-    console.log("Terms accepted:", termsAccepted);
-    console.log("Is submitting:", isSubmitting);
+    logger.dev("Submit button clicked", {
+      event: e.type,
+      allStepsCompleted,
+      termsAccepted,
+      isSubmitting
+    });
     
     // The button is type="submit" so it will automatically trigger the parent form's onSubmit
     // No need to call any additional handlers here

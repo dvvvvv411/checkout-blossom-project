@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -446,18 +445,6 @@ const Confirmation = () => {
                             </div>
                           </div>
                         </div>
-                      </div>
-                    )}
-
-                    {/* Debug section for missing bank details in Instant Mode - only in development */}
-                    {isInstantMode && !hasBankDetails && import.meta.env.DEV && (
-                      <div className="bg-red-50 border-2 border-red-200 rounded-lg p-6 mt-6">
-                        <h4 className="font-bold text-red-900 mb-3 text-lg">
-                          🐛 DEBUG: Missing Bank Details in Instant Mode
-                        </h4>
-                        <p className="text-red-800 mb-2">
-                          Instant Mode is enabled but no bank details were found from any source.
-                        </p>
                       </div>
                     )}
 

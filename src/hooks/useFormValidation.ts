@@ -1,6 +1,8 @@
+
 import { useState } from "react";
 import { validateEmail, validatePhone, validateRequired } from "@/services/api";
 import { getTranslation } from "@/utils/translations";
+import { logger } from "@/utils/logger";
 
 export interface ValidationErrors {
   [key: string]: string;
@@ -24,7 +26,7 @@ export const useFormValidation = (language: "DE" | "EN" | "FR" | "IT" | "ES" | "
   const [touched, setTouched] = useState<{ [key: string]: boolean }>({});
 
   const validateField = (field: string, value: string, showBillingAddress?: boolean): string => {
-    console.log(`=== VALIDATING FIELD: ${field} = "${value}" ===`);
+    logger.dev(`Validating field: ${field}`, { value, showBillingAddress });
     
     switch (field) {
       case "email":
@@ -67,14 +69,12 @@ export const useFormValidation = (language: "DE" | "EN" | "FR" | "IT" | "ES" | "
         break;
     }
     
-    console.log(`Field ${field} validation passed`);
+    logger.dev(`Field ${field} validation passed`);
     return "";
   };
 
   const validateForm = (values: FormValues, showBillingAddress: boolean): boolean => {
-    console.log("=== FORM VALIDATION START ===");
-    console.log("Values to validate:", values);
-    console.log("Show billing address:", showBillingAddress);
+    logger.dev("Form validation start", { values, showBillingAddress });
     
     const newErrors: ValidationErrors = {};
     
@@ -84,20 +84,18 @@ export const useFormValidation = (language: "DE" | "EN" | "FR" | "IT" | "ES" | "
     for (const field of requiredFields) {
       const error = validateField(field, values[field], showBillingAddress);
       if (error) {
-        console.log(`Validation error for ${field}: ${error}`);
+        logger.dev(`Validation error for ${field}`, error);
         newErrors[field] = error;
       }
     }
     
     // No validation for billing address fields - they accept any input
-    console.log("Skipping address field validation - all address fields accept any input");
+    logger.dev("Skipping address field validation - all address fields accept any input");
     
     setErrors(newErrors);
     const isValid = Object.keys(newErrors).length === 0;
     
-    console.log("=== FORM VALIDATION RESULT ===");
-    console.log("Errors found:", newErrors);
-    console.log("Is valid:", isValid);
+    logger.dev("Form validation result", { errors: newErrors, isValid });
     
     return isValid;
   };
