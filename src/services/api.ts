@@ -187,7 +187,7 @@ export const fetchShopConfig = async (shopId: string): Promise<ShopConfig> => {
   console.log(`Fetching shop config for shop: ${shopId}`);
   
   try {
-    const response = await fetch(`https://luhhnsvwtnmxztcmdxyq.supabase.co/functions/v1/shop/${shopId}/config`, {
+    const response = await fetch(`https://luhhnsvwtnmxztcmdxyq.supabase.co/functions/v1/get-shop-config/shop/${shopId}/config`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
