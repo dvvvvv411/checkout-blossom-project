@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { OrderData, ShopConfig } from "@/services/api";
-import { Package, Shield, AlertCircle } from "lucide-react";
+import { Package, AlertCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -139,29 +139,6 @@ export const OrderSummary = ({ orderData, shopConfig, accentColor }: OrderSummar
             >
               {formatCurrency(orderData.total_gross)}
             </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Trust Signals */}
-      <div className="bg-white rounded-xl border border-gray-200 p-3">
-        <div className="flex items-center space-x-2 mb-2">
-          <Shield className="h-4 w-4 text-green-600" />
-          <h3 className="font-semibold text-gray-900">Sicher & Zuverlässig</h3>
-        </div>
-        
-        <div className="space-y-1 text-sm text-gray-600">
-          <div className="flex items-center space-x-2">
-            <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
-            <span>SSL-verschlüsselte Übertragung</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
-            <span>Sichere Zahlungsabwicklung</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
-            <span>Zuverlässige Lieferung</span>
           </div>
         </div>
       </div>
