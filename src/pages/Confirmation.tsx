@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -103,8 +104,9 @@ const Confirmation = () => {
       console.log("shopConfig:", JSON.stringify(shopConfig, null, 2));
       console.log("shopConfig.checkout_mode:", shopConfig.checkout_mode);
       
-      // Check for both "express" and "instant" modes
-      const isExpressMode = shopConfig.checkout_mode === "express" || shopConfig.checkout_mode === "instant";
+      // Check for both "express" and "instant" modes - fix TypeScript issue
+      const checkoutMode = shopConfig.checkout_mode;
+      const isExpressMode = checkoutMode === "express" || checkoutMode === "instant";
       console.log("isExpressMode check (express OR instant):", isExpressMode);
       
       console.log("=== BANK DETAILS AVAILABILITY DEBUG ===");
@@ -169,8 +171,9 @@ const Confirmation = () => {
 
   const { orderResponse, customerData, orderData } = confirmationData;
   
-  // Enhanced Express Mode detection - check for both "express" and "instant"
-  const isExpressMode = shopConfig?.checkout_mode === "express" || shopConfig?.checkout_mode === "instant";
+  // Enhanced Express Mode detection - check for both "express" and "instant" - fix TypeScript issue
+  const checkoutMode = shopConfig?.checkout_mode;
+  const isExpressMode = checkoutMode === "express" || checkoutMode === "instant";
   const accentColor = shopConfig?.accent_color || "#2563eb";
 
   // Enhanced bank details detection - check both sources
