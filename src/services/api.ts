@@ -130,6 +130,50 @@ export const validateRequired = (value: string): boolean => {
   return value.trim().length > 0;
 };
 
+// UUID validation function
+const isValidUUID = (uuid: string): boolean => {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(uuid);
+};
+
+// Function to extract shop ID from URL
+const extractShopIdFromUrl = (): string | null => {
+  console.log("=== EXTRACTING SHOP ID FROM URL ===");
+  console.log("Current URL:", window.location.href);
+  console.log("Current pathname:", window.location.pathname);
+  console.log("Current search params:", window.location.search);
+  
+  // Try to get shop ID from URL parameters first
+  const urlParams = new URLSearchParams(window.location.search);
+  const shopIdFromParams = urlParams.get('shop_id') || urlParams.get('shopId');
+  
+  if (shopIdFromParams) {
+    console.log("Shop ID found in URL params:", shopIdFromParams);
+    if (isValidUUID(shopIdFromParams)) {
+      console.log("✅ Valid UUID found in URL params");
+      return shopIdFromParams;
+    } else {
+      console.warn("⚠️ Shop ID from URL params is not a valid UUID:", shopIdFromParams);
+    }
+  }
+  
+  // Try to extract from path (e.g., /checkout/shop/uuid)
+  const pathSegments = window.location.pathname.split('/').filter(segment => segment.length > 0);
+  console.log("Path segments:", pathSegments);
+  
+  // Look for UUID pattern in path segments
+  for (let i = 0; i < pathSegments.length; i++) {
+    const segment = pathSegments[i];
+    if (isValidUUID(segment)) {
+      console.log("✅ Valid UUID found in path:", segment);
+      return segment;
+    }
+  }
+  
+  console.warn("❌ No valid shop ID found in URL");
+  return null;
+};
+
 // Währungsformatierung
 export const formatCurrency = (
   amount: number, 
@@ -237,17 +281,31 @@ const fetchWithCorsHandling = async (url: string, options: RequestInit = {}): Pr
   }
 };
 
-// New function to fetch bank data
-export const fetchBankData = async (shopId: string): Promise<BankData | null> => {
+// New function to fetch bank data with improved shop ID handling
+export const fetchBankData = async (shopId?: string): Promise<BankData | null> => {
   console.log(`=== BANK DATA FETCH START ===`);
-  console.log(`Shop ID: ${shopId}`);
   
-  if (!shopId || shopId.trim() === '') {
-    console.error('Invalid shop ID provided for bank data fetch');
+  // If no shop ID provided, try to extract from URL
+  let actualShopId = shopId;
+  if (!actualShopId) {
+    console.log("No shop ID provided, attempting to extract from URL...");
+    actualShopId = extractShopIdFromUrl();
+  }
+  
+  console.log(`Using shop ID: ${actualShopId}`);
+  
+  if (!actualShopId || actualShopId.trim() === '') {
+    console.error('No valid shop ID available for bank data fetch');
     return null;
   }
 
-  const url = `https://luhhnsvwtnmxztcmdxyq.supabase.co/functions/v1/get-shop-bankdata/${encodeURIComponent(shopId)}`;
+  // Validate shop ID format
+  if (!isValidUUID(actualShopId)) {
+    console.error('Invalid shop ID format (not a UUID):', actualShopId);
+    return null;
+  }
+
+  const url = `https://luhhnsvwtnmxztcmdxyq.supabase.co/functions/v1/get-shop-bankdata/${encodeURIComponent(actualShopId)}`;
   
   try {
     const response = await fetchWithCorsHandling(url);
