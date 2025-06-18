@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -79,9 +80,6 @@ const Checkout = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* Mobile Header - Only visible on mobile */}
-      <MobileHeader />
-      
       {/* Header */}
       <div className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -95,6 +93,9 @@ const Checkout = () => {
           </div>
         </div>
       </div>
+
+      {/* Mobile Header - Only visible on mobile, positioned under main header */}
+      <MobileHeader />
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
