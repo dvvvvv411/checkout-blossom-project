@@ -210,6 +210,9 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
 
   const handleSubmit = async (e: React.FormEvent) => {
     console.log("=== CUSTOMER FORM: handleSubmit called ===");
+    console.log("Event type:", e.type);
+    console.log("Event target:", e.target);
+    console.log("Event currentTarget:", e.currentTarget);
     e.preventDefault();
     
     console.log("=== FORM SUBMISSION START ===");
@@ -217,6 +220,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
     console.log("Terms accepted:", termsAccepted);
     console.log("Test mode:", testMode);
     console.log("Form data:", formData);
+    console.log("All steps completed:", allStepsCompleted);
     
     if (!token) {
       console.error("Token missing");
@@ -480,7 +484,6 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
             termsAccepted={termsAccepted}
             onChange={handleTermsAccepted}
             isCompleted={completedSteps.terms}
-            onSubmit={handleSubmit}
             isSubmitting={isSubmitting}
             allStepsCompleted={allStepsCompleted}
             accentColor={accentColor}

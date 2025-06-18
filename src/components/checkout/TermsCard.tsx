@@ -11,7 +11,6 @@ interface TermsCardProps {
   termsAccepted: boolean;
   onChange: (accepted: boolean) => void;
   isCompleted: boolean;
-  onSubmit: (e: React.FormEvent) => void;
   isSubmitting: boolean;
   allStepsCompleted: boolean;
   accentColor: string;
@@ -24,7 +23,6 @@ export const TermsCard = ({
   termsAccepted, 
   onChange, 
   isCompleted, 
-  onSubmit,
   isSubmitting,
   allStepsCompleted,
   accentColor,
@@ -44,6 +42,17 @@ export const TermsCard = ({
     if (onTestModeChange) {
       onTestModeChange(checked);
     }
+  };
+
+  const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    console.log("=== TERMS CARD: Submit button clicked ===");
+    console.log("Button event:", e.type);
+    console.log("All steps completed:", allStepsCompleted);
+    console.log("Terms accepted:", termsAccepted);
+    console.log("Is submitting:", isSubmitting);
+    
+    // The button is type="submit" so it will automatically trigger the parent form's onSubmit
+    // No need to call any additional handlers here
   };
 
   return (
@@ -119,6 +128,7 @@ export const TermsCard = ({
 
         <button
           type="submit"
+          onClick={handleButtonClick}
           className={`w-full h-14 text-white font-semibold text-lg rounded-lg transition-all duration-200 disabled:opacity-50 ${
             allStepsCompleted 
               ? "bg-gradient-to-r from-green-500 to-emerald-600 shadow-lg hover:shadow-xl hover:from-green-600 hover:to-emerald-700" 
