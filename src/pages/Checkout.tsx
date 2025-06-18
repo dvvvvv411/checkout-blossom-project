@@ -115,6 +115,17 @@ const Checkout = () => {
                   />
                 </div>
               )}
+              
+              {/* Support-Telefon direkt unter dem Logo */}
+              {shopConfig?.support_phone && (
+                <div className="mb-4">
+                  <div className="flex items-center justify-center space-x-2 text-sm text-gray-600">
+                    <Phone className="h-4 w-4" />
+                    <span>Support: {shopConfig.support_phone}</span>
+                  </div>
+                </div>
+              )}
+              
               <h1 className="text-3xl font-bold text-gray-900 mb-3">
                 {getTranslation("checkout", language)}
               </h1>
@@ -183,18 +194,6 @@ const Checkout = () => {
           </div>
         </div>
       </div>
-
-      {/* Footer mit Support-Telefon */}
-      {shopConfig?.support_phone && (
-        <div className="bg-white border-t border-gray-200 mt-8">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <div className="flex items-center justify-center space-x-2 text-sm text-gray-600">
-              <Phone className="h-4 w-4" />
-              <span>Support: {shopConfig.support_phone}</span>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
