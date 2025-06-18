@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
-import { MapPin, Building } from "lucide-react";
+import { MapPin, Building, Check } from "lucide-react";
 
 interface BillingAddressCardProps {
   showBillingAddress: boolean;
@@ -56,9 +56,9 @@ export const BillingAddressCard = ({
   };
 
   const handleToggle = (checked: boolean) => {
-    onToggle(checked);
-    if (!checked) {
-      onComplete();
+    onToggle(!checked); // Invert the logic since checkbox now means "same address"
+    if (checked) {
+      onComplete(); // If checked (same address), mark as completed
     }
   };
 
@@ -82,33 +82,53 @@ export const BillingAddressCard = ({
   };
 
   return (
-    <Card className={`transition-all duration-200 ${focused ? "ring-2 ring-blue-500 ring-opacity-50" : ""} bg-white border-gray-200`}>
+    <Card className={`relative overflow-hidden transition-all duration-300 ${
+      focused 
+        ? "ring-2 ring-yellow-500 ring-opacity-30 shadow-lg" 
+        : "hover:shadow-md"
+    } ${isCompleted ? "bg-gradient-to-br from-green-50 to-white border-green-300" : "bg-white border-gray-200"}`}>
+      
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center justify-between text-lg">
           <div className="flex items-center space-x-3">
-            <div className="p-2 rounded-lg bg-gray-100">
-              <MapPin className="h-5 w-5 text-gray-600" />
+            <div className={`p-3 rounded-lg transition-all duration-300 ${
+              isCompleted 
+                ? "bg-green-600 shadow-sm" 
+                : "bg-blue-600 shadow-sm"
+            }`}>
+              {isCompleted ? (
+                <Check className="h-5 w-5 text-white" />
+              ) : (
+                <MapPin className="h-5 w-5 text-white" />
+              )}
             </div>
             <div>
-              <span>Rechnungsadresse</span>
+              <div className="text-lg font-semibold text-gray-900">
+                Rechnungsadresse
+              </div>
               <div className="text-sm text-gray-600 font-normal flex items-center gap-1">
                 <Building className="h-3 w-3 text-gray-500" />
                 Wohin soll die Rechnung gesendet werden?
               </div>
             </div>
           </div>
+          {isCompleted && (
+            <span className="text-sm text-green-700 font-semibold">
+              Festgelegt
+            </span>
+          )}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex items-center space-x-3 mb-4">
           <Checkbox
-            id="billing_different"
-            checked={showBillingAddress}
+            id="billing_same"
+            checked={!showBillingAddress}
             onCheckedChange={handleToggle}
             className="border-gray-300"
           />
-          <Label htmlFor="billing_different" className="text-sm font-medium text-gray-700">
-            Rechnungsadresse weicht von Lieferadresse ab
+          <Label htmlFor="billing_same" className="text-sm font-medium text-gray-700">
+            Rechnungsadresse ist identisch mit Lieferadresse
           </Label>
         </div>
 
