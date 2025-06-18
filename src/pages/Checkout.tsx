@@ -9,6 +9,7 @@ import { fetchOrderDataWithShopId, fetchShopConfig } from "@/services/api";
 import { getTranslation } from "@/utils/translations";
 import { Button } from "@/components/ui/button";
 import { getSupportedLanguage } from "@/lib/utils";
+import { logger } from "@/utils/logger";
 
 const Checkout = () => {
   const [searchParams] = useSearchParams();
@@ -26,34 +27,37 @@ const Checkout = () => {
     retry: (failureCount, error) => {
       if (error instanceof Error && error.message === 'CORS_ERROR') {
         setCorsError(true);
+        logger.warn("CORS error detected, disabling retries");
         return false;
       }
       if (error instanceof Error && error.message === 'TOKEN_EXPIRED') {
+        logger.error("Token expired during order fetch");
         return false;
       }
-      return failureCount < 1; // Reduced retry attempts for faster failure
+      return failureCount < 1;
     },
-    retryDelay: 1000, // Fixed delay instead of exponential backoff
+    retryDelay: 1000,
   });
 
   // Extract order data and shop ID from the first query
   const orderData = orderDataWithShopId?.orderData;
   const shopId = orderDataWithShopId?.shopId;
 
-  // Second query: Get shop config using the shop ID - now runs in parallel when possible
+  // Second query: Get shop config using the shop ID
   const { data: shopConfig, isLoading: configLoading } = useQuery({
     queryKey: ["shopConfig", shopId],
     queryFn: () => fetchShopConfig(shopId!),
     enabled: !!shopId,
     retry: (failureCount, error) => {
       if (error instanceof Error && error.message === 'CORS_ERROR') {
+        logger.warn("CORS error in shop config fetch");
         return false;
       }
-      return failureCount < 1; // Reduced retry attempts
+      return failureCount < 1;
     },
   });
 
-  // Get the final language - use utility function for consistency
+  // Get the final language
   const language = getSupportedLanguage(shopConfig?.language);
 
   // Set accent color when shop config loads
@@ -71,11 +75,13 @@ const Checkout = () => {
   const handleRetry = () => {
     setCorsError(false);
     setRetryCount(prev => prev + 1);
+    logger.info(`Retrying order fetch, attempt ${retryCount + 2}`);
     refetchOrder();
   };
 
   // Token validation
   if (!token) {
+    logger.error("Checkout accessed without valid token");
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center max-w-md mx-auto px-6">
@@ -96,7 +102,6 @@ const Checkout = () => {
     );
   }
 
-  // Optimized loading state - show immediately when any critical data is loading
   const isLoading = orderLoading || (orderData && configLoading);
   
   if (isLoading) {
@@ -169,6 +174,7 @@ const Checkout = () => {
 
   // Other errors
   if (orderError && !orderData) {
+    logger.error("Order loading failed", orderError);
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center max-w-md mx-auto px-6">
@@ -197,7 +203,6 @@ const Checkout = () => {
   // Success state - show checkout form
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* CORS Warning Banner */}
       {corsError && (
         <div className="bg-orange-50 border-b border-orange-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
@@ -215,7 +220,6 @@ const Checkout = () => {
       <div className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex justify-center relative">
-            {/* Mobile Back Button - positioned absolutely on the left */}
             <button
               onClick={handleBack}
               className="lg:hidden absolute left-0 top-1/2 -translate-y-1/2 p-2 text-gray-600 hover:text-gray-800 transition-colors"
@@ -223,7 +227,6 @@ const Checkout = () => {
               <ArrowLeft className="h-6 w-6" />
             </button>
             <div className="text-center">
-              {/* Optimized Logo with better error handling */}
               {shopConfig?.logo_url && (
                 <div className="mb-4">
                   <img 
@@ -232,7 +235,6 @@ const Checkout = () => {
                     className="h-24 mx-auto object-contain transition-opacity duration-200"
                     loading="lazy"
                     onError={(e) => {
-                      // Simple fallback without excessive logging
                       const fallbackLogo = "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=200&h=80&fit=crop&crop=center";
                       if (e.currentTarget.src !== fallbackLogo) {
                         e.currentTarget.src = fallbackLogo;
@@ -244,7 +246,6 @@ const Checkout = () => {
                 </div>
               )}
               
-              {/* Support-Telefon direkt unter dem Logo */}
               {shopConfig?.support_phone && (
                 <div className="mb-4">
                   <div className="flex items-center justify-center space-x-2 text-sm text-gray-600">
@@ -254,7 +255,6 @@ const Checkout = () => {
                 </div>
               )}
               
-              {/* Security indicators */}
               <div className="flex items-center justify-center space-x-4 text-sm text-gray-600">
                 <div className="flex items-center space-x-2">
                   <div className="w-2 h-2 rounded-full bg-green-500"></div>
@@ -270,7 +270,6 @@ const Checkout = () => {
         </div>
       </div>
 
-      {/* Mobile Navigation - Only visible on mobile */}
       <div className="lg:hidden bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 py-4 space-y-3">
           <div className="flex items-center text-sm">
@@ -285,10 +284,8 @@ const Checkout = () => {
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Order Summary - Mobile First */}
           <div className="lg:col-span-5 lg:order-2">
             <div className="lg:sticky lg:top-8 space-y-6">
               <div className="[&_.bg-white]:bg-transparent [&_.border]:border-transparent [&_.shadow-sm]:shadow-none">
@@ -300,7 +297,6 @@ const Checkout = () => {
                 />
               </div>
               
-              {/* Verified Shop Card - positioned at bottom of right column */}
               <div className="mt-8">
                 <VerifiedShopCard 
                   language={language} 
@@ -310,7 +306,6 @@ const Checkout = () => {
             </div>
           </div>
           
-          {/* Customer Form - Second on Mobile */}
           <div className="lg:col-span-7 lg:order-1">
             <CustomerForm 
               orderData={orderData!}

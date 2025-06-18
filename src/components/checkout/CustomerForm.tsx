@@ -12,6 +12,7 @@ import { TermsCard } from "./TermsCard";
 import { ArrowLeft } from "lucide-react";
 import { useFormValidation, FormValues } from "@/hooks/useFormValidation";
 import { getTranslation } from "@/utils/translations";
+import { logger } from "@/utils/logger";
 
 interface CustomerFormProps {
   orderData: OrderData;
@@ -85,14 +86,14 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
       contact: !!(formData.first_name && formData.last_name && formData.phone),
       delivery: !!(formData.delivery_address.street && formData.delivery_address.postal_code && formData.delivery_address.city),
       billing: !showBillingAddress || !!(formData.billing_address?.street && formData.billing_address?.postal_code && formData.billing_address?.city),
-      payment: true, // Payment is always completed since we have default values
+      payment: true,
       terms: termsAccepted,
     };
     
     setCompletedSteps(newCompletedSteps);
   }, [formData, showBillingAddress, termsAccepted]);
 
-  // Automatisch erste Zahlungsmethode auswählen wenn verfügbar
+  // Auto-select first payment method if available
   useEffect(() => {
     if (shopConfig?.payment_methods && shopConfig.payment_methods.length > 0 && !formData.payment_method) {
       setFormData(prev => ({
@@ -128,7 +129,6 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
       }));
     }
 
-    // Clear any existing error for this field
     clearFieldError(field);
   };
 
@@ -158,7 +158,6 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
   const handleBillingAddressToggle = (checked: boolean) => {
     setShowBillingAddress(checked);
     if (checked) {
-      // Initialize with empty billing address for separate input
       setFormData(prev => ({
         ...prev,
         billing_address: {
@@ -168,7 +167,6 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
         },
       }));
     }
-    // The useEffect above will handle copying delivery address when checked becomes false
   };
 
   const handleStepComplete = (step: string) => {
@@ -187,6 +185,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
     e.preventDefault();
     
     if (!token) {
+      logger.error("Order submission attempted without token");
       toast({
         title: getTranslation("order_error", language),
         description: getTranslation("checkout_token_missing", language),
@@ -204,7 +203,6 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
       return;
     }
 
-    // Vollständige Formvalidierung
     const formValues: FormValues = {
       email: formData.email,
       first_name: formData.first_name,
@@ -221,6 +219,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
     const isValid = validateForm(formValues, showBillingAddress);
     
     if (!isValid) {
+      logger.warn("Form validation failed during submission");
       toast({
         title: getTranslation("order_error", language),
         description: getTranslation("order_error_message", language),
@@ -230,22 +229,24 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
     }
 
     setIsSubmitting(true);
+    logger.info("Submitting order");
 
     try {
       const orderResponse = await submitOrder(formData, orderData, token);
       
+      logger.info("Order submitted successfully");
       toast({
         title: getTranslation("order_success", language),
         description: getTranslation("order_success_message", language),
       });
       
-      // Zur Bestätigungsseite weiterleiten
       setTimeout(() => {
         window.location.href = '/confirmation';
       }, 1500);
       
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      logger.error("Order submission failed", { error: errorMessage });
       
       if (errorMessage === "CORS_ERROR") {
         toast({
@@ -296,7 +297,6 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
 
   return (
     <div className="space-y-4">
-      {/* Back Button and Progress Indicator - Show on desktop, hide on mobile since it's at page top */}
       <div className="px-4 space-y-3 hidden lg:block">
         <button
           onClick={handleBack}
@@ -317,7 +317,6 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
         </div>
       </div>
       
-      {/* Formular sperren während Übertragung */}
       <div className={`${isSubmitting ? 'pointer-events-none opacity-60' : ''}`}>
         <form onSubmit={handleSubmit} className="space-y-6">
           <EmailCard
@@ -344,14 +343,12 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
             }}
             isCompleted={completedSteps.contact && completedSteps.delivery}
             language={language}
-            // Pass validation errors
             firstNameError={getFieldError("first_name")}
             lastNameError={getFieldError("last_name")}
             phoneError={getFieldError("phone")}
             streetError={getFieldError("street")}
             postalCodeError={getFieldError("postal_code")}
             cityError={getFieldError("city")}
-            // Pass blur handlers
             onFirstNameBlur={() => handleFieldBlur("first_name")}
             onLastNameBlur={() => handleFieldBlur("last_name")}
             onPhoneBlur={() => handleFieldBlur("phone")}
@@ -384,16 +381,10 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
           )}
 
           <TermsCard
-            termsAccepted={termsAccepted}
-            onChange={handleTermsAccepted}
-            isCompleted={completedSteps.terms}
-            isSubmitting={isSubmitting}
-            allStepsCompleted={allStepsCompleted}
-            accentColor={accentColor}
-            language={language}
-          />
-        </form>
-      </div>
-    </div>
-  );
-};
+            termsAccepted={terms
+
+    setFormData(prev => ({
+      ...prev,
+      payment_method: "vorkasse"
+    }));
+  }, []);
