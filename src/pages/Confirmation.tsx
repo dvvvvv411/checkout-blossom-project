@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -35,30 +36,50 @@ const Confirmation = () => {
   const [language, setLanguage] = useState<"DE" | "EN" | "FR">("DE");
 
   useEffect(() => {
+    console.log("=== CONFIRMATION PAGE DEBUG START ===");
+    
     const storedData = sessionStorage.getItem('orderConfirmation');
+    console.log("Raw sessionStorage data:", storedData);
+    
     if (!storedData) {
-      // Keine Bestelldaten gefunden, zurück zur Startseite
+      console.error("No order confirmation data found in sessionStorage");
       navigate('/');
       return;
     }
 
     try {
       const data = JSON.parse(storedData);
+      console.log("Parsed confirmation data:", JSON.stringify(data, null, 2));
+      
+      // Debug orderResponse structure
+      console.log("=== ORDER RESPONSE DEBUG ===");
+      console.log("orderResponse:", data.orderResponse);
+      console.log("orderResponse.payment_instructions:", data.orderResponse?.payment_instructions);
+      console.log("orderResponse.payment_instructions.bank_details:", data.orderResponse?.payment_instructions?.bank_details);
+      
       setConfirmationData(data);
       
       // Sprache aus den Daten setzen falls verfügbar
       if (data.orderData?.language) {
+        console.log("Setting language from orderData:", data.orderData.language);
         setLanguage(data.orderData.language);
       }
 
       // Shop-Konfiguration verwenden - zuerst aus sessionStorage, dann API
       if (data.shopConfig) {
+        console.log("=== SHOP CONFIG FROM SESSION STORAGE ===");
+        console.log("shopConfig from sessionStorage:", JSON.stringify(data.shopConfig, null, 2));
+        console.log("checkout_mode:", data.shopConfig.checkout_mode);
         setShopConfig(data.shopConfig);
         if (data.shopConfig.language) {
           setLanguage(data.shopConfig.language);
         }
       } else if (data.orderData?.shop_id) {
+        console.log("=== FETCHING SHOP CONFIG FROM API ===");
+        console.log("shop_id:", data.orderData.shop_id);
         fetchShopConfig(data.orderData.shop_id).then(config => {
+          console.log("shopConfig from API:", JSON.stringify(config, null, 2));
+          console.log("checkout_mode from API:", config.checkout_mode);
           setShopConfig(config);
           if (config.language) {
             setLanguage(config.language);
@@ -70,6 +91,36 @@ const Confirmation = () => {
       navigate('/');
     }
   }, [navigate]);
+
+  // Debug Express Mode detection
+  useEffect(() => {
+    if (confirmationData && shopConfig) {
+      console.log("=== EXPRESS MODE DETECTION DEBUG ===");
+      console.log("shopConfig:", JSON.stringify(shopConfig, null, 2));
+      console.log("shopConfig.checkout_mode:", shopConfig.checkout_mode);
+      console.log("isExpressMode check:", shopConfig.checkout_mode === "express");
+      
+      console.log("=== BANK DETAILS AVAILABILITY DEBUG ===");
+      console.log("orderResponse:", JSON.stringify(confirmationData.orderResponse, null, 2));
+      console.log("payment_instructions exists:", !!confirmationData.orderResponse.payment_instructions);
+      console.log("bank_details exists:", !!confirmationData.orderResponse.payment_instructions?.bank_details);
+      
+      const bankDetailsAvailable = confirmationData.orderResponse.payment_instructions?.bank_details;
+      console.log("Bank details object:", bankDetailsAvailable);
+      
+      const shouldShowBankDetails = shopConfig.checkout_mode === "express" && bankDetailsAvailable;
+      console.log("Should show bank details:", shouldShowBankDetails);
+      
+      if (shopConfig.checkout_mode === "express" && !bankDetailsAvailable) {
+        console.warn("⚠️ EXPRESS MODE IS ENABLED BUT NO BANK DETAILS FOUND!");
+        console.warn("This might indicate an API issue or missing bank account configuration");
+      }
+      
+      if (shopConfig.checkout_mode !== "express") {
+        console.info("ℹ️ Not in Express Mode - checkout_mode is:", shopConfig.checkout_mode);
+      }
+    }
+  }, [confirmationData, shopConfig]);
 
   const handleNewOrder = () => {
     // Bestätigungsdaten löschen und zur Startseite
@@ -84,7 +135,6 @@ const Confirmation = () => {
   const handleCopyToClipboard = async (text: string, label: string) => {
     try {
       await navigator.clipboard.writeText(text);
-      // You could add a toast notification here if desired
       console.log(`${label} copied to clipboard: ${text}`);
     } catch (err) {
       console.error('Failed to copy to clipboard:', err);
@@ -103,8 +153,26 @@ const Confirmation = () => {
   const isExpressMode = shopConfig?.checkout_mode === "express";
   const accentColor = shopConfig?.accent_color || "#2563eb";
 
+  // Additional runtime debugging
+  console.log("=== RENDER TIME DEBUG ===");
+  console.log("Final isExpressMode value:", isExpressMode);
+  console.log("Final shopConfig:", shopConfig);
+  console.log("Bank details check:", orderResponse.payment_instructions?.bank_details);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      {/* Debug Panel - Remove this in production */}
+      <div className="bg-yellow-100 border-2 border-yellow-400 p-4 m-4 rounded-lg">
+        <h3 className="font-bold text-yellow-800 mb-2">🐛 DEBUG INFORMATION</h3>
+        <div className="text-sm text-yellow-900 space-y-1">
+          <p><strong>Express Mode:</strong> {isExpressMode ? "✅ YES" : "❌ NO"}</p>
+          <p><strong>Checkout Mode:</strong> {shopConfig?.checkout_mode || "undefined"}</p>
+          <p><strong>Bank Details Available:</strong> {orderResponse.payment_instructions?.bank_details ? "✅ YES" : "❌ NO"}</p>
+          <p><strong>Payment Instructions:</strong> {orderResponse.payment_instructions ? "✅ YES" : "❌ NO"}</p>
+          <p><strong>Shop Config Loaded:</strong> {shopConfig ? "✅ YES" : "❌ NO"}</p>
+        </div>
+      </div>
+
       {/* Header */}
       <div className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -329,6 +397,22 @@ const Confirmation = () => {
                               </button>
                             </div>
                           </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Debug section for missing bank details in Express Mode */}
+                    {isExpressMode && !orderResponse.payment_instructions?.bank_details && (
+                      <div className="bg-red-50 border-2 border-red-200 rounded-lg p-6 mt-6">
+                        <h4 className="font-bold text-red-900 mb-3 text-lg">
+                          🐛 DEBUG: Missing Bank Details
+                        </h4>
+                        <p className="text-red-800 mb-2">
+                          Express Mode is enabled but no bank details were provided by the API.
+                        </p>
+                        <div className="text-sm text-red-700">
+                          <p><strong>Expected:</strong> orderResponse.payment_instructions.bank_details</p>
+                          <p><strong>Received:</strong> {JSON.stringify(orderResponse.payment_instructions)}</p>
                         </div>
                       </div>
                     )}

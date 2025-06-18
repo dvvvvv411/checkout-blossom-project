@@ -482,13 +482,41 @@ export const submitOrder = async (
     console.log("=== ORDER SUBMISSION SUCCESS ===");
     console.log("Order submitted successfully:", result);
     
-    // Bestelldaten in sessionStorage für Bestätigungsseite speichern
-    sessionStorage.setItem('orderConfirmation', JSON.stringify({
+    // Enhanced debugging for sessionStorage data
+    console.log("=== SESSION STORAGE DEBUG ===");
+    console.log("About to store in sessionStorage:");
+    console.log("- orderResponse:", JSON.stringify(result, null, 2));
+    console.log("- customerData:", JSON.stringify(customerData, null, 2));
+    console.log("- orderData:", JSON.stringify(orderData, null, 2));
+    
+    // Check if we need to fetch shop config
+    let shopConfigToStore = null;
+    if (orderData.shop_id) {
+      try {
+        console.log("Fetching shop config for sessionStorage...");
+        shopConfigToStore = await fetchShopConfig(orderData.shop_id);
+        console.log("Shop config for sessionStorage:", JSON.stringify(shopConfigToStore, null, 2));
+      } catch (error) {
+        console.warn("Could not fetch shop config for sessionStorage:", error);
+      }
+    }
+    
+    const confirmationData = {
       orderResponse: result,
       customerData,
       orderData,
+      shopConfig: shopConfigToStore,
       submittedAt: new Date().toISOString()
-    }));
+    };
+    
+    console.log("Final confirmation data to store:", JSON.stringify(confirmationData, null, 2));
+    
+    // Bestelldaten in sessionStorage für Bestätigungsseite speichern
+    sessionStorage.setItem('orderConfirmation', JSON.stringify(confirmationData));
+    
+    // Verify storage
+    const storedData = sessionStorage.getItem('orderConfirmation');
+    console.log("Verification - data actually stored:", storedData);
     
     return result;
   } catch (error) {
