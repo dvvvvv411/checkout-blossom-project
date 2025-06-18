@@ -42,7 +42,7 @@ const Confirmation = () => {
 
   // Initialize shop URL capture when component mounts
   useEffect(() => {
-    initializeShopUrlCapture();
+    
   }, []);
 
   useEffect(() => {
