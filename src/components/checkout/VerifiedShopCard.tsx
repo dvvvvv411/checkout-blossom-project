@@ -31,19 +31,19 @@ export const VerifiedShopCard = ({ language = "DE" }: VerifiedShopCardProps) => 
       DE: {
         title: "Verifizierter Shop",
         subtitle: "Bewertet mit 4.8 von 5 Sternen",
-        verified: "Verifiziert",
+        reviews: "12.847 Bewertungen",
         securePayment: "100% Sichere Zahlung"
       },
       EN: {
         title: "Verified Shop",
         subtitle: "Rated 4.8 out of 5 stars",
-        verified: "Verified",
+        reviews: "12,847 Reviews",
         securePayment: "100% Secure Payment"
       },
       FR: {
         title: "Boutique Vérifiée",
         subtitle: "Noté 4.8 sur 5 étoiles",
-        verified: "Vérifié",
+        reviews: "12 847 Avis",
         securePayment: "Paiement 100% Sécurisé"
       },
     };
@@ -118,7 +118,7 @@ export const VerifiedShopCard = ({ language = "DE" }: VerifiedShopCardProps) => 
                 {getTranslation("title")}
               </h3>
               <div className="px-3 py-1 bg-gradient-to-r from-emerald-500 to-green-600 text-white text-xs rounded-full font-semibold shadow-md">
-                {getTranslation("verified")}
+                {getTranslation("reviews")}
               </div>
             </div>
           </div>
