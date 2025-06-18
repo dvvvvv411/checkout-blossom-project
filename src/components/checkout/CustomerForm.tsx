@@ -294,27 +294,12 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
           termsAccepted={termsAccepted}
           onChange={handleTermsAccepted}
           isCompleted={completedSteps.terms}
+          onSubmit={handleSubmit}
+          isSubmitting={isSubmitting}
+          allStepsCompleted={allStepsCompleted}
+          accentColor={accentColor}
+          submitButtonText={getTranslation("submit")}
         />
-
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <Button
-            type="submit"
-            className={`w-full h-14 text-white font-semibold text-lg rounded-lg transition-all duration-200 disabled:opacity-50 ${
-              allStepsCompleted ? "shadow-lg hover:shadow-xl" : ""
-            }`}
-            disabled={isSubmitting || !allStepsCompleted}
-            style={{ 
-              backgroundColor: allStepsCompleted ? accentColor : "#6b7280",
-              color: "white"
-            }}
-          >
-            {isSubmitting ? "Bestellung wird verarbeitet..." : getTranslation("submit")}
-          </Button>
-          
-          <p className="text-sm text-gray-600 text-center mt-3">
-            Mit dem Abschließen der Bestellung stimmen Sie unseren AGB zu.
-          </p>
-        </div>
       </form>
     </div>
   );
