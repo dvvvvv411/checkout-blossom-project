@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { OrderData, ShopConfig, CustomerData, submitOrder } from "@/services/api";
@@ -15,9 +14,10 @@ interface CustomerFormProps {
   orderData: OrderData;
   shopConfig?: ShopConfig;
   accentColor: string;
+  showMobileNavigation?: boolean;
 }
 
-export const CustomerForm = ({ orderData, shopConfig, accentColor }: CustomerFormProps) => {
+export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNavigation = true }: CustomerFormProps) => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const token = searchParams.get("token");
@@ -224,26 +224,28 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor }: CustomerFor
 
   return (
     <div className="space-y-4">
-      {/* Back Button and Progress Indicator - Combined with slightly more spacing */}
-      <div className="px-4 space-y-3">
-        <button
-          onClick={handleBack}
-          className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
-        >
-          <ArrowLeft className="h-5 w-5" />
-          <span>Zurück</span>
-        </button>
-        
-        <div className="flex items-center text-sm">
-          <span className="text-gray-500">Warenkorb</span>
-          <span className="mx-2 text-gray-400">{'>'}</span>
-          <span className="font-semibold text-gray-900">Informationen</span>
-          <span className="mx-2 text-gray-400">{'>'}</span>
-          <span className="text-gray-500">Versand</span>
-          <span className="mx-2 text-gray-400">{'>'}</span>
-          <span className="text-gray-500">Zahlung</span>
+      {/* Back Button and Progress Indicator - Only show if showMobileNavigation is true and on desktop */}
+      {showMobileNavigation && (
+        <div className="px-4 space-y-3 lg:block hidden">
+          <button
+            onClick={handleBack}
+            className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
+          >
+            <ArrowLeft className="h-5 w-5" />
+            <span>Zurück</span>
+          </button>
+          
+          <div className="flex items-center text-sm">
+            <span className="text-gray-500">Warenkorb</span>
+            <span className="mx-2 text-gray-400">{'>'}</span>
+            <span className="font-semibold text-gray-900">Informationen</span>
+            <span className="mx-2 text-gray-400">{'>'}</span>
+            <span className="text-gray-500">Versand</span>
+            <span className="mx-2 text-gray-400">{'>'}</span>
+            <span className="text-gray-500">Zahlung</span>
+          </div>
         </div>
-      </div>
+      )}
       
       <form onSubmit={handleSubmit} className="space-y-6">
         <EmailCard

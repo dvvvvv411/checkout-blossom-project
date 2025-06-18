@@ -1,8 +1,8 @@
 
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
+import { Loader2, ArrowLeft } from "lucide-react";
 import { OrderSummary } from "@/components/checkout/OrderSummary";
 import { CustomerForm } from "@/components/checkout/CustomerForm";
 import { VerifiedShopCard } from "@/components/checkout/VerifiedShopCard";
@@ -10,6 +10,7 @@ import { fetchOrderData, fetchShopConfig } from "@/services/api";
 
 const Checkout = () => {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const token = searchParams.get("token");
   const [accentColor, setAccentColor] = useState("#000000");
 
@@ -31,6 +32,10 @@ const Checkout = () => {
       document.documentElement.style.setProperty("--checkout-accent", shopConfig.accent_color);
     }
   }, [shopConfig]);
+
+  const handleBack = () => {
+    navigate(-1);
+  };
 
   if (!token) {
     return (
@@ -93,6 +98,29 @@ const Checkout = () => {
         </div>
       </div>
 
+      {/* Mobile Navigation - Only visible on mobile */}
+      <div className="lg:hidden bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 py-4 space-y-3">
+          <button
+            onClick={handleBack}
+            className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
+          >
+            <ArrowLeft className="h-5 w-5" />
+            <span>Zurück</span>
+          </button>
+          
+          <div className="flex items-center text-sm">
+            <span className="text-gray-500">Warenkorb</span>
+            <span className="mx-2 text-gray-400">{'>'}</span>
+            <span className="font-semibold text-gray-900">Informationen</span>
+            <span className="mx-2 text-gray-400">{'>'}</span>
+            <span className="text-gray-500">Versand</span>
+            <span className="mx-2 text-gray-400">{'>'}</span>
+            <span className="text-gray-500">Zahlung</span>
+          </div>
+        </div>
+      </div>
+
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -120,6 +148,7 @@ const Checkout = () => {
               orderData={orderData}
               shopConfig={shopConfig}
               accentColor={accentColor}
+              showMobileNavigation={false}
             />
           </div>
         </div>
