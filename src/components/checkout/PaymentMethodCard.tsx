@@ -147,12 +147,6 @@ export const PaymentMethodCard = ({
       </CardHeader>
       
       <CardContent>
-        {/* Debug info for development */}
-        <div className="mb-4 text-xs text-gray-500 bg-gray-50 p-2 rounded">
-          <div>Verfügbare Zahlungsarten: {processedPaymentMethods.length} von {paymentMethods.length}</div>
-          <div className="mt-1">Aktuell gewählt: {paymentMethod || "Keine Auswahl"}</div>
-        </div>
-        
         <RadioGroup
           value={paymentMethod}
           onValueChange={handleChange}
@@ -200,10 +194,6 @@ export const PaymentMethodCard = ({
                         </span>
                       </div>
                       <p className="text-sm text-gray-600 mb-2">{details.description}</p>
-                      {/* Debug info */}
-                      <p className="text-xs text-gray-400">
-                        Original: {String(methodInfo.original)} → Code: {methodInfo.code}
-                      </p>
                     </div>
                   </div>
                 </div>
