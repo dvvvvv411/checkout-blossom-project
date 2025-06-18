@@ -132,7 +132,7 @@ const Checkout = () => {
         <div className="flex flex-col items-center space-y-4">
           <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
           <span className="text-lg text-gray-600 font-medium">
-            {getTranslation("loading_checkout", language)}
+            Loading checkout...
           </span>
           {corsError && (
             <div className="text-center mt-4">
