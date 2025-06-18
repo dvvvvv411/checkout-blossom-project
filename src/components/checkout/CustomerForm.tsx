@@ -20,9 +20,10 @@ interface CustomerFormProps {
   accentColor: string;
   showMobileNavigation?: boolean;
   language: "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL";
+  capturedShopUrl?: string | null;
 }
 
-export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNavigation = true, language }: CustomerFormProps) => {
+export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNavigation = true, language, capturedShopUrl }: CustomerFormProps) => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const token = searchParams.get("token");
@@ -233,6 +234,18 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
 
     try {
       const orderResponse = await submitOrder(formData, orderData, token);
+      
+      // Store order confirmation data including captured shop URL
+      const confirmationData = {
+        orderResponse,
+        customerData: formData,
+        orderData,
+        shopConfig,
+        capturedShopUrl, // Include captured shop URL
+        submittedAt: new Date().toISOString()
+      };
+      
+      sessionStorage.setItem('orderConfirmation', JSON.stringify(confirmationData));
       
       logger.info("Order submitted successfully");
       toast({

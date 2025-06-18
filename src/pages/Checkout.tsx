@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -18,6 +19,16 @@ const Checkout = () => {
   const [accentColor, setAccentColor] = useState("#000000");
   const [corsError, setCorsError] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
+  const [capturedShopUrl, setCapturedShopUrl] = useState<string | null>(null);
+
+  // Capture shop URL from referrer when component mounts
+  useEffect(() => {
+    const referrer = document.referrer;
+    if (referrer && !referrer.includes(window.location.hostname)) {
+      logger.dev("Captured shop URL from referrer:", referrer);
+      setCapturedShopUrl(referrer);
+    }
+  }, []);
 
   // First query: Get order data and shop ID from token
   const { data: orderDataWithShopId, isLoading: orderLoading, error: orderError, refetch: refetchOrder } = useQuery({
@@ -312,6 +323,7 @@ const Checkout = () => {
               shopConfig={shopConfig}
               accentColor={accentColor}
               language={language}
+              capturedShopUrl={capturedShopUrl}
             />
           </div>
         </div>

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, Info, CreditCard, MapPin, Mail, Phone, ArrowLeft, Truck, Copy } from "lucide-react";
-import { formatCurrency, fetchShopConfig, fetchBankData, ShopConfig, BankData, initializeShopUrlCapture } from "@/services/api";
+import { formatCurrency, fetchShopConfig, fetchBankData, ShopConfig, BankData } from "@/services/api";
 import { getTranslation, getProductNameTranslation } from "@/utils/translations";
 import { formatIBAN } from "@/utils/formatters";
 import { logger } from "@/utils/logger";
@@ -29,7 +29,7 @@ interface OrderConfirmationData {
   orderData: any;
   shopConfig?: ShopConfig;
   bankData?: BankData;
-  capturedShopUrl?: string; // Added captured shop URL
+  capturedShopUrl?: string; // Captured shop URL from checkout
   submittedAt: string;
 }
 
@@ -63,7 +63,8 @@ const Confirmation = () => {
         hasCustomerData: !!data.customerData,
         hasOrderData: !!data.orderData,
         hasShopConfig: !!data.shopConfig,
-        hasBankData: !!data.bankData
+        hasBankData: !!data.bankData,
+        hasCapturedShopUrl: !!data.capturedShopUrl
       });
       
       setConfirmationData(data);
@@ -160,15 +161,15 @@ const Confirmation = () => {
   }, [confirmationData, shopConfig, loadedBankData]);
 
   const handleBackToShop = () => {
-    // Enhanced shop URL detection with multiple fallbacks
-    const shopUrl = shopConfig?.shop_url || 
-                   confirmationData?.shopConfig?.shop_url ||
-                   confirmationData?.capturedShopUrl;
+    // Enhanced shop URL detection with captured URL as priority
+    const shopUrl = confirmationData?.capturedShopUrl ||
+                   shopConfig?.shop_url || 
+                   confirmationData?.shopConfig?.shop_url;
     
     logger.dev("Attempting to redirect to shop", {
+      capturedShopUrl: confirmationData?.capturedShopUrl,
       shopConfigUrl: shopConfig?.shop_url,
       confirmationShopConfigUrl: confirmationData?.shopConfig?.shop_url,
-      capturedShopUrl: confirmationData?.capturedShopUrl,
       finalUrl: shopUrl
     });
     
