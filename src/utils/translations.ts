@@ -1,4 +1,3 @@
-
 export interface Translations {
   [key: string]: string;
 }
@@ -14,6 +13,13 @@ export const translations = {
     payment: "Zahlung",
     secure_payment: "Sichere Zahlung",
     ssl_encrypted: "SSL verschlüsselt",
+    
+    // VerifiedShopCard translations
+    loading: "Wird geladen...",
+    title: "Verifizierter Shop",
+    reviews: "4.500+ Bewertungen",
+    subtitle: "Sicher einkaufen mit SSL-Verschlüsselung",
+    securePayment: "Sichere Zahlung",
     
     // E-Mail Card
     email_address: "E-Mail-Adresse",
@@ -143,6 +149,13 @@ export const translations = {
     secure_payment: "Secure Payment",
     ssl_encrypted: "SSL Encrypted",
     
+    // VerifiedShopCard translations
+    loading: "Loading...",
+    title: "Verified Shop",
+    reviews: "4,500+ Reviews",
+    subtitle: "Shop securely with SSL encryption",
+    securePayment: "Secure Payment",
+    
     // Email Card
     email_address: "Email Address",
     email_description: "For order confirmation and communication",
@@ -163,7 +176,7 @@ export const translations = {
     last_name_required: "Last name is required",
     phone_required: "Phone number is required",
     phone_invalid: "Please enter a valid phone number",
-    street_required: "Street and house number is required",
+    street_required: "Street and house number are required",
     postal_code_required: "Postal code is required",
     city_required: "City is required",
     
@@ -271,12 +284,12 @@ export const translations = {
     secure_payment: "Paiement Sécurisé",
     ssl_encrypted: "SSL Crypté",
     
-    // Email Card
-    email_address: "Adresse E-mail",
-    email_description: "Pour la confirmation de commande et la communication",
-    email_placeholder: "votre.email@exemple.fr",
-    email_required: "L'adresse e-mail est requise",
-    email_invalid: "Veuillez saisir une adresse e-mail valide",
+    // VerifiedShopCard translations
+    loading: "Chargement...",
+    title: "Boutique Vérifiée",
+    reviews: "4 500+ Avis",
+    subtitle: "Achetez en toute sécurité avec le cryptage SSL",
+    securePayment: "Paiement Sécurisé",
     
     // Contact & Livraison
     contact_delivery: "Contact & Adresse de Livraison",
@@ -398,6 +411,13 @@ export const translations = {
     payment: "Pagamento",
     secure_payment: "Pagamento Sicuro",
     ssl_encrypted: "SSL Crittografato",
+    
+    // VerifiedShopCard translations
+    loading: "Caricamento...",
+    title: "Negozio Verificato",
+    reviews: "4.500+ Recensioni",
+    subtitle: "Acquista in sicurezza con crittografia SSL",
+    securePayment: "Pagamento Sicuro",
     
     // Email Card
     email_address: "Indirizzo Email",
@@ -527,12 +547,12 @@ export const translations = {
     secure_payment: "Pago Seguro",
     ssl_encrypted: "SSL Encriptado",
     
-    // Email Card
-    email_address: "Dirección de Email",
-    email_description: "Para confirmación del pedido y comunicación",
-    email_placeholder: "tu.email@ejemplo.es",
-    email_required: "La dirección de email es obligatoria",
-    email_invalid: "Introduce una dirección de email válida",
+    // VerifiedShopCard translations
+    loading: "Cargando...",
+    title: "Tienda Verificada",
+    reviews: "4,500+ Reseñas",
+    subtitle: "Compra seguro con cifrado SSL",
+    securePayment: "Pago Seguro",
     
     // Contacto y Entrega
     contact_delivery: "Contacto y Dirección de Entrega",
@@ -655,12 +675,12 @@ export const translations = {
     secure_payment: "Bezpieczna Płatność",
     ssl_encrypted: "Szyfrowane SSL",
     
-    // Email Card
-    email_address: "Adres Email",
-    email_description: "Do potwierdzenia zamówienia i komunikacji",
-    email_placeholder: "twoj.email@przyklad.pl",
-    email_required: "Adres email jest wymagany",
-    email_invalid: "Podaj prawidłowy adres email",
+    // VerifiedShopCard translations
+    loading: "Ładowanie...",
+    title: "Zweryfikowany Sklep",
+    reviews: "4 500+ Opinii",
+    subtitle: "Kupuj bezpiecznie z szyfrowaniem SSL",
+    securePayment: "Bezpieczna Płatność",
     
     // Kontakt i Dostawa
     contact_delivery: "Kontakt i Adres Dostawy",
@@ -783,7 +803,14 @@ export const translations = {
     secure_payment: "Veilige Betaling",
     ssl_encrypted: "SSL Versleuteld",
     
-    // Email Card
+    // VerifiedShopCard translations
+    loading: "Laden...",
+    title: "Geverifieerde Winkel",
+    reviews: "4.500+ Beoordelingen",
+    subtitle: "Winkel veilig met SSL-versleuteling",
+    securePayment: "Veilige Betaling",
+    
+    // E-mail Card
     email_address: "E-mailadres",
     email_description: "Voor orderbevestiging en communicatie",
     email_placeholder: "jouw.email@voorbeeld.be",
