@@ -227,7 +227,7 @@ export const submitOrder = async (
   };
 
   try {
-    const response = await fetch("https://luhhnsvwtnmxztcmdxyq.supabase.co/functions/v1/orders", {
+    const response = await fetch("https://luhhnsvwtnmxztcmdxyq.supabase.co/functions/v1/create-order", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
