@@ -10,13 +10,12 @@ interface OrderSummaryProps {
   orderData: OrderData;
   shopConfig?: ShopConfig;
   accentColor: string;
+  language: "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL";
 }
 
-export const OrderSummary = ({ orderData, shopConfig, accentColor }: OrderSummaryProps) => {
+export const OrderSummary = ({ orderData, shopConfig, accentColor, language }: OrderSummaryProps) => {
   const [discountCode, setDiscountCode] = useState("");
   const [showError, setShowError] = useState(false);
-
-  const language = shopConfig?.language || "DE";
 
   const formatPrice = (amount: number) => {
     return formatCurrency(amount, orderData.currency || "EUR", language);

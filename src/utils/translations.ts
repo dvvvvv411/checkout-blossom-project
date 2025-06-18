@@ -952,11 +952,18 @@ const translations = {
   }
 };
 
-export const getTranslation = (key: string, language: "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL" = "DE"): string => {
+export const getTranslation = (key: string, language: "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL"): string => {
+  // Ensure we have a valid language parameter
+  if (!language || !["DE", "EN", "FR", "IT", "ES", "PL", "NL"].includes(language)) {
+    console.warn(`Invalid language parameter: ${language}, falling back to DE`);
+    language = "DE";
+  }
+  
   const translation = translations[key];
   if (!translation) {
-    console.warn(`Translation key "${key}" not found`);
+    console.warn(`Translation key not found: ${key}`);
     return key;
   }
+  
   return translation[language] || translation.DE || key;
 };

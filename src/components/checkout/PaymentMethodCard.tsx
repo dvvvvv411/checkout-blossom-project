@@ -13,7 +13,7 @@ interface PaymentMethodCardProps {
   onChange: (method: "vorkasse" | "rechnung") => void;
   onComplete: () => void;
   isCompleted: boolean;
-  language?: "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL";
+  language: "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL";
 }
 
 export const PaymentMethodCard = ({ 
@@ -22,7 +22,7 @@ export const PaymentMethodCard = ({
   onChange, 
   onComplete,
   isCompleted,
-  language = "DE"
+  language
 }: PaymentMethodCardProps) => {
   const [focused, setFocused] = useState(false);
 
@@ -34,12 +34,6 @@ export const PaymentMethodCard = ({
     language,
     isCompleted
   });
-
-  // Ensure we have a valid language for getTranslation
-  const validLanguage = (language && typeof language === 'string' && 
-    ["DE", "EN", "FR", "IT", "ES", "PL", "NL"].includes(language.toUpperCase())) 
-    ? language.toUpperCase() as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL"
-    : "DE";
 
   // Process payment methods using the utility function
   const processedPaymentMethods = processPaymentMethods(paymentMethods || []);
@@ -71,14 +65,14 @@ export const PaymentMethodCard = ({
     
     const details = {
       vorkasse: {
-        title: getTranslation("vorkasse", validLanguage),
-        description: getTranslation("vorkasse_description", validLanguage),
-        badge: getTranslation("recommended", validLanguage)
+        title: getTranslation("vorkasse", language),
+        description: getTranslation("vorkasse_description", language),
+        badge: getTranslation("recommended", language)
       },
       rechnung: {
-        title: getTranslation("rechnung", validLanguage),
-        description: getTranslation("rechnung_description", validLanguage),
-        badge: getTranslation("existing_customers_only", validLanguage)
+        title: getTranslation("rechnung", language),
+        description: getTranslation("rechnung_description", language),
+        badge: getTranslation("existing_customers_only", language)
       }
     };
     
@@ -141,11 +135,11 @@ export const PaymentMethodCard = ({
             </div>
             <div>
               <div className="text-lg font-semibold text-gray-900">
-                {getTranslation("payment_method", validLanguage)}
+                {getTranslation("payment_method", language)}
               </div>
               <div className="text-sm text-gray-600 font-normal flex items-center gap-1">
                 <Shield className="h-3 w-3 text-gray-500" />
-                {getTranslation("payment_description", validLanguage)}
+                {getTranslation("payment_description", language)}
               </div>
             </div>
           </div>
@@ -198,7 +192,7 @@ export const PaymentMethodCard = ({
                           {details.title}
                         </Label>
                         <span className={`text-xs px-2 py-1 rounded font-medium ${
-                          details.badge === getTranslation("recommended", validLanguage)
+                          details.badge === getTranslation("recommended", language)
                             ? "bg-green-100 text-green-700" 
                             : "bg-gray-100 text-gray-600"
                         }`}>

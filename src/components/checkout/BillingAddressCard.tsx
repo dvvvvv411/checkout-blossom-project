@@ -17,7 +17,7 @@ interface BillingAddressCardProps {
   onChange: (field: string, value: string) => void;
   onComplete: () => void;
   isCompleted: boolean;
-  language?: "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL";
+  language: "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL";
 }
 
 export const BillingAddressCard = ({ 
@@ -29,7 +29,7 @@ export const BillingAddressCard = ({
   onChange, 
   onComplete,
   isCompleted,
-  language = "DE"
+  language
 }: BillingAddressCardProps) => {
   const [focused, setFocused] = useState(false);
 

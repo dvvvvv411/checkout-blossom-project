@@ -16,7 +16,7 @@ interface ContactDeliveryCardProps {
   onChange: (field: string, value: string) => void;
   onComplete: () => void;
   isCompleted: boolean;
-  language?: "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL";
+  language: "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL";
   // Error props
   firstNameError?: string;
   lastNameError?: string;
@@ -43,7 +43,7 @@ export const ContactDeliveryCard = ({
   onChange, 
   onComplete, 
   isCompleted,
-  language = "DE",
+  language,
   firstNameError,
   lastNameError,
   phoneError,

@@ -1,27 +1,24 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Star, Lock } from "lucide-react";
 import { getTranslation } from "@/utils/translations";
-import { getSupportedLanguage } from "@/lib/utils";
 
 interface VerifiedShopCardProps {
-  language?: string;
+  language: "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL";
   shopConfig?: {
     company_name?: string;
   };
 }
 
-export const VerifiedShopCard = ({ language: rawLanguage = "DE", shopConfig }: VerifiedShopCardProps) => {
+export const VerifiedShopCard = ({ language, shopConfig }: VerifiedShopCardProps) => {
   const [showLoading, setShowLoading] = useState(true);
   const [loadingStep, setLoadingStep] = useState(0);
   const [animateStars, setAnimateStars] = useState(false);
   const [showContent, setShowContent] = useState(false);
   const [greenOutline, setGreenOutline] = useState(false);
 
-  // Use the same utility function as the main Checkout component
-  const language = getSupportedLanguage(rawLanguage);
-
-  console.log("VerifiedShopCard language processing:", { original: rawLanguage, resolved: language });
+  console.log("VerifiedShopCard language:", language);
 
   useEffect(() => {
     // Loading animation with 5 stars over 2 seconds

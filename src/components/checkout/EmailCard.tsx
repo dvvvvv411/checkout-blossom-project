@@ -11,7 +11,7 @@ interface EmailCardProps {
   onChange: (email: string) => void;
   onComplete: () => void;
   isCompleted: boolean;
-  language?: "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL";
+  language: "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL";
   error?: string;
   onBlur?: () => void;
 }
@@ -21,7 +21,7 @@ export const EmailCard = ({
   onChange, 
   onComplete, 
   isCompleted, 
-  language = "DE",
+  language,
   error,
   onBlur
 }: EmailCardProps) => {

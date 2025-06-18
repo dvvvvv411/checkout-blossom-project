@@ -14,7 +14,7 @@ interface TermsCardProps {
   isSubmitting: boolean;
   allStepsCompleted: boolean;
   accentColor: string;
-  language?: "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL";
+  language: "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL";
 }
 
 export const TermsCard = ({ 
@@ -24,7 +24,7 @@ export const TermsCard = ({
   isSubmitting,
   allStepsCompleted,
   accentColor,
-  language = "DE"
+  language
 }: TermsCardProps) => {
   const [focused, setFocused] = useState(false);
 

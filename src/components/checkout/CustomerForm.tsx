@@ -11,21 +11,20 @@ import { TermsCard } from "./TermsCard";
 import { ArrowLeft } from "lucide-react";
 import { useFormValidation, FormValues } from "@/hooks/useFormValidation";
 import { getTranslation } from "@/utils/translations";
-import { getSupportedLanguage } from "@/lib/utils";
 
 interface CustomerFormProps {
   orderData: OrderData;
   shopConfig?: ShopConfig;
   accentColor: string;
   showMobileNavigation?: boolean;
+  language: "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL";
 }
 
-export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNavigation = true }: CustomerFormProps) => {
+export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNavigation = true, language }: CustomerFormProps) => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const token = searchParams.get("token");
   const { toast } = useToast();
-  const supportedLanguage = getSupportedLanguage(shopConfig?.language);
   
   const [formData, setFormData] = useState<CustomerData>({
     email: "",
@@ -62,7 +61,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
     clearFieldError,
     getFieldError,
     hasFieldError,
-  } = useFormValidation(supportedLanguage);
+  } = useFormValidation(language);
 
   // Auto-copy delivery address to billing address when billing address is not shown separately
   useEffect(() => {
@@ -211,8 +210,8 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
     if (!token) {
       console.error("Token missing");
       toast({
-        title: getTranslation("order_error", supportedLanguage),
-        description: getTranslation("checkout_token_missing", supportedLanguage),
+        title: getTranslation("order_error", language),
+        description: getTranslation("checkout_token_missing", language),
         variant: "destructive",
       });
       return;
@@ -221,8 +220,8 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
     if (!termsAccepted) {
       console.error("Terms not accepted");
       toast({
-        title: getTranslation("order_error", supportedLanguage),
-        description: getTranslation("terms_required", supportedLanguage),
+        title: getTranslation("order_error", language),
+        description: getTranslation("terms_required", language),
         variant: "destructive",
       });
       return;
@@ -252,8 +251,8 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
       console.error("Form validation failed");
       console.error("Validation errors:", errors);
       toast({
-        title: getTranslation("order_error", supportedLanguage),
-        description: getTranslation("order_error_message", supportedLanguage),
+        title: getTranslation("order_error", language),
+        description: getTranslation("order_error_message", language),
         variant: "destructive",
       });
       return;
@@ -271,8 +270,8 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
       console.log("Order response:", orderResponse);
       
       toast({
-        title: getTranslation("order_success", supportedLanguage),
-        description: getTranslation("order_success_message", supportedLanguage),
+        title: getTranslation("order_success", language),
+        description: getTranslation("order_success_message", language),
       });
       
       // Zur Bestätigungsseite weiterleiten
@@ -297,7 +296,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
       } else if (errorMessage === "TOKEN_EXPIRED") {
         console.error("Token expired");
         toast({
-          title: getTranslation("order_error", supportedLanguage),
+          title: getTranslation("order_error", language),
           description: "Der Checkout-Link ist abgelaufen. Sie werden zur Startseite weitergeleitet.",
           variant: "destructive",
         });
@@ -307,28 +306,28 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
       } else if (errorMessage.startsWith("VALIDATION_ERROR")) {
         console.error("Validation error");
         toast({
-          title: getTranslation("order_error", supportedLanguage),
+          title: getTranslation("order_error", language),
           description: "Die eingegebenen Daten sind ungültig. Bitte überprüfen Sie Ihre Eingaben.",
           variant: "destructive",
         });
       } else if (errorMessage.startsWith("SERVER_ERROR")) {
         console.error("Server error");
         toast({
-          title: getTranslation("order_error", supportedLanguage),
+          title: getTranslation("order_error", language),
           description: "Es gibt ein Problem mit dem Server. Bitte versuchen Sie es später erneut.",
           variant: "destructive",
         });
       } else if (errorMessage === "NETWORK_ERROR") {
         console.error("Network error");
         toast({
-          title: getTranslation("order_error", supportedLanguage),
+          title: getTranslation("order_error", language),
           description: "Netzwerkfehler. Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.",
           variant: "destructive",
         });
       } else {
         console.error("Unknown error");
         toast({
-          title: getTranslation("order_error", supportedLanguage),
+          title: getTranslation("order_error", language),
           description: "Ein unbekannter Fehler ist aufgetreten. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
           variant: "destructive",
         });
@@ -356,17 +355,17 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
           className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
         >
           <ArrowLeft className="h-5 w-5" />
-          <span>{getTranslation("back", supportedLanguage)}</span>
+          <span>{getTranslation("back", language)}</span>
         </button>
         
         <div className="flex items-center text-sm">
-          <span className="text-gray-500">{getTranslation("cart", supportedLanguage)}</span>
+          <span className="text-gray-500">{getTranslation("cart", language)}</span>
           <span className="mx-2 text-gray-400">{'>'}</span>
-          <span className="font-semibold text-gray-900">{getTranslation("information", supportedLanguage)}</span>
+          <span className="font-semibold text-gray-900">{getTranslation("information", language)}</span>
           <span className="mx-2 text-gray-400">{'>'}</span>
-          <span className="text-gray-500">{getTranslation("shipping", supportedLanguage)}</span>
+          <span className="text-gray-500">{getTranslation("shipping", language)}</span>
           <span className="mx-2 text-gray-400">{'>'}</span>
-          <span className="text-gray-500">{getTranslation("payment", supportedLanguage)}</span>
+          <span className="text-gray-500">{getTranslation("payment", language)}</span>
         </div>
       </div>
       
@@ -378,7 +377,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
             onChange={(email) => handleInputChange("email", email)}
             onComplete={() => handleStepComplete("email")}
             isCompleted={completedSteps.email}
-            language={supportedLanguage}
+            language={language}
             error={getFieldError("email")}
             onBlur={() => handleFieldBlur("email")}
           />
@@ -396,7 +395,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
               handleStepComplete("delivery");
             }}
             isCompleted={completedSteps.contact && completedSteps.delivery}
-            language={supportedLanguage}
+            language={language}
             // Pass validation errors
             firstNameError={getFieldError("first_name")}
             lastNameError={getFieldError("last_name")}
@@ -422,7 +421,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
             onChange={handleInputChange}
             onComplete={() => handleStepComplete("billing")}
             isCompleted={completedSteps.billing}
-            language={supportedLanguage}
+            language={language}
           />
 
           {shopConfig?.payment_methods && shopConfig.payment_methods.length > 1 && (
@@ -432,7 +431,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
               onChange={(method) => handleInputChange("payment_method", method)}
               onComplete={() => handleStepComplete("payment")}
               isCompleted={completedSteps.payment}
-              language={supportedLanguage}
+              language={language}
             />
           )}
 
@@ -443,7 +442,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
             isSubmitting={isSubmitting}
             allStepsCompleted={allStepsCompleted}
             accentColor={accentColor}
-            language={supportedLanguage}
+            language={language}
           />
         </form>
       </div>
