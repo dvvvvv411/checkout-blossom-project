@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { OrderData, ShopConfig } from "@/services/api";
-import { Package, Truck, Shield, AlertCircle } from "lucide-react";
+import { Package, Shield, AlertCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -109,10 +109,7 @@ export const OrderSummary = ({ orderData, shopConfig, accentColor }: OrderSummar
           </div>
           
           <div className="flex justify-between items-center py-1 border-b border-gray-100">
-            <div className="flex items-center space-x-2">
-              <Truck className="h-4 w-4 text-gray-400" />
-              <span className="text-gray-700 text-sm">Lieferung</span>
-            </div>
+            <span className="text-gray-700 text-sm">Lieferung</span>
             <span className={`font-medium text-sm ${isDeliveryFree ? "text-green-600" : "text-gray-900"}`}>
               {isDeliveryFree ? "Kostenlos" : formatCurrency(orderData.delivery_fee)}
             </span>

@@ -2,13 +2,13 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { OrderData, ShopConfig, CustomerData, submitOrder } from "@/services/api";
 import { useToast } from "@/hooks/use-toast";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { EmailCard } from "./EmailCard";
 import { ContactDeliveryCard } from "./ContactDeliveryCard";
 import { BillingAddressCard } from "./BillingAddressCard";
 import { PaymentMethodCard } from "./PaymentMethodCard";
 import { TermsCard } from "./TermsCard";
-import { Shield, ShieldCheck } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 interface CustomerFormProps {
   orderData: OrderData;
@@ -18,6 +18,7 @@ interface CustomerFormProps {
 
 export const CustomerForm = ({ orderData, shopConfig, accentColor }: CustomerFormProps) => {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const token = searchParams.get("token");
   const { toast } = useToast();
   
@@ -113,6 +114,10 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor }: CustomerFor
   const handleTermsAccepted = (accepted: boolean) => {
     setTermsAccepted(accepted);
     setCompletedSteps(prev => ({ ...prev, terms: accepted }));
+  };
+
+  const handleBack = () => {
+    navigate(-1);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -218,16 +223,27 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor }: CustomerFor
 
   return (
     <div className="space-y-6">
-      {/* SSL Security Message */}
-      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-        <div className="flex items-center space-x-3">
-          <div className="p-2 bg-green-600 rounded-lg">
-            <ShieldCheck className="h-5 w-5 text-white" />
-          </div>
-          <div>
-            <div className="font-semibold text-green-800">SSL-gesicherte Verbindung</div>
-            <p className="text-green-700 text-sm">Ihre Daten werden sicher übertragen und verarbeitet</p>
-          </div>
+      {/* Back Button */}
+      <div className="bg-white rounded-lg border border-gray-200 p-4">
+        <button
+          onClick={handleBack}
+          className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
+        >
+          <ArrowLeft className="h-5 w-5" />
+          <span>Zurück</span>
+        </button>
+      </div>
+
+      {/* Progress Indicator */}
+      <div className="bg-white rounded-lg border border-gray-200 p-4">
+        <div className="flex items-center text-sm">
+          <span className="text-gray-500">Warenkorb</span>
+          <span className="mx-2 text-gray-400">></span>
+          <span className="font-semibold text-gray-900">Informationen</span>
+          <span className="mx-2 text-gray-400">></span>
+          <span className="text-gray-500">Versand</span>
+          <span className="mx-2 text-gray-400">></span>
+          <span className="text-gray-500">Zahlung</span>
         </div>
       </div>
       
