@@ -33,7 +33,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
       postal_code: "",
       city: "",
     },
-    payment_method: "vorkasse",
+    payment_method: "rechnung",
   });
 
   const [showBillingAddress, setShowBillingAddress] = useState(false);

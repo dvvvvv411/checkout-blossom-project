@@ -41,26 +41,26 @@ export const OrderSummary = ({ orderData, shopConfig, accentColor }: OrderSummar
       <div className="bg-white rounded-xl border border-gray-200 p-3">
         <div className="flex items-center space-x-2 mb-2">
           <div className="p-1.5 bg-gray-100 rounded-lg">
-            <Package className="h-5 w-5 text-gray-600" />
+            <Package className="h-4 w-4 text-gray-600" />
           </div>
-          <h2 className="text-xl font-semibold text-gray-900">Ihre Bestellung</h2>
+          <h2 className="text-lg font-semibold text-gray-900">Ihre Bestellung</h2>
         </div>
 
-        <div className="bg-gray-50 rounded-lg p-3 border border-gray-100">
+        <div className="bg-gray-50 rounded-lg p-2 border border-gray-100">
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <h3 className="font-semibold text-gray-900 text-lg">
+              <h3 className="font-semibold text-gray-900">
                 {orderData.product_name}
               </h3>
-              <p className="text-gray-600 mt-1 text-base">
+              <p className="text-gray-600 mt-0.5 text-sm">
                 {formatLiters(orderData.quantity_liters)} Liter
               </p>
-              <p className="text-base text-gray-500 mt-1">
+              <p className="text-sm text-gray-500 mt-0.5">
                 {formatCurrency(orderData.price_per_liter)} pro Liter
               </p>
             </div>
             <div className="text-right">
-              <p className="text-xl font-semibold text-gray-900">
+              <p className="text-lg font-semibold text-gray-900">
                 {formatCurrency(orderData.price_per_liter * orderData.quantity_liters)}
               </p>
             </div>
@@ -69,71 +69,71 @@ export const OrderSummary = ({ orderData, shopConfig, accentColor }: OrderSummar
       </div>
 
       {/* Discount Code */}
-      <div className="bg-white rounded-xl border border-gray-200 px-3 py-2">
+      <div className="bg-white rounded-xl border border-gray-200 px-2 py-1">
         <div className="flex space-x-2">
           <Input
             value={discountCode}
             onChange={(e) => setDiscountCode(e.target.value)}
             placeholder="Rabattcode eingeben"
-            className="flex-1 border-2 border-gray-300 focus-visible:ring-2 focus-visible:ring-gray-400 text-base"
+            className="flex-1 border-2 border-gray-300 focus-visible:ring-2 focus-visible:ring-gray-400"
           />
           <Button 
             onClick={handleDiscountSubmit}
             variant="default"
             size="sm"
-            className="bg-black text-white hover:bg-gray-800 text-base px-4"
+            className="bg-black text-white hover:bg-gray-800"
           >
             Anwenden
           </Button>
         </div>
         
         {showError && (
-          <div className="flex items-center space-x-2 text-red-600 text-base mt-2">
-            <AlertCircle className="h-5 w-5" />
+          <div className="flex items-center space-x-2 text-red-600 text-sm mt-1">
+            <AlertCircle className="h-4 w-4" />
             <span>Der eingegebene Code ist nicht gültig</span>
           </div>
         )}
       </div>
 
       {/* Cost Breakdown */}
-      <div className="bg-white rounded-xl border border-gray-200 p-4">
-        <h3 className="font-semibold text-gray-900 mb-3 text-lg">Kostenaufstellung</h3>
+      <div className="bg-white rounded-xl border border-gray-200 p-3">
+        <h3 className="font-semibold text-gray-900 mb-2">Kostenaufstellung</h3>
         
-        <div className="space-y-1">
-          <div className="flex justify-between items-center py-2 border-b border-gray-100">
-            <span className="text-gray-700 text-base">Zwischensumme</span>
-            <span className="font-medium text-gray-900 text-base">
+        <div className="space-y-0.5">
+          <div className="flex justify-between items-center py-1 border-b border-gray-100">
+            <span className="text-gray-700 text-sm">Zwischensumme</span>
+            <span className="font-medium text-gray-900 text-sm">
               {formatCurrency(orderData.price_per_liter * orderData.quantity_liters)}
             </span>
           </div>
           
-          <div className="flex justify-between items-center py-2 border-b border-gray-100">
-            <span className="text-gray-700 text-base">Lieferung</span>
-            <span className={`font-medium text-base ${isDeliveryFree ? "text-green-600" : "text-gray-900"}`}>
+          <div className="flex justify-between items-center py-1 border-b border-gray-100">
+            <span className="text-gray-700 text-sm">Lieferung</span>
+            <span className={`font-medium text-sm ${isDeliveryFree ? "text-green-600" : "text-gray-900"}`}>
               {isDeliveryFree ? "Kostenlos" : formatCurrency(orderData.delivery_fee)}
             </span>
           </div>
           
-          <div className="flex justify-between items-center py-2 border-b border-gray-100">
-            <span className="text-gray-700 text-base">Netto-Betrag</span>
-            <span className="font-medium text-gray-900 text-base">
+          <div className="flex justify-between items-center py-1 border-b border-gray-100">
+            <span className="text-gray-700 text-sm">Netto-Betrag</span>
+            <span className="font-medium text-gray-900 text-sm">
               {formatCurrency(orderData.total_net)}
             </span>
           </div>
           
-          <div className="flex justify-between items-center py-2 border-b border-gray-100">
-            <span className="text-gray-700 text-base">MwSt ({Math.round(orderData.tax_rate * 100)}%)</span>
-            <span className="font-medium text-gray-900 text-base">
+          <div className="flex justify-between items-center py-1 border-b border-gray-100">
+            <span className="text-gray-700 text-sm">MwSt ({Math.round(orderData.tax_rate * 100)}%)</span>
+            <span className="font-medium text-gray-900 text-sm">
               {formatCurrency(orderData.total_tax)}
             </span>
           </div>
         </div>
         
-        <div className="mt-3 pt-3 border-t-2 border-gray-200">
+        <div className="mt-2 pt-2 border-t-2 border-gray-200">
           <div className="flex justify-between items-center">
-            <span className="text-xl font-semibold text-gray-900">Gesamtpreis</span>
+            <span className="text-lg font-semibold text-gray-900">Gesamtpreis</span>
             <span 
-              className="text-2xl font-bold"
+              className="text-xl font-bold"
               style={{ color: accentColor }}
             >
               {formatCurrency(orderData.total_gross)}
