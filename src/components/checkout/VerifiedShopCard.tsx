@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Star, Lock, CheckCircle } from "lucide-react";
+import { Star, Lock } from "lucide-react";
 
 interface VerifiedShopCardProps {
   language?: string;
@@ -107,19 +107,11 @@ export const VerifiedShopCard = ({ language = "DE" }: VerifiedShopCardProps) => 
         <CardContent className="p-6 relative text-center">
           {/* Header with custom image */}
           <div className="flex items-center justify-center space-x-3 mb-4">
-            <div className="relative">
-              <div className="p-3 bg-gradient-to-br from-yellow-500 to-amber-600 rounded-xl shadow-md">
-                <img 
-                  src="https://i.imgur.com/Nw7FDia.png" 
-                  alt="Verified Shop Badge"
-                  className="h-6 w-6 object-contain"
-                />
-              </div>
-              {/* Verification badge */}
-              <div className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white">
-                <CheckCircle className="h-3 w-3 text-white absolute top-0.5 left-0.5" />
-              </div>
-            </div>
+            <img 
+              src="https://i.imgur.com/Nw7FDia.png" 
+              alt="Verified Shop Badge"
+              className="h-12 w-12 object-contain"
+            />
 
             <div>
               <h3 className="font-bold text-gray-900 text-lg">
