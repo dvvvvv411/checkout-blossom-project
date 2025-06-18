@@ -1,10 +1,9 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, Info, CreditCard, MapPin, Mail, Phone, ArrowLeft, Truck, Copy } from "lucide-react";
-import { formatCurrency, fetchShopConfig, ShopConfig } from "@/services/api";
+import { formatCurrency, fetchShopConfig, ShopConfig, BankData } from "@/services/api";
 import { getTranslation } from "@/utils/translations";
 
 interface OrderConfirmationData {
@@ -26,6 +25,7 @@ interface OrderConfirmationData {
   customerData: any;
   orderData: any;
   shopConfig?: ShopConfig;
+  bankData?: BankData;
   submittedAt: string;
 }
 
@@ -56,6 +56,10 @@ const Confirmation = () => {
       console.log("orderResponse:", data.orderResponse);
       console.log("orderResponse.payment_instructions:", data.orderResponse?.payment_instructions);
       console.log("orderResponse.payment_instructions.bank_details:", data.orderResponse?.payment_instructions?.bank_details);
+      
+      // Debug bank data
+      console.log("=== BANK DATA DEBUG ===");
+      console.log("bankData from sessionStorage:", data.bankData);
       
       setConfirmationData(data);
       
@@ -92,32 +96,46 @@ const Confirmation = () => {
     }
   }, [navigate]);
 
-  // Debug Express Mode detection
+  // Enhanced Express Mode detection with comprehensive debugging
   useEffect(() => {
     if (confirmationData && shopConfig) {
-      console.log("=== EXPRESS MODE DETECTION DEBUG ===");
+      console.log("=== ENHANCED EXPRESS MODE DETECTION DEBUG ===");
       console.log("shopConfig:", JSON.stringify(shopConfig, null, 2));
       console.log("shopConfig.checkout_mode:", shopConfig.checkout_mode);
-      console.log("isExpressMode check:", shopConfig.checkout_mode === "express");
+      
+      // Check for both "express" and "instant" modes
+      const isExpressMode = shopConfig.checkout_mode === "express" || shopConfig.checkout_mode === "instant";
+      console.log("isExpressMode check (express OR instant):", isExpressMode);
       
       console.log("=== BANK DETAILS AVAILABILITY DEBUG ===");
       console.log("orderResponse:", JSON.stringify(confirmationData.orderResponse, null, 2));
       console.log("payment_instructions exists:", !!confirmationData.orderResponse.payment_instructions);
       console.log("bank_details exists:", !!confirmationData.orderResponse.payment_instructions?.bank_details);
       
-      const bankDetailsAvailable = confirmationData.orderResponse.payment_instructions?.bank_details;
-      console.log("Bank details object:", bankDetailsAvailable);
+      const bankDetailsFromResponse = confirmationData.orderResponse.payment_instructions?.bank_details;
+      console.log("Bank details from order response:", bankDetailsFromResponse);
       
-      const shouldShowBankDetails = shopConfig.checkout_mode === "express" && bankDetailsAvailable;
+      const bankDataFromStorage = confirmationData.bankData;
+      console.log("Bank data from sessionStorage:", bankDataFromStorage);
+      
+      const bankDetailsAvailable = bankDetailsFromResponse || bankDataFromStorage;
+      console.log("Bank details available (from either source):", !!bankDetailsAvailable);
+      
+      const shouldShowBankDetails = isExpressMode && bankDetailsAvailable;
       console.log("Should show bank details:", shouldShowBankDetails);
       
-      if (shopConfig.checkout_mode === "express" && !bankDetailsAvailable) {
-        console.warn("⚠️ EXPRESS MODE IS ENABLED BUT NO BANK DETAILS FOUND!");
+      if (isExpressMode && !bankDetailsAvailable) {
+        console.warn("⚠️ EXPRESS/INSTANT MODE IS ENABLED BUT NO BANK DETAILS FOUND!");
         console.warn("This might indicate an API issue or missing bank account configuration");
+        console.warn("Checkout mode:", shopConfig.checkout_mode);
+        console.warn("Bank details in response:", bankDetailsFromResponse);
+        console.warn("Bank data in storage:", bankDataFromStorage);
       }
       
-      if (shopConfig.checkout_mode !== "express") {
-        console.info("ℹ️ Not in Express Mode - checkout_mode is:", shopConfig.checkout_mode);
+      if (!isExpressMode) {
+        console.info("ℹ️ Not in Express/Instant Mode - checkout_mode is:", shopConfig.checkout_mode);
+      } else {
+        console.info("✅ Express/Instant Mode detected - checkout_mode is:", shopConfig.checkout_mode);
       }
     }
   }, [confirmationData, shopConfig]);
@@ -150,26 +168,47 @@ const Confirmation = () => {
   }
 
   const { orderResponse, customerData, orderData } = confirmationData;
-  const isExpressMode = shopConfig?.checkout_mode === "express";
+  
+  // Enhanced Express Mode detection - check for both "express" and "instant"
+  const isExpressMode = shopConfig?.checkout_mode === "express" || shopConfig?.checkout_mode === "instant";
   const accentColor = shopConfig?.accent_color || "#2563eb";
+
+  // Enhanced bank details detection - check both sources
+  const bankDetailsFromResponse = orderResponse.payment_instructions?.bank_details;
+  const bankDataFromStorage = confirmationData.bankData;
+  const hasBankDetails = !!(bankDetailsFromResponse || bankDataFromStorage);
+
+  // Get bank details from the best available source
+  const bankDetails = bankDetailsFromResponse || (bankDataFromStorage ? {
+    account_holder: bankDataFromStorage.account_holder,
+    iban: bankDataFromStorage.iban,
+    bic: bankDataFromStorage.bic,
+    reference: orderResponse.confirmation_number || orderResponse.order_id
+  } : null);
 
   // Additional runtime debugging
   console.log("=== RENDER TIME DEBUG ===");
   console.log("Final isExpressMode value:", isExpressMode);
   console.log("Final shopConfig:", shopConfig);
-  console.log("Bank details check:", orderResponse.payment_instructions?.bank_details);
+  console.log("Bank details from response:", bankDetailsFromResponse);
+  console.log("Bank data from storage:", bankDataFromStorage);
+  console.log("Has bank details (any source):", hasBankDetails);
+  console.log("Final bank details to display:", bankDetails);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* Debug Panel - Remove this in production */}
+      {/* Enhanced Debug Panel */}
       <div className="bg-yellow-100 border-2 border-yellow-400 p-4 m-4 rounded-lg">
-        <h3 className="font-bold text-yellow-800 mb-2">🐛 DEBUG INFORMATION</h3>
+        <h3 className="font-bold text-yellow-800 mb-2">🐛 ENHANCED DEBUG INFORMATION</h3>
         <div className="text-sm text-yellow-900 space-y-1">
           <p><strong>Express Mode:</strong> {isExpressMode ? "✅ YES" : "❌ NO"}</p>
           <p><strong>Checkout Mode:</strong> {shopConfig?.checkout_mode || "undefined"}</p>
-          <p><strong>Bank Details Available:</strong> {orderResponse.payment_instructions?.bank_details ? "✅ YES" : "❌ NO"}</p>
+          <p><strong>Bank Details in Response:</strong> {bankDetailsFromResponse ? "✅ YES" : "❌ NO"}</p>
+          <p><strong>Bank Data in Storage:</strong> {bankDataFromStorage ? "✅ YES" : "❌ NO"}</p>
+          <p><strong>Has Bank Details (Any Source):</strong> {hasBankDetails ? "✅ YES" : "❌ NO"}</p>
           <p><strong>Payment Instructions:</strong> {orderResponse.payment_instructions ? "✅ YES" : "❌ NO"}</p>
           <p><strong>Shop Config Loaded:</strong> {shopConfig ? "✅ YES" : "❌ NO"}</p>
+          <p><strong>Should Show Bank Details:</strong> {isExpressMode && hasBankDetails ? "✅ YES" : "❌ NO"}</p>
         </div>
       </div>
 
@@ -314,8 +353,8 @@ const Confirmation = () => {
                       )}
                     </div>
 
-                    {/* Bank Details - Only show in Express Mode */}
-                    {isExpressMode && orderResponse.payment_instructions?.bank_details && (
+                    {/* Bank Details - Show in Express Mode when available */}
+                    {isExpressMode && bankDetails && (
                       <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-6 mt-6">
                         <h4 className="font-bold text-blue-900 mb-4 text-lg">
                           {getTranslation("bank_transfer_details", language)}
@@ -327,11 +366,11 @@ const Confirmation = () => {
                             </span>
                             <div className="flex items-center justify-between">
                               <p className="text-blue-900 font-medium text-lg">
-                                {orderResponse.payment_instructions.bank_details.account_holder}
+                                {bankDetails.account_holder}
                               </p>
                               <button
                                 onClick={() => handleCopyToClipboard(
-                                  orderResponse.payment_instructions.bank_details.account_holder,
+                                  bankDetails.account_holder,
                                   getTranslation("account_holder", language)
                                 )}
                                 className="ml-2 p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded transition-colors"
@@ -345,13 +384,10 @@ const Confirmation = () => {
                             <span className="text-blue-700 font-semibold text-sm block mb-1">IBAN:</span>
                             <div className="flex items-center justify-between">
                               <p className="text-blue-900 font-mono text-lg font-medium">
-                                {orderResponse.payment_instructions.bank_details.iban}
+                                {bankDetails.iban}
                               </p>
                               <button
-                                onClick={() => handleCopyToClipboard(
-                                  orderResponse.payment_instructions.bank_details.iban,
-                                  "IBAN"
-                                )}
+                                onClick={() => handleCopyToClipboard(bankDetails.iban, "IBAN")}
                                 className="ml-2 p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded transition-colors"
                                 title={getTranslation("copy_tooltip", language)}
                               >
@@ -363,13 +399,10 @@ const Confirmation = () => {
                             <span className="text-blue-700 font-semibold text-sm block mb-1">BIC:</span>
                             <div className="flex items-center justify-between">
                               <p className="text-blue-900 font-mono text-lg font-medium">
-                                {orderResponse.payment_instructions.bank_details.bic}
+                                {bankDetails.bic}
                               </p>
                               <button
-                                onClick={() => handleCopyToClipboard(
-                                  orderResponse.payment_instructions.bank_details.bic,
-                                  "BIC"
-                                )}
+                                onClick={() => handleCopyToClipboard(bankDetails.bic, "BIC")}
                                 className="ml-2 p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded transition-colors"
                                 title={getTranslation("copy_tooltip", language)}
                               >
@@ -383,11 +416,11 @@ const Confirmation = () => {
                             </span>
                             <div className="flex items-center justify-between">
                               <p className="text-blue-900 font-mono text-lg font-bold bg-yellow-100 px-2 py-1 rounded">
-                                {orderResponse.confirmation_number}
+                                {bankDetails.reference}
                               </p>
                               <button
                                 onClick={() => handleCopyToClipboard(
-                                  orderResponse.confirmation_number,
+                                  bankDetails.reference,
                                   getTranslation("reference", language)
                                 )}
                                 className="ml-2 p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded transition-colors"
@@ -401,18 +434,20 @@ const Confirmation = () => {
                       </div>
                     )}
 
-                    {/* Debug section for missing bank details in Express Mode */}
-                    {isExpressMode && !orderResponse.payment_instructions?.bank_details && (
+                    {/* Enhanced debug section for missing bank details in Express Mode */}
+                    {isExpressMode && !hasBankDetails && (
                       <div className="bg-red-50 border-2 border-red-200 rounded-lg p-6 mt-6">
                         <h4 className="font-bold text-red-900 mb-3 text-lg">
-                          🐛 DEBUG: Missing Bank Details
+                          🐛 DEBUG: Missing Bank Details in Express Mode
                         </h4>
                         <p className="text-red-800 mb-2">
-                          Express Mode is enabled but no bank details were provided by the API.
+                          Express/Instant Mode is enabled but no bank details were found from any source.
                         </p>
-                        <div className="text-sm text-red-700">
-                          <p><strong>Expected:</strong> orderResponse.payment_instructions.bank_details</p>
-                          <p><strong>Received:</strong> {JSON.stringify(orderResponse.payment_instructions)}</p>
+                        <div className="text-sm text-red-700 space-y-1">
+                          <p><strong>Checkout Mode:</strong> {shopConfig?.checkout_mode}</p>
+                          <p><strong>Bank details in order response:</strong> {JSON.stringify(bankDetailsFromResponse)}</p>
+                          <p><strong>Bank data in sessionStorage:</strong> {JSON.stringify(bankDataFromStorage)}</p>
+                          <p><strong>Order response payment_instructions:</strong> {JSON.stringify(orderResponse.payment_instructions)}</p>
                         </div>
                       </div>
                     )}

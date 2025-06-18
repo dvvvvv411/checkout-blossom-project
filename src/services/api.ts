@@ -99,6 +99,14 @@ export interface OrderDataWithShopId {
   shopId: string;
 }
 
+// New interface for bank data
+export interface BankData {
+  account_holder: string;
+  iban: string;
+  bic: string;
+  bank_name?: string;
+}
+
 // Error types für bessere Fehlerbehandlung
 export interface ApiError {
   type: 'CORS_ERROR' | 'TOKEN_EXPIRED' | 'VALIDATION_ERROR' | 'SERVER_ERROR' | 'NETWORK_ERROR';
@@ -226,6 +234,76 @@ const fetchWithCorsHandling = async (url: string, options: RequestInit = {}): Pr
     
     console.error('Rethrowing original error');
     throw error;
+  }
+};
+
+// New function to fetch bank data
+export const fetchBankData = async (shopId: string): Promise<BankData | null> => {
+  console.log(`=== BANK DATA FETCH START ===`);
+  console.log(`Shop ID: ${shopId}`);
+  
+  if (!shopId || shopId.trim() === '') {
+    console.error('Invalid shop ID provided for bank data fetch');
+    return null;
+  }
+
+  const url = `https://luhhnsvwtnmxztcmdxyq.supabase.co/functions/v1/get-shop-bankdata/${encodeURIComponent(shopId)}`;
+  
+  try {
+    const response = await fetchWithCorsHandling(url);
+    
+    if (!response.ok) {
+      console.warn(`=== BANK DATA HTTP ERROR ===`);
+      console.warn(`Status: ${response.status}`);
+      
+      if (response.status === 404) {
+        console.warn('Bank data not found - this is expected for shops without bank configuration');
+        return null;
+      } else if (response.status >= 500) {
+        console.error('Server error fetching bank data');
+        throw new Error('SERVER_ERROR');
+      } else {
+        console.error(`HTTP error fetching bank data: ${response.status}`);
+        throw new Error('VALIDATION_ERROR');
+      }
+    }
+    
+    const rawData = await response.json();
+    console.log("=== BANK DATA SUCCESS ===");
+    console.log("Raw bank data received:", rawData);
+    
+    // Validate bank data structure
+    if (!rawData || typeof rawData !== 'object') {
+      console.warn('Invalid bank data structure received');
+      return null;
+    }
+    
+    const bankData: BankData = {
+      account_holder: rawData.account_holder || '',
+      iban: rawData.iban || '',
+      bic: rawData.bic || '',
+      bank_name: rawData.bank_name
+    };
+    
+    // Validate required fields
+    if (!bankData.account_holder || !bankData.iban || !bankData.bic) {
+      console.warn('Bank data missing required fields:', bankData);
+      return null;
+    }
+    
+    console.log('Validated bank data:', bankData);
+    return bankData;
+  } catch (error) {
+    console.error("=== BANK DATA ERROR ===");
+    console.error("Error fetching bank data:", error);
+    
+    if (error instanceof Error && error.message === 'CORS_ERROR') {
+      console.warn('CORS error fetching bank data - this is expected in development');
+    } else {
+      console.warn('Error fetching bank data - bank transfers may not be available');
+    }
+    
+    return null;
   }
 };
 
@@ -489,15 +567,50 @@ export const submitOrder = async (
     console.log("- customerData:", JSON.stringify(customerData, null, 2));
     console.log("- orderData:", JSON.stringify(orderData, null, 2));
     
-    // Check if we need to fetch shop config
+    // Fetch shop config and bank data for sessionStorage
     let shopConfigToStore = null;
+    let bankDataToStore = null;
+    
     if (orderData.shop_id) {
       try {
+        console.log("=== FETCHING ADDITIONAL DATA FOR SESSION STORAGE ===");
+        
+        // Fetch shop config
         console.log("Fetching shop config for sessionStorage...");
         shopConfigToStore = await fetchShopConfig(orderData.shop_id);
         console.log("Shop config for sessionStorage:", JSON.stringify(shopConfigToStore, null, 2));
+        
+        // Check if this is express/instant mode and fetch bank data if needed
+        if (shopConfigToStore && (shopConfigToStore.checkout_mode === "express" || shopConfigToStore.checkout_mode === "instant")) {
+          console.log("=== EXPRESS/INSTANT MODE DETECTED - FETCHING BANK DATA ===");
+          console.log("Checkout mode:", shopConfigToStore.checkout_mode);
+          
+          bankDataToStore = await fetchBankData(orderData.shop_id);
+          console.log("Bank data for sessionStorage:", JSON.stringify(bankDataToStore, null, 2));
+          
+          if (bankDataToStore) {
+            console.log("✅ Bank data successfully fetched for express mode");
+            
+            // Inject bank data into the order response for the confirmation page
+            result.payment_instructions = {
+              ...result.payment_instructions,
+              bank_details: {
+                account_holder: bankDataToStore.account_holder,
+                iban: bankDataToStore.iban,
+                bic: bankDataToStore.bic,
+                reference: result.confirmation_number || result.order_id
+              }
+            };
+            
+            console.log("✅ Bank details injected into order response:", result.payment_instructions.bank_details);
+          } else {
+            console.warn("⚠️ No bank data available for express mode - bank transfer instructions will not be shown");
+          }
+        } else {
+          console.log("ℹ️ Not in express/instant mode or no shop config - checkout_mode:", shopConfigToStore?.checkout_mode);
+        }
       } catch (error) {
-        console.warn("Could not fetch shop config for sessionStorage:", error);
+        console.warn("Could not fetch additional data for sessionStorage:", error);
       }
     }
     
@@ -506,10 +619,19 @@ export const submitOrder = async (
       customerData,
       orderData,
       shopConfig: shopConfigToStore,
+      bankData: bankDataToStore,
       submittedAt: new Date().toISOString()
     };
     
+    console.log("=== FINAL CONFIRMATION DATA ===");
     console.log("Final confirmation data to store:", JSON.stringify(confirmationData, null, 2));
+    
+    // Enhanced debugging for bank details in the final result
+    console.log("=== BANK DETAILS FINAL CHECK ===");
+    console.log("Order response payment_instructions:", result.payment_instructions);
+    console.log("Bank details in payment_instructions:", result.payment_instructions?.bank_details);
+    console.log("Checkout mode:", shopConfigToStore?.checkout_mode);
+    console.log("Bank data separately stored:", bankDataToStore);
     
     // Bestelldaten in sessionStorage für Bestätigungsseite speichern
     sessionStorage.setItem('orderConfirmation', JSON.stringify(confirmationData));
