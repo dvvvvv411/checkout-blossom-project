@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -240,8 +241,24 @@ const Confirmation = () => {
   // Get display order number - prefer order_number, fallback to order_id
   const displayOrderNumber = orderResponse.order_number || orderResponse.order_id;
 
-  // Get translated product name - NEW
-  const translatedProductName = getProductNameTranslation(orderData.product_name, language);
+  // Enhanced product name translation with debugging
+  const originalProductName = orderData.product_name;
+  const translatedProductName = getProductNameTranslation(originalProductName, language);
+
+  // ENHANCED PRODUCT NAME TRANSLATION DEBUGGING
+  console.log("=== PRODUCT NAME TRANSLATION DEBUG ===");
+  console.log("Original product name:", originalProductName);
+  console.log("Current language:", language);
+  console.log("Translated product name:", translatedProductName);
+  console.log("Translation successful:", translatedProductName !== originalProductName);
+  
+  // Test different languages for debugging
+  console.log("=== TESTING TRANSLATIONS IN ALL LANGUAGES ===");
+  const testLanguages: ("DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL")[] = ["DE", "EN", "FR", "IT", "ES", "PL", "NL"];
+  testLanguages.forEach(lang => {
+    const testTranslation = getProductNameTranslation(originalProductName, lang);
+    console.log(`${lang}: "${originalProductName}" -> "${testTranslation}"`);
+  });
 
   // Additional runtime debugging
   console.log("=== RENDER TIME DEBUG ===");
@@ -256,11 +273,33 @@ const Confirmation = () => {
   console.log("Order ID:", orderResponse.order_id);
   console.log("Display order number:", displayOrderNumber);
   console.log("Payment reference:", paymentReference);
-  console.log("Original product name:", orderData.product_name);
-  console.log("Translated product name:", translatedProductName);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      {/* Product Name Translation Debug Panel */}
+      <div className="bg-green-100 border-2 border-green-400 p-4 m-4 rounded-lg">
+        <h3 className="font-bold text-green-800 mb-2">🔍 PRODUCT NAME TRANSLATION DEBUG</h3>
+        <div className="text-sm text-green-900 space-y-1">
+          <p><strong>Original Product Name:</strong> "{originalProductName}"</p>
+          <p><strong>Current Language:</strong> {language}</p>
+          <p><strong>Translated Product Name:</strong> "{translatedProductName}"</p>
+          <p><strong>Translation Applied:</strong> {translatedProductName !== originalProductName ? "✅ YES" : "❌ NO"}</p>
+          <div className="mt-2">
+            <p><strong>All Language Translations:</strong></p>
+            <div className="ml-4 space-y-1">
+              {testLanguages.map(lang => {
+                const testTranslation = getProductNameTranslation(originalProductName, lang);
+                return (
+                  <p key={lang} className={lang === language ? "font-bold" : ""}>
+                    {lang}: "{testTranslation}" {lang === language ? "(CURRENT)" : ""}
+                  </p>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Header */}
       <div className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -561,6 +600,10 @@ const Confirmation = () => {
                         </h3>
                         <p className="text-gray-600 mt-1">
                           {orderData.quantity_liters} L × {formatCurrency(orderData.price_per_liter, orderData.currency, language)}
+                        </p>
+                        {/* Debug info for product name */}
+                        <p className="text-xs text-gray-500 mt-1">
+                          Original: "{originalProductName}"
                         </p>
                       </div>
                       <span className="text-xl font-bold text-gray-900">
