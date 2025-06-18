@@ -35,10 +35,12 @@ export const TermsCard = ({
   const [focused, setFocused] = useState(false);
 
   const handleChange = (checked: boolean) => {
+    console.log("=== TERMS CARD: Terms checkbox changed ===", checked);
     onChange(checked);
   };
 
   const handleTestModeChange = (checked: boolean) => {
+    console.log("=== TERMS CARD: Test mode changed ===", checked);
     if (onTestModeChange) {
       onTestModeChange(checked);
     }
@@ -117,7 +119,6 @@ export const TermsCard = ({
 
         <button
           type="submit"
-          onClick={onSubmit}
           className={`w-full h-14 text-white font-semibold text-lg rounded-lg transition-all duration-200 disabled:opacity-50 ${
             allStepsCompleted 
               ? "bg-gradient-to-r from-green-500 to-emerald-600 shadow-lg hover:shadow-xl hover:from-green-600 hover:to-emerald-700" 

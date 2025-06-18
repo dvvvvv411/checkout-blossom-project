@@ -194,11 +194,13 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
   };
 
   const handleTermsAccepted = (accepted: boolean) => {
+    console.log("=== CUSTOMER FORM: Terms accepted changed ===", accepted);
     setTermsAccepted(accepted);
     setCompletedSteps(prev => ({ ...prev, terms: accepted }));
   };
 
   const handleTestModeChange = (enabled: boolean) => {
+    console.log("=== CUSTOMER FORM: Test mode changed ===", enabled);
     setTestMode(enabled);
   };
 
@@ -207,6 +209,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+    console.log("=== CUSTOMER FORM: handleSubmit called ===");
     e.preventDefault();
     
     console.log("=== FORM SUBMISSION START ===");
@@ -394,6 +397,11 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
   };
 
   const allStepsCompleted = Object.values(completedSteps).every(Boolean);
+
+  console.log("=== CUSTOMER FORM RENDER ===");
+  console.log("All steps completed:", allStepsCompleted);
+  console.log("Terms accepted:", termsAccepted);
+  console.log("Is submitting:", isSubmitting);
 
   return (
     <div className="space-y-4">
