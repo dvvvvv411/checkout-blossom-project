@@ -95,7 +95,20 @@ const Checkout = () => {
             >
               <ArrowLeft className="h-6 w-6" />
             </button>
-            <h1 className="text-3xl font-bold text-gray-900">Checkout</h1>
+            <div className="text-center">
+              <h1 className="text-3xl font-bold text-gray-900 mb-3">Checkout</h1>
+              {/* Security indicators */}
+              <div className="space-y-1">
+                <div className="flex items-center justify-center space-x-2 text-sm text-gray-600">
+                  <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                  <span>Sichere Zahlung</span>
+                </div>
+                <div className="flex items-center justify-center space-x-2 text-sm text-gray-600">
+                  <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                  <span>SSL verschlüsselt</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
