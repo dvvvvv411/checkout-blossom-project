@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { validateEmail, validatePhone, validateRequired } from "@/services/api";
 import { getTranslation } from "@/utils/translations";
@@ -60,26 +59,11 @@ export const useFormValidation = (language: "DE" | "EN" | "FR" | "IT" | "ES" | "
       
       case "street":
       case "billing_street":
-        if (!validateRequired(value)) {
-          return getTranslation("street_required", language);
-        }
-        // Only required validation - any content is accepted
-        break;
-      
       case "postal_code":
       case "billing_postal_code":
-        if (!validateRequired(value)) {
-          return getTranslation("postal_code_required", language);
-        }
-        // Only required validation - any content is accepted
-        break;
-      
       case "city":
       case "billing_city":
-        if (!validateRequired(value)) {
-          return getTranslation("city_required", language);
-        }
-        // Only required validation - any content is accepted
+        // No validation for address fields - accept any input including empty strings
         break;
     }
     
@@ -94,8 +78,8 @@ export const useFormValidation = (language: "DE" | "EN" | "FR" | "IT" | "ES" | "
     
     const newErrors: ValidationErrors = {};
     
-    // Standard-Felder validieren
-    const requiredFields = ["email", "first_name", "last_name", "phone", "street", "postal_code", "city"];
+    // Only validate required fields (email, names, phone) - skip address fields
+    const requiredFields = ["email", "first_name", "last_name", "phone"];
     
     for (const field of requiredFields) {
       const error = validateField(field, values[field], showBillingAddress);
@@ -105,20 +89,8 @@ export const useFormValidation = (language: "DE" | "EN" | "FR" | "IT" | "ES" | "
       }
     }
     
-    // Rechnungsadresse validieren nur wenn separat angezeigt
-    if (showBillingAddress) {
-      console.log("Validating separate billing address fields");
-      const billingFields = ["billing_street", "billing_postal_code", "billing_city"];
-      for (const field of billingFields) {
-        const error = validateField(field, values[field] || "", showBillingAddress);
-        if (error) {
-          console.log(`Validation error for ${field}: ${error}`);
-          newErrors[field] = error;
-        }
-      }
-    } else {
-      console.log("Billing address is same as delivery address - skipping separate validation");
-    }
+    // No validation for billing address fields - they accept any input
+    console.log("Skipping address field validation - all address fields accept any input");
     
     setErrors(newErrors);
     const isValid = Object.keys(newErrors).length === 0;
