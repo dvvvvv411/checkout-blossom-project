@@ -346,20 +346,44 @@ export const fetchBankData = async (shopId?: string): Promise<BankData | null> =
       return null;
     }
     
+    // Handle both nested and flat data structures
+    let bankDataSource = rawData;
+    
+    // Check if data is nested in bank_data object
+    if (rawData.bank_data && typeof rawData.bank_data === 'object') {
+      console.log("=== NESTED BANK DATA DETECTED ===");
+      console.log("Extracting from bank_data object:", rawData.bank_data);
+      bankDataSource = rawData.bank_data;
+    } else {
+      console.log("=== FLAT BANK DATA STRUCTURE ===");
+      console.log("Using root level data");
+    }
+    
+    console.log("=== BANK DATA SOURCE ===");
+    console.log("Bank data source for processing:", bankDataSource);
+    
     const bankData: BankData = {
-      account_holder: rawData.account_holder || '',
-      iban: rawData.iban || '',
-      bic: rawData.bic || '',
-      bank_name: rawData.bank_name
+      account_holder: bankDataSource.account_holder || '',
+      iban: bankDataSource.iban || '',
+      bic: bankDataSource.bic || '',
+      bank_name: bankDataSource.bank_name
     };
+    
+    console.log("=== PROCESSED BANK DATA ===");
+    console.log("Processed bank data:", bankData);
     
     // Validate required fields
     if (!bankData.account_holder || !bankData.iban || !bankData.bic) {
-      console.warn('Bank data missing required fields:', bankData);
+      console.warn('Bank data missing required fields:', {
+        account_holder: !!bankData.account_holder,
+        iban: !!bankData.iban,
+        bic: !!bankData.bic,
+        data: bankData
+      });
       return null;
     }
     
-    console.log('Validated bank data:', bankData);
+    console.log('✅ Validated bank data:', bankData);
     return bankData;
   } catch (error) {
     console.error("=== BANK DATA ERROR ===");
