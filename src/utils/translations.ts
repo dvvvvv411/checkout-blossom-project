@@ -196,7 +196,7 @@ const translations = {
     NL: "Ik ga akkoord met de Algemene Voorwaarden en het Privacybeleid en bevestig dat ik deze heb gelezen en begrepen."
   },
 
-  // Validation error messages - NEW
+  // Validation error messages
   first_name_required: {
     DE: "Vorname ist erforderlich",
     EN: "First name is required",
@@ -251,34 +251,7 @@ const translations = {
     PL: "Miasto jest wymagane",
     NL: "Stad is verplicht"
   },
-  email_required: {
-    DE: "E-Mail-Adresse ist erforderlich",
-    EN: "Email address is required",
-    FR: "L'adresse e-mail est requise",
-    IT: "L'indirizzo email è obbligatorio",
-    ES: "La dirección de correo es obligatoria",
-    PL: "Adres e-mail jest wymagany",
-    NL: "E-mailadres is verplicht"
-  },
-  email_invalid: {
-    DE: "Ungültige E-Mail-Adresse",
-    EN: "Invalid email address",
-    FR: "Adresse e-mail invalide",
-    IT: "Indirizzo email non valido",
-    ES: "Dirección de correo inválida",
-    PL: "Nieprawidłowy adres e-mail",
-    NL: "Ongeldig e-mailadres"
-  },
-  phone_invalid: {
-    DE: "Ungültige Telefonnummer",
-    EN: "Invalid phone number",
-    FR: "Numéro de téléphone invalide",
-    IT: "Numero di telefono non valido",
-    ES: "Número de teléfono inválido",
-    PL: "Nieprawidłowy numer telefonu",
-    NL: "Ongeldig telefoonnummer"
-  },
-
+  
   // Order Summary translations - ENHANCED
   your_order: {
     DE: "Ihre Bestellung",
@@ -785,7 +758,7 @@ const translations = {
     FR: "Informations",
     IT: "Informazioni",
     ES: "Información",
-    PL: "Informacje",
+    PL: "Informazioni",
     NL: "Informatie"
   },
   shipping: {
