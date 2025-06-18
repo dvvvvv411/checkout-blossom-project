@@ -12,14 +12,17 @@ export const translations = {
     shipping: "Versand",
     payment: "Zahlung",
     secure_payment: "Sichere Zahlung",
-    ssl_encrypted: "SSL verschlüsselt",
+    ssl_encrypted: "Mit 4.8 von 5 Sternen bewertet",
     
     // VerifiedShopCard translations
     loading: "Wird geladen...",
     title: "Verifizierter Shop",
-    reviews: "4.500+ Bewertungen",
-    subtitle: "Sicher einkaufen mit SSL-Verschlüsselung",
-    securePayment: "Sichere Zahlung",
+    reviews: "12.500+ Bewertungen",
+    subtitle: "Mit 4.8 von 5 Sternen bewertet",
+    securePayment: "Sichere Zahlungsabwicklung",
+    
+    // Product translations
+    standard_heizoel: "Standard Heizöl",
     
     // E-Mail Card
     email_address: "E-Mail-Adresse",
@@ -147,14 +150,17 @@ export const translations = {
     shipping: "Shipping",
     payment: "Payment",
     secure_payment: "Secure Payment",
-    ssl_encrypted: "SSL Encrypted",
+    ssl_encrypted: "Rated 4.8 out of 5 stars",
     
     // VerifiedShopCard translations
     loading: "Loading...",
     title: "Verified Shop",
-    reviews: "4,500+ Reviews",
-    subtitle: "Shop securely with SSL encryption",
-    securePayment: "Secure Payment",
+    reviews: "12,500+ Reviews",
+    subtitle: "Rated 4.8 out of 5 stars",
+    securePayment: "Secure Payment Processing",
+    
+    // Product translations
+    standard_heizoel: "Standard Heating Oil",
     
     // Email Card
     email_address: "Email Address",
@@ -282,14 +288,17 @@ export const translations = {
     shipping: "Livraison",
     payment: "Paiement",
     secure_payment: "Paiement Sécurisé",
-    ssl_encrypted: "SSL Crypté",
+    ssl_encrypted: "Noté 4,8 sur 5 étoiles",
     
     // VerifiedShopCard translations
     loading: "Chargement...",
     title: "Boutique Vérifiée",
-    reviews: "4 500+ Avis",
-    subtitle: "Achetez en toute sécurité avec le cryptage SSL",
-    securePayment: "Paiement Sécurisé",
+    reviews: "12 500+ Avis",
+    subtitle: "Noté 4,8 sur 5 étoiles",
+    securePayment: "Traitement de Paiement Sécurisé",
+    
+    // Product translations
+    standard_heizoel: "Fioul de Chauffage Standard",
     
     // Contact & Livraison
     contact_delivery: "Contact & Adresse de Livraison",
@@ -410,14 +419,17 @@ export const translations = {
     shipping: "Spedizione",
     payment: "Pagamento",
     secure_payment: "Pagamento Sicuro",
-    ssl_encrypted: "SSL Crittografato",
+    ssl_encrypted: "Valutato 4,8 su 5 stelle",
     
     // VerifiedShopCard translations
     loading: "Caricamento...",
     title: "Negozio Verificato",
-    reviews: "4.500+ Recensioni",
-    subtitle: "Acquista in sicurezza con crittografia SSL",
-    securePayment: "Pagamento Sicuro",
+    reviews: "12.500+ Recensioni",
+    subtitle: "Valutato 4,8 su 5 stelle",
+    securePayment: "Elaborazione Pagamento Sicuro",
+    
+    // Product translations
+    standard_heizoel: "Olio da Riscaldamento Standard",
     
     // Email Card
     email_address: "Indirizzo Email",
@@ -545,14 +557,17 @@ export const translations = {
     shipping: "Envío",
     payment: "Pago",
     secure_payment: "Pago Seguro",
-    ssl_encrypted: "SSL Encriptado",
+    ssl_encrypted: "Calificado con 4,8 de 5 estrellas",
     
     // VerifiedShopCard translations
     loading: "Cargando...",
     title: "Tienda Verificada",
-    reviews: "4,500+ Reseñas",
-    subtitle: "Compra seguro con cifrado SSL",
-    securePayment: "Pago Seguro",
+    reviews: "12,500+ Reseñas",
+    subtitle: "Calificado con 4,8 de 5 estrellas",
+    securePayment: "Procesamiento de Pago Seguro",
+    
+    // Product translations
+    standard_heizoel: "Combustible de Calefacción Estándar",
     
     // Contacto y Entrega
     contact_delivery: "Contacto y Dirección de Entrega",
@@ -673,14 +688,17 @@ export const translations = {
     shipping: "Dostawa",
     payment: "Płatność",
     secure_payment: "Bezpieczna Płatność",
-    ssl_encrypted: "Szyfrowane SSL",
+    ssl_encrypted: "Ocenione na 4,8 z 5 gwiazdek",
     
     // VerifiedShopCard translations
     loading: "Ładowanie...",
     title: "Zweryfikowany Sklep",
-    reviews: "4 500+ Opinii",
-    subtitle: "Kupuj bezpiecznie z szyfrowaniem SSL",
-    securePayment: "Bezpieczna Płatność",
+    reviews: "12 500+ Opinii",
+    subtitle: "Ocenione na 4,8 z 5 gwiazdek",
+    securePayment: "Bezpieczne Przetwarzanie Płatności",
+    
+    // Product translations
+    standard_heizoel: "Standardowy Olej Opałowy",
     
     // Kontakt i Dostawa
     contact_delivery: "Kontakt i Adres Dostawy",
@@ -801,14 +819,17 @@ export const translations = {
     shipping: "Verzending",
     payment: "Betaling",
     secure_payment: "Veilige Betaling",
-    ssl_encrypted: "SSL Versleuteld",
+    ssl_encrypted: "Beoordeeld met 4,8 van 5 sterren",
     
     // VerifiedShopCard translations
     loading: "Laden...",
     title: "Geverifieerde Winkel",
-    reviews: "4.500+ Beoordelingen",
-    subtitle: "Winkel veilig met SSL-versleuteling",
-    securePayment: "Veilige Betaling",
+    reviews: "12.500+ Beoordelingen",
+    subtitle: "Beoordeeld met 4,8 van 5 sterren",
+    securePayment: "Veilige Betalingsverwerking",
+    
+    // Product translations
+    standard_heizoel: "Standaard Stookolie",
     
     // E-mail Card
     email_address: "E-mailadres",
