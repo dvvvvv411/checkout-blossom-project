@@ -16,7 +16,7 @@ export const OrderSummary = ({ orderData, shopConfig, accentColor }: OrderSummar
   const [discountCode, setDiscountCode] = useState("");
   const [showError, setShowError] = useState(false);
 
-  const language = shopConfig?.language || "DE";
+  const language = (shopConfig?.language as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL") || "DE";
 
   const formatPrice = (amount: number) => {
     return formatCurrency(amount, orderData.currency || "EUR", language);

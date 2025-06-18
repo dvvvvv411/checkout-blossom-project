@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import { MapPin, Building, Check } from "lucide-react";
+import { getTranslation } from "@/utils/translations";
 
 interface BillingAddressCardProps {
   showBillingAddress: boolean;
@@ -16,6 +17,7 @@ interface BillingAddressCardProps {
   onChange: (field: string, value: string) => void;
   onComplete: () => void;
   isCompleted: boolean;
+  language?: "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL";
 }
 
 export const BillingAddressCard = ({ 
@@ -26,7 +28,8 @@ export const BillingAddressCard = ({
   onToggle, 
   onChange, 
   onComplete,
-  isCompleted 
+  isCompleted,
+  language = "DE"
 }: BillingAddressCardProps) => {
   const [focused, setFocused] = useState(false);
 
@@ -85,11 +88,11 @@ export const BillingAddressCard = ({
             </div>
             <div>
               <div className="text-lg font-semibold text-gray-900">
-                Rechnungsadresse
+                {getTranslation("billing_address", language)}
               </div>
               <div className="text-sm text-gray-600 font-normal flex items-center gap-1">
                 <Building className="h-3 w-3 text-gray-500" />
-                Wohin soll die Rechnung gesendet werden?
+                {getTranslation("billing_description", language)}
               </div>
             </div>
           </div>
@@ -104,7 +107,7 @@ export const BillingAddressCard = ({
             className="border-gray-300"
           />
           <Label htmlFor="billing_same" className="text-sm font-medium text-gray-700">
-            Rechnungsadresse ist identisch mit Lieferadresse
+            {getTranslation("same_as_delivery", language)}
           </Label>
         </div>
 
@@ -112,7 +115,7 @@ export const BillingAddressCard = ({
           <CollapsibleContent className="space-y-4">
             <div>
               <Label htmlFor="billing_street" className="text-sm font-medium text-gray-700 mb-2 block">
-                Straße und Hausnummer *
+                {getTranslation("street_number", language)} *
               </Label>
               <Input
                 id="billing_street"
@@ -122,14 +125,14 @@ export const BillingAddressCard = ({
                 onBlur={() => setFocused(false)}
                 required={showBillingAddress}
                 className="h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all"
-                placeholder="Straße und Hausnummer"
+                placeholder={getTranslation("street_number", language)}
               />
             </div>
             
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="billing_postal_code" className="text-sm font-medium text-gray-700 mb-2 block">
-                  Postleitzahl *
+                  {getTranslation("postal_code", language)} *
                 </Label>
                 <Input
                   id="billing_postal_code"
@@ -139,13 +142,13 @@ export const BillingAddressCard = ({
                   onBlur={() => setFocused(false)}
                   required={showBillingAddress}
                   className="h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all"
-                  placeholder="PLZ"
+                  placeholder={getTranslation("postal_code", language)}
                 />
               </div>
               
               <div>
                 <Label htmlFor="billing_city" className="text-sm font-medium text-gray-700 mb-2 block">
-                  Stadt *
+                  {getTranslation("city", language)} *
                 </Label>
                 <Input
                   id="billing_city"
@@ -155,7 +158,7 @@ export const BillingAddressCard = ({
                   onBlur={() => setFocused(false)}
                   required={showBillingAddress}
                   className="h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all"
-                  placeholder="Stadt"
+                  placeholder={getTranslation("city", language)}
                 />
               </div>
             </div>
