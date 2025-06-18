@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -86,7 +87,14 @@ const Checkout = () => {
       {/* Header */}
       <div className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex justify-center">
+          <div className="flex justify-center relative">
+            {/* Mobile Back Button - positioned absolutely on the left */}
+            <button
+              onClick={handleBack}
+              className="lg:hidden absolute left-0 top-1/2 -translate-y-1/2 p-2 text-gray-600 hover:text-gray-800 transition-colors"
+            >
+              <ArrowLeft className="h-6 w-6" />
+            </button>
             <h1 className="text-3xl font-bold text-gray-900">Checkout</h1>
           </div>
         </div>
@@ -95,14 +103,6 @@ const Checkout = () => {
       {/* Mobile Navigation - Only visible on mobile */}
       <div className="lg:hidden bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 py-4 space-y-3">
-          <button
-            onClick={handleBack}
-            className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
-          >
-            <ArrowLeft className="h-5 w-5" />
-            <span>Zurück</span>
-          </button>
-          
           <div className="flex items-center text-sm">
             <span className="text-gray-500">Warenkorb</span>
             <span className="mx-2 text-gray-400">{'>'}</span>
