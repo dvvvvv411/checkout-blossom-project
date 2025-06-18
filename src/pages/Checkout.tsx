@@ -131,7 +131,7 @@ const Checkout = () => {
               {getTranslation("invalid_checkout_message", language)}
             </p>
             <Button onClick={() => navigate('/')} className="w-full">
-              Zur Startseite
+              {getTranslation("home_button", language)}
             </Button>
           </div>
         </div>
@@ -152,7 +152,7 @@ const Checkout = () => {
             <div className="text-center mt-4">
               <WifiOff className="h-6 w-6 text-orange-500 mx-auto mb-2" />
               <p className="text-sm text-gray-600 mb-3">
-                Verbindungsprobleme erkannt. Fallback-Modus wird geladen...
+                {getTranslation("verbindungsprobleme", language)}
               </p>
             </div>
           )}
@@ -169,19 +169,18 @@ const Checkout = () => {
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
             <WifiOff className="h-12 w-12 text-orange-500 mx-auto mb-4" />
             <h1 className="text-2xl font-semibold text-gray-900 mb-3">
-              Verbindungsproblem
+              {getTranslation("cors_error_title", language)}
             </h1>
             <p className="text-gray-600 leading-relaxed mb-6">
-              Es gibt ein Problem mit der Serververbindung. Dies kann an CORS-Einstellungen liegen. 
-              Versuchen Sie es erneut oder kontaktieren Sie den Support.
+              {getTranslation("cors_error_message", language)}
             </p>
             <div className="space-y-3">
               <Button onClick={handleRetry} className="w-full">
                 <Wifi className="h-4 w-4 mr-2" />
-                Erneut versuchen ({retryCount + 1})
+                {getTranslation("retry_button", language)} ({retryCount + 1})
               </Button>
               <Button variant="outline" onClick={() => navigate('/')} className="w-full">
-                Zur Startseite
+                {getTranslation("home_button", language)}
               </Button>
             </div>
           </div>
@@ -201,10 +200,10 @@ const Checkout = () => {
               {getTranslation("error_loading_order", language)}
             </h1>
             <p className="text-gray-600 leading-relaxed mb-6">
-              Der Checkout-Link ist abgelaufen oder ungültig. Bitte erstellen Sie einen neuen Link.
+              {getTranslation("error_loading_message", language)}
             </p>
             <Button onClick={() => navigate('/')} className="w-full">
-              Zur Startseite
+              {getTranslation("home_button", language)}
             </Button>
           </div>
         </div>
@@ -227,10 +226,10 @@ const Checkout = () => {
             </p>
             <div className="space-y-3">
               <Button onClick={handleRetry} className="w-full">
-                Erneut versuchen
+                {getTranslation("retry_button", language)}
               </Button>
               <Button variant="outline" onClick={() => navigate('/')} className="w-full">
-                Zur Startseite
+                {getTranslation("home_button", language)}
               </Button>
             </div>
           </div>
@@ -249,7 +248,7 @@ const Checkout = () => {
             <div className="flex items-center justify-center space-x-2 text-sm">
               <WifiOff className="h-4 w-4 text-orange-600" />
               <span className="text-orange-800">
-                Demo-Modus: Verbindung zum Server nicht verfügbar. Alle Funktionen arbeiten mit Beispieldaten.
+                {getTranslation("demo_mode_banner", language)}
               </span>
             </div>
           </div>

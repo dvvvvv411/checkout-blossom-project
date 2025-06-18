@@ -14,7 +14,7 @@ interface TermsCardProps {
   isSubmitting: boolean;
   allStepsCompleted: boolean;
   accentColor: string;
-  language?: "DE" | "EN" | "FR";
+  language?: "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL";
 }
 
 export const TermsCard = ({ 

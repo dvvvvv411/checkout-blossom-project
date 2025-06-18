@@ -98,6 +98,15 @@ export const translations = {
     error_loading_order: "Fehler beim Laden der Bestelldaten",
     error_loading_message: "Bitte überprüfen Sie Ihren Checkout-Link oder versuchen Sie es später erneut.",
     
+    // Neue Übersetzungen für Fehlerbehandlung
+    verbindungsprobleme: "Verbindungsprobleme erkannt. Fallback-Modus wird geladen...",
+    verbindungsproblem: "Verbindungsproblem",
+    cors_error_title: "Verbindungsproblem",
+    cors_error_message: "Es gibt ein Problem mit der Serververbindung. Dies kann an CORS-Einstellungen liegen. Versuchen Sie es erneut oder kontaktieren Sie den Support.",
+    retry_button: "Erneut versuchen",
+    home_button: "Zur Startseite",
+    demo_mode_banner: "Demo-Modus: Verbindung zum Server nicht verfügbar. Alle Funktionen arbeiten mit Beispieldaten.",
+    
     // Bestätigungsseite
     order_confirmation: "Bestellbestätigung",
     order_number: "Bestellnummer",
@@ -236,6 +245,15 @@ export const translations = {
     error_loading_order: "Error Loading Order Data",
     error_loading_message: "Please check your checkout link or try again later.",
     
+    // New translations for error handling
+    verbindungsprobleme: "Connection problems detected. Fallback mode is loading...",
+    verbindungsproblem: "Connection Problem",
+    cors_error_title: "Connection Problem",
+    cors_error_message: "There is a problem with the server connection. This may be due to CORS settings. Please try again or contact support.",
+    retry_button: "Try Again",
+    home_button: "Go to Homepage",
+    demo_mode_banner: "Demo Mode: Connection to server not available. All functions work with sample data.",
+    
     // Confirmation page
     order_confirmation: "Order Confirmation",
     order_number: "Order Number",
@@ -299,6 +317,13 @@ export const translations = {
     
     // Product translations
     standard_heizoel: "Fioul de Chauffage Standard",
+    
+    // Email Card
+    email_address: "Adresse E-mail",
+    email_description: "Pour la confirmation de commande et la communication",
+    email_placeholder: "votre.email@exemple.fr",
+    email_required: "L'adresse e-mail est requise",
+    email_invalid: "Veuillez saisir une adresse e-mail valide",
     
     // Contact & Livraison
     contact_delivery: "Contact & Adresse de Livraison",
@@ -366,6 +391,15 @@ export const translations = {
     loading_checkout: "Chargement de la commande...",
     error_loading_order: "Erreur de Chargement des Données de Commande",
     error_loading_message: "Veuillez vérifier votre lien de commande ou réessayer plus tard.",
+    
+    // Nouvelles traductions pour la gestion des erreurs
+    verbindungsprobleme: "Problèmes de connexion détectés. Le mode de secours se charge...",
+    verbindungsproblem: "Problème de Connexion",
+    cors_error_title: "Problème de Connexion",
+    cors_error_message: "Il y a un problème avec la connexion au serveur. Cela peut être dû aux paramètres CORS. Veuillez réessayer ou contacter le support.",
+    retry_button: "Réessayer",
+    home_button: "Aller à l'accueil",
+    demo_mode_banner: "Mode Démo : Connexion au serveur non disponible. Toutes les fonctions fonctionnent avec des données d'exemple.",
     
     // Page de confirmation
     order_confirmation: "Confirmation de Commande",
@@ -505,6 +539,15 @@ export const translations = {
     error_loading_order: "Errore nel Caricamento Dati Ordine",
     error_loading_message: "Controlla il tuo link checkout o riprova più tardi.",
     
+    // Nuove traduzioni per la gestione degli errori
+    verbindungsprobleme: "Problemi di connessione rilevati. Modalità di riserva in caricamento...",
+    verbindungsproblem: "Problema di Connessione",
+    cors_error_title: "Problema di Connessione",
+    cors_error_message: "C'è un problema con la connessione al server. Questo potrebbe essere dovuto alle impostazioni CORS. Riprova o contatta il supporto.",
+    retry_button: "Riprova",
+    home_button: "Vai alla Homepage",
+    demo_mode_banner: "Modalità Demo: Connessione al server non disponibile. Tutte le funzioni lavorano con dati di esempio.",
+    
     // Pagina di conferma
     order_confirmation: "Conferma Ordine",
     order_number: "Numero Ordine",
@@ -568,6 +611,13 @@ export const translations = {
     
     // Product translations
     standard_heizoel: "Combustible de Calefacción Estándar",
+    
+    // Email Card
+    email_address: "Dirección de Email",
+    email_description: "Para confirmación de pedido y comunicación",
+    email_placeholder: "tu.email@ejemplo.es",
+    email_required: "La dirección de email es obligatoria",
+    email_invalid: "Introduce una dirección de email válida",
     
     // Contacto y Entrega
     contact_delivery: "Contacto y Dirección de Entrega",
@@ -636,6 +686,15 @@ export const translations = {
     error_loading_order: "Error Cargando Datos del Pedido",
     error_loading_message: "Verifica tu enlace de checkout o inténtalo más tarde.",
     
+    // Nuevas traducciones para manejo de errores
+    verbindungsprobleme: "Problemas de conexión detectados. Modo de respaldo cargando...",
+    verbindungsproblem: "Problema de Conexión",
+    cors_error_title: "Problema de Conexión",
+    cors_error_message: "Hay un problema con la conexión al servidor. Esto puede deberse a configuraciones CORS. Inténtalo de nuevo o contacta soporte.",
+    retry_button: "Intentar de Nuevo",
+    home_button: "Ir al Inicio",
+    demo_mode_banner: "Modo Demo: Conexión al servidor no disponible. Todas las funciones trabajan con datos de ejemplo.",
+    
     // Página de confirmación
     order_confirmation: "Confirmación del Pedido",
     order_number: "Número de Pedido",
@@ -699,6 +758,13 @@ export const translations = {
     
     // Product translations
     standard_heizoel: "Standardowy Olej Opałowy",
+    
+    // Email Card
+    email_address: "Adres E-mail",
+    email_description: "Do potwierdzenia zamówienia i komunikacji",
+    email_placeholder: "twoj.email@przyklad.pl",
+    email_required: "Adres e-mail jest wymagany",
+    email_invalid: "Podaj prawidłowy adres e-mail",
     
     // Kontakt i Dostawa
     contact_delivery: "Kontakt i Adres Dostawy",
@@ -767,6 +833,15 @@ export const translations = {
     error_loading_order: "Błąd Ładowania Danych Zamówienia",
     error_loading_message: "Sprawdź swój link checkout lub spróbuj ponownie później.",
     
+    // Nowe tłumaczenia dla obsługi błędów
+    verbindungsprobleme: "Wykryto problemy z połączeniem. Ładowanie trybu awaryjnego...",
+    verbindungsproblem: "Problem z Połączeniem",
+    cors_error_title: "Problem z Połączeniem",
+    cors_error_message: "Wystąpił problem z połączeniem z serwerem. Może to być spowodowane ustawieniami CORS. Spróbuj ponownie lub skontaktuj się z pomocą techniczną.",
+    retry_button: "Spróbuj Ponownie",
+    home_button: "Przejdź do Strony Głównej",
+    demo_mode_banner: "Tryb Demo: Połączenie z serwerem niedostępne. Wszystkie funkcje działają z przykładowymi danymi.",
+    
     // Strona potwierdzenia
     order_confirmation: "Potwierdzenie Zamówienia",
     order_number: "Numer Zamówienia",
@@ -834,7 +909,7 @@ export const translations = {
     // E-mail Card
     email_address: "E-mailadres",
     email_description: "Voor orderbevestiging en communicatie",
-    email_placeholder: "jouw.email@voorbeeld.be",
+    email_placeholder: "jouw.email@voorbeeld.nl",
     email_required: "E-mailadres is verplicht",
     email_invalid: "Voer een geldig e-mailadres in",
     
@@ -904,6 +979,15 @@ export const translations = {
     loading_checkout: "Checkout laden...",
     error_loading_order: "Fout bij Laden Bestellingsgegevens",
     error_loading_message: "Controleer jouw checkout link of probeer het later opnieuw.",
+    
+    // Nieuwe vertalingen voor foutafhandeling
+    verbindungsprobleme: "Verbindingsproblemen gedetecteerd. Fallback-modus wordt geladen...",
+    verbindungsproblem: "Verbindingsprobleem",
+    cors_error_title: "Verbindingsprobleem",
+    cors_error_message: "Er is een probleem met de serververbinding. Dit kan te wijten zijn aan CORS-instellingen. Probeer het opnieuw of neem contact op met de ondersteuning.",
+    retry_button: "Opnieuw Proberen",
+    home_button: "Naar Homepage",
+    demo_mode_banner: "Demo Modus: Verbinding met server niet beschikbaar. Alle functies werken met voorbeeldgegevens.",
     
     // Bevestigingspagina
     order_confirmation: "Bestellingsbevestiging",
