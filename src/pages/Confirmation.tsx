@@ -10,6 +10,7 @@ import { getTranslation } from "@/utils/translations";
 interface OrderConfirmationData {
   orderResponse: {
     order_id: string;
+    order_number?: string; // Added 7-digit order number
     status: string;
     confirmation_number: string;
     payment_instructions?: {
@@ -221,20 +222,24 @@ const Confirmation = () => {
   const hasBankDetails = !!(bankDetailsFromResponse || bankDataFromStorage || loadedBankData);
 
   // Get bank details from the best available source, with loaded data taking priority
-  // Use order_id as the reference instead of confirmation_number
+  // Use order_number as payment reference, fallback to order_id, then confirmation_number
+  const paymentReference = orderResponse.order_number || orderResponse.order_id || orderResponse.confirmation_number;
   const bankDetails = bankDetailsFromResponse || 
     (loadedBankData ? {
       account_holder: loadedBankData.account_holder,
       iban: loadedBankData.iban,
       bic: loadedBankData.bic,
-      reference: orderResponse.order_id || orderResponse.confirmation_number
+      reference: paymentReference
     } : null) ||
     (bankDataFromStorage ? {
       account_holder: bankDataFromStorage.account_holder,
       iban: bankDataFromStorage.iban,
       bic: bankDataFromStorage.bic,
-      reference: orderResponse.order_id || orderResponse.confirmation_number
+      reference: paymentReference
     } : null);
+
+  // Get display order number - prefer order_number, fallback to order_id
+  const displayOrderNumber = orderResponse.order_number || orderResponse.order_id;
 
   // Additional runtime debugging
   console.log("=== RENDER TIME DEBUG ===");
@@ -245,6 +250,10 @@ const Confirmation = () => {
   console.log("Loaded bank data:", loadedBankData);
   console.log("Has bank details (any source):", hasBankDetails);
   console.log("Final bank details to display:", bankDetails);
+  console.log("Order number:", orderResponse.order_number);
+  console.log("Order ID:", orderResponse.order_id);
+  console.log("Display order number:", displayOrderNumber);
+  console.log("Payment reference:", paymentReference);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
@@ -261,9 +270,11 @@ const Confirmation = () => {
           <p><strong>Payment Instructions:</strong> {orderResponse.payment_instructions ? "✅ YES" : "❌ NO"}</p>
           <p><strong>Shop Config Loaded:</strong> {shopConfig ? "✅ YES" : "❌ NO"}</p>
           <p><strong>Should Show Bank Details:</strong> {isInstantMode && hasBankDetails ? "✅ YES" : "❌ NO"}</p>
-          <p><strong>Order ID:</strong> {orderResponse.order_id}</p>
+          <p><strong>Order Number (7-digit):</strong> {orderResponse.order_number || "N/A"}</p>
+          <p><strong>Order ID (UUID):</strong> {orderResponse.order_id}</p>
           <p><strong>Confirmation Number:</strong> {orderResponse.confirmation_number}</p>
-          <p><strong>Payment Reference Used:</strong> {bankDetails?.reference}</p>
+          <p><strong>Display Order Number:</strong> {displayOrderNumber}</p>
+          <p><strong>Payment Reference Used:</strong> {paymentReference}</p>
         </div>
       </div>
 
@@ -283,7 +294,7 @@ const Confirmation = () => {
                   {getTranslation("order_confirmation", language)}
                 </h1>
                 <p className="text-gray-600">
-                  {getTranslation("order_number", language)}: {orderResponse.order_id}
+                  {getTranslation("order_number", language)}: {displayOrderNumber}
                 </p>
               </div>
             </div>

@@ -1,3 +1,4 @@
+
 // API Services für Checkout-System
 
 import { 
@@ -79,6 +80,7 @@ export interface OrderSubmissionPayload {
 
 export interface OrderResponse {
   order_id: string;
+  order_number?: string; // Added 7-digit order number
   status: "pending" | "confirmed" | "failed";
   confirmation_number: string;
   payment_instructions?: {
@@ -683,18 +685,20 @@ export const submitOrder = async (
             console.log("✅ Bank data successfully fetched for instant mode");
             
             // Inject bank data into the order response for the confirmation page
-            // Use order_id as the payment reference instead of confirmation_number
+            // Use order_number as payment reference, fallback to order_id
+            const paymentReference = result.order_number || result.order_id || result.confirmation_number;
             result.payment_instructions = {
               ...result.payment_instructions,
               bank_details: {
                 account_holder: bankDataToStore.account_holder,
                 iban: bankDataToStore.iban,
                 bic: bankDataToStore.bic,
-                reference: result.order_id || result.confirmation_number
+                reference: paymentReference
               }
             };
             
-            console.log("✅ Bank details injected into order response with order_id reference:", result.payment_instructions.bank_details);
+            console.log("✅ Bank details injected into order response with order_number reference:", result.payment_instructions.bank_details);
+            console.log("Payment reference used:", paymentReference);
           } else {
             console.warn("⚠️ No bank data available for instant mode - bank transfer instructions will not be shown");
           }
