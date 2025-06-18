@@ -1,3 +1,4 @@
+
 const translations = {
   // Email section
   email_address: {
@@ -394,15 +395,6 @@ const translations = {
     ES: "Línea de dirección 2",
     PL: "Wiersz adresu 2",
     NL: "Adresregel 2"
-  },
-  city_placeholder: {
-    DE: "Stadt",
-    EN: "City",
-    FR: "Ville",
-    IT: "Città",
-    ES: "Ciudad",
-    PL: "Miasto",
-    NL: "Stad"
   },
   state_placeholder: {
     DE: "Bundesland",
