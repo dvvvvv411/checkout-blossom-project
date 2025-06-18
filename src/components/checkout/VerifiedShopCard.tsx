@@ -11,6 +11,8 @@ export const VerifiedShopCard = ({ language = "DE" }: VerifiedShopCardProps) => 
   const [showLoading, setShowLoading] = useState(true);
   const [loadingStep, setLoadingStep] = useState(0);
   const [animateStars, setAnimateStars] = useState(false);
+  const [showContent, setShowContent] = useState(false);
+  const [greenOutline, setGreenOutline] = useState(false);
 
   useEffect(() => {
     // Loading animation with 5 stars over 2 seconds
@@ -20,14 +22,23 @@ export const VerifiedShopCard = ({ language = "DE" }: VerifiedShopCardProps) => 
     const loadingInterval = setInterval(() => {
       if (currentStep < loadingSteps.length) {
         setLoadingStep(currentStep);
+        
+        // Trigger green outline animation
+        setGreenOutline(true);
+        setTimeout(() => setGreenOutline(false), 200);
+        
         currentStep++;
       } else {
         clearInterval(loadingInterval);
         setShowLoading(false);
         
-        // Start star animation after loading is done
+        // Start content animation after loading is done
         setTimeout(() => {
-          setAnimateStars(true);
+          setShowContent(true);
+          // Start star animation after content is shown
+          setTimeout(() => {
+            setAnimateStars(true);
+          }, 100);
         }, 100);
       }
     }, 400); // 400ms * 5 = 2000ms (2 seconds)
@@ -43,19 +54,22 @@ export const VerifiedShopCard = ({ language = "DE" }: VerifiedShopCardProps) => 
         title: "Verifizierter Shop",
         subtitle: "Bewertet mit 4.8 von 5 Sternen",
         reviews: "12.847 Bewertungen",
-        securePayment: "100% Sichere Zahlung"
+        securePayment: "100% Sichere Zahlung",
+        loading: "Bewertungen werden geladen..."
       },
       EN: {
         title: "Verified Shop",
         subtitle: "Rated 4.8 out of 5 stars",
         reviews: "12,847 Reviews",
-        securePayment: "100% Secure Payment"
+        securePayment: "100% Secure Payment",
+        loading: "Loading reviews..."
       },
       FR: {
         title: "Boutique Vérifiée",
         subtitle: "Noté 4.8 sur 5 étoiles",
         reviews: "12 847 Avis",
-        securePayment: "Paiement 100% Sécurisé"
+        securePayment: "Paiement 100% Sécurisé",
+        loading: "Chargement des avis..."
       },
     };
 
@@ -108,25 +122,32 @@ export const VerifiedShopCard = ({ language = "DE" }: VerifiedShopCardProps) => 
 
   if (showLoading) {
     return (
-      <Card className="relative overflow-hidden bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 border-2 border-yellow-300/50 shadow-lg">
+      <Card className={`relative overflow-hidden bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 border-2 shadow-lg transition-all duration-200 ${
+        greenOutline ? "border-green-500" : "border-yellow-300/50"
+      }`}>
         <CardContent className="p-6 relative text-center">
-          <div className="flex items-center justify-center space-x-3 min-h-[200px]">
-            {Array.from({ length: 5 }, (_, i) => (
-              <div
-                key={i}
-                className={`transition-all duration-300 ${
-                  i <= loadingStep 
-                    ? "opacity-100 scale-110" 
-                    : "opacity-30 scale-90"
-                }`}
-              >
-                <img 
-                  src="https://i.imgur.com/34S8L0P.png" 
-                  alt="Loading Star"
-                  className="h-8 w-8 object-contain"
-                />
-              </div>
-            ))}
+          <div className="flex items-center justify-center space-x-3 min-h-[150px] flex-col">
+            <div className="flex space-x-3 mb-4">
+              {Array.from({ length: 5 }, (_, i) => (
+                <div
+                  key={i}
+                  className={`transition-all duration-300 ${
+                    i <= loadingStep 
+                      ? "opacity-100 scale-110" 
+                      : "opacity-30 scale-90"
+                  }`}
+                >
+                  <img 
+                    src="https://i.imgur.com/34S8L0P.png" 
+                    alt="Loading Star"
+                    className="h-8 w-8 object-contain"
+                  />
+                </div>
+              ))}
+            </div>
+            <p className="text-sm text-gray-600 font-medium">
+              {getTranslation("loading")}
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -135,7 +156,9 @@ export const VerifiedShopCard = ({ language = "DE" }: VerifiedShopCardProps) => 
 
   return (
     <Card className="relative overflow-hidden bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 border-2 border-yellow-300/50 shadow-lg hover:shadow-xl transition-all duration-500 hover:-translate-y-1">
-      <CardContent className="p-6 relative text-center">
+      <CardContent className={`p-6 relative text-center transition-all duration-500 ${
+        showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+      }`}>
         {/* Header with custom image */}
         <div className="flex items-center justify-center space-x-3 mb-4">
           <img 
