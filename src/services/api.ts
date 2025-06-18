@@ -151,20 +151,13 @@ export const formatLiters = (liters: number, language: "DE" | "EN" | "FR"): stri
 
 // Verbesserte Fetch-Funktion mit CORS-Handling
 const fetchWithCorsHandling = async (url: string, options: RequestInit = {}): Promise<Response> => {
-  const corsHeaders = {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    'Origin': window.location.origin,
-    'Access-Control-Request-Method': options.method || 'GET',
-    'Access-Control-Request-Headers': 'Content-Type, Authorization, Origin',
-  };
-
   const enhancedOptions: RequestInit = {
     ...options,
     mode: 'cors',
     credentials: 'omit',
     headers: {
-      ...corsHeaders,
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
       ...options.headers,
     },
   };
