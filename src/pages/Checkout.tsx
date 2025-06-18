@@ -57,6 +57,24 @@ const Checkout = () => {
     },
   });
 
+  // Enhanced logging for payment method debugging
+  useEffect(() => {
+    if (shopConfig) {
+      console.log("=== CHECKOUT PAYMENT METHOD DEBUG ===");
+      console.log("Shop Config:", shopConfig);
+      console.log("Payment Methods Raw:", shopConfig.payment_methods);
+      console.log("Payment Methods Type:", typeof shopConfig.payment_methods);
+      console.log("Payment Methods Array:", Array.isArray(shopConfig.payment_methods));
+      if (Array.isArray(shopConfig.payment_methods)) {
+        shopConfig.payment_methods.forEach((method, index) => {
+          console.log(`Payment Method ${index}:`, method, "Type:", typeof method);
+        });
+      }
+      console.log("Language:", shopConfig.language);
+      console.log("=====================================");
+    }
+  }, [shopConfig]);
+
   useEffect(() => {
     if (shopConfig?.accent_color) {
       setAccentColor(shopConfig.accent_color);

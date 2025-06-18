@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { CreditCard, Check, Shield } from "lucide-react";
 import { getTranslation } from "@/utils/translations";
+import { processPaymentMethods, PaymentMethodCode } from "@/utils/paymentMethodUtils";
 
 interface PaymentMethodCardProps {
   paymentMethod: "vorkasse" | "rechnung";
@@ -25,7 +26,14 @@ export const PaymentMethodCard = ({
 }: PaymentMethodCardProps) => {
   const [focused, setFocused] = useState(false);
 
-  console.log("PaymentMethodCard props:", { paymentMethod, paymentMethods, language });
+  console.log("PaymentMethodCard - Debug Info:", {
+    paymentMethod,
+    paymentMethods,
+    paymentMethodsLength: paymentMethods?.length,
+    paymentMethodsTypes: paymentMethods?.map(m => typeof m),
+    language,
+    isCompleted
+  });
 
   // Ensure we have a valid language for getTranslation
   const validLanguage = (language && typeof language === 'string' && 
@@ -33,42 +41,24 @@ export const PaymentMethodCard = ({
     ? language.toUpperCase() as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL"
     : "DE";
 
-  console.log("PaymentMethodCard using language:", validLanguage);
+  // Process payment methods using the utility function
+  const processedPaymentMethods = processPaymentMethods(paymentMethods || []);
 
-  // Automatically select first available payment method
+  console.log("Processed payment methods:", processedPaymentMethods);
+
+  // Automatically select first available payment method if none is selected
   useEffect(() => {
-    if (paymentMethods && paymentMethods.length > 0 && !paymentMethod) {
-      // Extract payment method code if it's an object, otherwise use as string
-      const firstMethodCode = extractPaymentMethodCode(paymentMethods[0]);
-      console.log("Auto-selecting first payment method:", firstMethodCode);
-      
-      if (isValidPaymentMethod(firstMethodCode)) {
-        onChange(firstMethodCode);
-        onComplete();
-      }
+    if (processedPaymentMethods.length > 0 && !paymentMethod) {
+      const firstMethod = processedPaymentMethods[0].code;
+      console.log("Auto-selecting first payment method:", firstMethod);
+      onChange(firstMethod);
+      onComplete();
     }
-  }, [paymentMethods, paymentMethod, onChange, onComplete]);
-
-  // Helper function to extract payment method code from various formats
-  const extractPaymentMethodCode = (method: any): string => {
-    if (typeof method === 'string') {
-      return method;
-    }
-    if (typeof method === 'object' && method !== null) {
-      // Handle various object structures
-      return method.code || method.id || method.type || method.name || String(method);
-    }
-    return String(method);
-  };
-
-  // Type guard to ensure payment method is valid
-  const isValidPaymentMethod = (method: string): method is "vorkasse" | "rechnung" => {
-    return method === "vorkasse" || method === "rechnung";
-  };
+  }, [processedPaymentMethods, paymentMethod, onChange, onComplete]);
 
   const handleChange = (value: string) => {
     console.log("Payment method change:", value);
-    if (isValidPaymentMethod(value)) {
+    if (value === "vorkasse" || value === "rechnung") {
       onChange(value);
       onComplete();
     } else {
@@ -76,28 +66,56 @@ export const PaymentMethodCard = ({
     }
   };
 
-  const getPaymentMethodDetails = (method: string) => {
-    const methodCode = extractPaymentMethodCode(method);
-    console.log("Getting details for payment method:", methodCode);
+  const getPaymentMethodDetails = (method: PaymentMethodCode) => {
+    console.log("Getting details for payment method:", method);
     
     const details = {
       vorkasse: {
+        title: getTranslation("vorkasse", validLanguage),
         description: getTranslation("vorkasse_description", validLanguage),
         badge: getTranslation("recommended", validLanguage)
       },
       rechnung: {
+        title: getTranslation("rechnung", validLanguage),
         description: getTranslation("rechnung_description", validLanguage),
         badge: getTranslation("existing_customers_only", validLanguage)
       }
     };
     
-    return details[methodCode as keyof typeof details] || details.rechnung;
+    return details[method];
   };
 
-  // Don't render if no payment methods or only one method
-  if (!paymentMethods || paymentMethods.length <= 1) {
-    console.log("Not rendering PaymentMethodCard - insufficient methods:", paymentMethods);
-    return null;
+  // Show error state if no payment methods available
+  if (!paymentMethods || paymentMethods.length === 0) {
+    console.log("No payment methods available");
+    return (
+      <Card className="border-red-300 bg-red-50">
+        <CardContent className="p-6">
+          <div className="text-center text-red-600">
+            <p className="font-medium">Keine Zahlungsmethoden verfügbar</p>
+            <p className="text-sm mt-1">Bitte wenden Sie sich an den Support.</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Show processing state if no valid methods after processing
+  if (processedPaymentMethods.length === 0) {
+    console.log("No valid payment methods after processing");
+    return (
+      <Card className="border-yellow-300 bg-yellow-50">
+        <CardContent className="p-6">
+          <div className="text-center text-yellow-700">
+            <p className="font-medium">Zahlungsmethoden werden verarbeitet...</p>
+            <p className="text-sm mt-1">Rohdaten: {paymentMethods.join(", ")}</p>
+            <p className="text-xs mt-2 text-gray-600">
+              Unterstützte Methoden: Vorkasse/Überweisung, Kauf auf Rechnung
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (
@@ -133,7 +151,14 @@ export const PaymentMethodCard = ({
           </div>
         </CardTitle>
       </CardHeader>
+      
       <CardContent>
+        {/* Debug info for development */}
+        <div className="mb-4 text-xs text-gray-500 bg-gray-50 p-2 rounded">
+          <div>Verfügbare Zahlungsarten: {processedPaymentMethods.length} von {paymentMethods.length}</div>
+          <div className="mt-1">Aktuell gewählt: {paymentMethod || "Keine Auswahl"}</div>
+        </div>
+        
         <RadioGroup
           value={paymentMethod}
           onValueChange={handleChange}
@@ -141,15 +166,19 @@ export const PaymentMethodCard = ({
           onBlur={() => setFocused(false)}
           className="space-y-3"
         >
-          {paymentMethods.map((method, index) => {
-            const methodCode = extractPaymentMethodCode(method);
-            const details = getPaymentMethodDetails(methodCode);
-            const isSelected = paymentMethod === methodCode;
+          {processedPaymentMethods.map((methodInfo, index) => {
+            const details = getPaymentMethodDetails(methodInfo.code);
+            const isSelected = paymentMethod === methodInfo.code;
             
-            console.log("Rendering payment method:", { method, methodCode, isSelected });
+            console.log("Rendering payment method:", { 
+              original: methodInfo.original,
+              code: methodInfo.code,
+              isSelected,
+              displayName: methodInfo.displayName
+            });
             
             return (
-              <div key={`${methodCode}-${index}`} className={`transition-all duration-200 ${
+              <div key={`${methodInfo.code}-${index}`} className={`transition-all duration-200 ${
                 isSelected ? "scale-[1.01]" : ""
               }`}>
                 <div className={`p-4 border rounded-lg transition-all duration-200 ${
@@ -159,14 +188,14 @@ export const PaymentMethodCard = ({
                 }`}>
                   <div className="flex items-start space-x-3">
                     <RadioGroupItem 
-                      value={methodCode} 
-                      id={`${methodCode}-${index}`}
+                      value={methodInfo.code} 
+                      id={`${methodInfo.code}-${index}`}
                       className="border-2 border-gray-300 mt-1"
                     />
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
-                        <Label htmlFor={`${methodCode}-${index}`} className="flex items-center text-base font-semibold text-gray-900 cursor-pointer">
-                          {getTranslation(methodCode, validLanguage)}
+                        <Label htmlFor={`${methodInfo.code}-${index}`} className="flex items-center text-base font-semibold text-gray-900 cursor-pointer">
+                          {details.title}
                         </Label>
                         <span className={`text-xs px-2 py-1 rounded font-medium ${
                           details.badge === getTranslation("recommended", validLanguage)
@@ -177,6 +206,10 @@ export const PaymentMethodCard = ({
                         </span>
                       </div>
                       <p className="text-sm text-gray-600 mb-2">{details.description}</p>
+                      {/* Debug info */}
+                      <p className="text-xs text-gray-400">
+                        Original: {String(methodInfo.original)} → Code: {methodInfo.code}
+                      </p>
                     </div>
                   </div>
                 </div>
