@@ -29,59 +29,23 @@ export interface BackendShopConfig {
   checkout_mode?: "express" | "standard";
 }
 
-// Calculate totals based on quantity, price, delivery fee and tax rate
-const calculateTotals = (quantity: number, pricePerLiter: number, deliveryFee: number, taxRate: number) => {
-  console.log("Calculating totals with:", { quantity, pricePerLiter, deliveryFee, taxRate });
-  
-  const productTotal = quantity * pricePerLiter;
-  const totalNet = productTotal + deliveryFee;
-  const totalTax = totalNet * taxRate;
-  const totalGross = totalNet + totalTax;
-  
-  console.log("Calculated totals:", { productTotal, totalNet, totalTax, totalGross });
-  
-  return {
-    total_net: Math.round(totalNet * 100) / 100,
-    total_tax: Math.round(totalTax * 100) / 100,
-    total_gross: Math.round(totalGross * 100) / 100,
-  };
-};
-
 // Transform backend order data to frontend format
 export const transformOrderData = (backendData: any): any => {
   console.log("Transforming backend order data:", backendData);
   
   // Handle both old and new field formats
-  const quantity = backendData.quantity_liters || backendData.liters || 0;
-  const pricePerLiter = backendData.price_per_liter || 0;
-  const deliveryFee = backendData.delivery_fee || 0;
-  const taxRate = backendData.tax_rate || 0.19;
-  
-  // Check if we need to calculate totals
-  const hasValidTotals = backendData.total_gross && backendData.total_gross > 0;
-  let calculatedTotals = {};
-  
-  if (!hasValidTotals && quantity > 0 && pricePerLiter > 0) {
-    console.log("Backend totals missing or invalid, calculating them...");
-    calculatedTotals = calculateTotals(quantity, pricePerLiter, deliveryFee, taxRate);
-  } else {
-    calculatedTotals = {
-      total_net: backendData.total_net || 0,
-      total_tax: backendData.total_tax || 0,
-      total_gross: backendData.total_gross || 0,
-    };
-  }
-  
   const transformed = {
     shop_id: backendData.shop_id,
     product_name: backendData.product_name || backendData.product || "Heizöl",
     product_type: backendData.product_type || "standard",
-    quantity_liters: quantity,
-    price_per_liter: pricePerLiter,
-    delivery_fee: deliveryFee,
-    tax_rate: taxRate,
+    quantity_liters: backendData.quantity_liters || backendData.liters || 0,
+    price_per_liter: backendData.price_per_liter || 0,
+    delivery_fee: backendData.delivery_fee || 0,
+    tax_rate: backendData.tax_rate || 0.19,
     currency: backendData.currency || "EUR",
-    ...calculatedTotals,
+    total_net: backendData.total_net || 0,
+    total_tax: backendData.total_tax || 0,
+    total_gross: backendData.total_gross || 0,
   };
   
   console.log("Transformed order data:", transformed);
@@ -108,7 +72,7 @@ export const transformShopConfig = (backendData: any): any => {
   return transformed;
 };
 
-// Validate transformed order data with improved flexibility
+// Validate transformed order data
 export const validateOrderData = (data: any): boolean => {
   console.log("Validating order data:", data);
   
@@ -116,10 +80,10 @@ export const validateOrderData = (data: any): boolean => {
     'shop_id',
     'product_name', 
     'quantity_liters',
-    'price_per_liter'
+    'price_per_liter',
+    'total_gross'
   ];
   
-  // Check required fields
   for (const field of requiredFields) {
     if (!data[field] && data[field] !== 0) {
       console.error(`Missing required field: ${field}`);
@@ -127,7 +91,7 @@ export const validateOrderData = (data: any): boolean => {
     }
   }
   
-  // Validate numeric fields
+  // Additional validation
   if (typeof data.quantity_liters !== 'number' || data.quantity_liters <= 0) {
     console.error('Invalid quantity_liters:', data.quantity_liters);
     return false;
@@ -138,37 +102,9 @@ export const validateOrderData = (data: any): boolean => {
     return false;
   }
   
-  // More flexible total_gross validation - allow 0 but warn about it
-  if (typeof data.total_gross !== 'number') {
-    console.error('Invalid total_gross type:', typeof data.total_gross);
+  if (typeof data.total_gross !== 'number' || data.total_gross <= 0) {
+    console.error('Invalid total_gross:', data.total_gross);
     return false;
-  }
-  
-  if (data.total_gross <= 0) {
-    console.warn('Total gross is 0 or negative:', data.total_gross);
-    
-    // Try to recalculate if we have the necessary data
-    if (data.quantity_liters > 0 && data.price_per_liter > 0) {
-      console.log('Attempting to recalculate totals...');
-      const recalculated = calculateTotals(
-        data.quantity_liters,
-        data.price_per_liter,
-        data.delivery_fee || 0,
-        data.tax_rate || 0.19
-      );
-      
-      // Update the data object with recalculated values
-      Object.assign(data, recalculated);
-      console.log('Updated data with recalculated totals:', data);
-      
-      if (data.total_gross <= 0) {
-        console.error('Even after recalculation, total_gross is invalid:', data.total_gross);
-        return false;
-      }
-    } else {
-      console.error('Cannot recalculate totals due to missing quantity or price data');
-      return false;
-    }
   }
   
   console.log("Order data validation passed");
