@@ -140,39 +140,35 @@ const isValidUUID = (uuid: string): boolean => {
 
 // Function to extract shop ID from URL
 const extractShopIdFromUrl = (): string | null => {
-  logger.dev("=== EXTRACTING SHOP ID FROM URL ===");
-  logger.dev("Current URL:", window.location.href);
-  logger.dev("Current pathname:", window.location.pathname);
-  logger.dev("Current search params:", window.location.search);
+  logger.dev("Extracting shop ID from URL");
   
   // Try to get shop ID from URL parameters first
   const urlParams = new URLSearchParams(window.location.search);
   const shopIdFromParams = urlParams.get('shop_id') || urlParams.get('shopId');
   
   if (shopIdFromParams) {
-    logger.dev("Shop ID found in URL params:", shopIdFromParams);
+    logger.devDetailed("Shop ID found in URL params:", shopIdFromParams);
     if (isValidUUID(shopIdFromParams)) {
-      logger.dev("✅ Valid UUID found in URL params");
+      logger.dev("Valid UUID found in URL params");
       return shopIdFromParams;
     } else {
-      logger.warn("⚠️ Shop ID from URL params is not a valid UUID:", shopIdFromParams);
+      logger.warn("Shop ID from URL params is not a valid UUID:", shopIdFromParams);
     }
   }
   
   // Try to extract from path (e.g., /checkout/shop/uuid)
   const pathSegments = window.location.pathname.split('/').filter(segment => segment.length > 0);
-  logger.dev("Path segments:", pathSegments);
   
   // Look for UUID pattern in path segments
   for (let i = 0; i < pathSegments.length; i++) {
     const segment = pathSegments[i];
     if (isValidUUID(segment)) {
-      logger.dev("✅ Valid UUID found in path:", segment);
+      logger.dev("Valid UUID found in path:", segment);
       return segment;
     }
   }
   
-  logger.warn("❌ No valid shop ID found in URL");
+  logger.warn("No valid shop ID found in URL");
   return null;
 };
 
@@ -230,12 +226,7 @@ const getLocaleFromLanguage = (language: "DE" | "EN" | "FR" | "IT" | "ES" | "PL"
 
 // Enhanced Fetch-Funktion mit verbessertem CORS-Handling und Debugging
 const fetchWithCorsHandling = async (url: string, options: RequestInit = {}): Promise<Response> => {
-  logger.dev(`=== FETCH REQUEST DEBUG ===`);
-  logger.dev(`URL: ${url}`);
-  logger.dev(`Method: ${options.method || 'GET'}`);
-  logger.dev(`Headers:`, options.headers);
-  logger.dev(`Body:`, options.body);
-  logger.dev(`Current Origin: ${window.location.origin}`);
+  logger.dev(`Making ${options.method || 'GET'} request to: ${url}`);
   
   const enhancedOptions: RequestInit = {
     ...options,
@@ -248,53 +239,35 @@ const fetchWithCorsHandling = async (url: string, options: RequestInit = {}): Pr
     },
   };
 
-  logger.dev(`Enhanced options:`, enhancedOptions);
-
   try {
-    logger.dev(`Making fetch request...`);
     const response = await fetch(url, enhancedOptions);
     
-    logger.dev(`=== FETCH RESPONSE DEBUG ===`);
-    logger.dev(`Status: ${response.status} ${response.statusText}`);
-    logger.dev(`Headers:`, Object.fromEntries(response.headers.entries()));
-    logger.dev(`OK: ${response.ok}`);
-    logger.dev(`Type: ${response.type}`);
-    logger.dev(`URL: ${response.url}`);
+    logger.devDetailed(`Response: ${response.status} ${response.statusText}`);
     
     return response;
   } catch (error) {
-    logger.error(`=== FETCH ERROR DEBUG ===`);
-    logger.error('Error object:', error);
-    logger.dev('Error type:', typeof error);
-    logger.dev('Error constructor:', error?.constructor?.name);
-    logger.error('Error message:', error?.message);
-    logger.dev('Error stack:', error?.stack);
+    logger.error('Fetch error:', error?.message);
     
     if (error instanceof TypeError) {
-      logger.error('TypeError detected - likely CORS or network issue');
       if (error.message.includes('Failed to fetch')) {
-        logger.error('Failed to fetch - definitive CORS or network error');
+        logger.error('Network or CORS error detected');
         throw new Error('CORS_ERROR');
       }
     }
     
-    logger.error('Rethrowing original error');
     throw error;
   }
 };
 
 // Modified function to fetch bank data using POST request
 export const fetchBankData = async (shopId?: string): Promise<BankData | null> => {
-  logger.dev(`=== BANK DATA FETCH START ===`);
+  logger.dev("Fetching bank data");
   
   // If no shop ID provided, try to extract from URL
   let actualShopId = shopId;
   if (!actualShopId) {
-    logger.dev("No shop ID provided, attempting to extract from URL...");
     actualShopId = extractShopIdFromUrl();
   }
-  
-  logger.dev(`Using shop ID: ${actualShopId}`);
   
   if (!actualShopId || actualShopId.trim() === '') {
     logger.error('No valid shop ID available for bank data fetch');
@@ -307,13 +280,10 @@ export const fetchBankData = async (shopId?: string): Promise<BankData | null> =
     return null;
   }
 
-  // Changed to POST request with shop ID in body
   const url = `https://luhhnsvwtnmxztcmdxyq.supabase.co/functions/v1/get-shop-bankdata`;
   const requestBody = {
     shop_id: actualShopId
   };
-  
-  logger.dev(`POST request body:`, requestBody);
   
   try {
     const response = await fetchWithCorsHandling(url, {
@@ -322,9 +292,6 @@ export const fetchBankData = async (shopId?: string): Promise<BankData | null> =
     });
     
     if (!response.ok) {
-      logger.warn(`=== BANK DATA HTTP ERROR ===`);
-      logger.warn(`Status: ${response.status}`);
-      
       if (response.status === 404) {
         logger.warn('Bank data not found - this is expected for shops without bank configuration');
         return null;
@@ -338,8 +305,7 @@ export const fetchBankData = async (shopId?: string): Promise<BankData | null> =
     }
     
     const rawData = await response.json();
-    logger.dev("=== BANK DATA SUCCESS ===");
-    logger.dev("Raw bank data received:", rawData);
+    logger.dev("Bank data received successfully");
     
     // Validate bank data structure
     if (!rawData || typeof rawData !== 'object') {
@@ -352,16 +318,9 @@ export const fetchBankData = async (shopId?: string): Promise<BankData | null> =
     
     // Check if data is nested in bank_data object
     if (rawData.bank_data && typeof rawData.bank_data === 'object') {
-      logger.dev("=== NESTED BANK DATA DETECTED ===");
-      logger.dev("Extracting from bank_data object:", rawData.bank_data);
+      logger.devDetailed("Using nested bank_data object");
       bankDataSource = rawData.bank_data;
-    } else {
-      logger.dev("=== FLAT BANK DATA STRUCTURE ===");
-      logger.dev("Using root level data");
     }
-    
-    logger.dev("=== BANK DATA SOURCE ===");
-    logger.dev("Bank data source for processing:", bankDataSource);
     
     const bankData: BankData = {
       account_holder: bankDataSource.account_holder || '',
@@ -370,24 +329,15 @@ export const fetchBankData = async (shopId?: string): Promise<BankData | null> =
       bank_name: bankDataSource.bank_name
     };
     
-    logger.dev("=== PROCESSED BANK DATA ===");
-    logger.dev("Processed bank data:", bankData);
-    
     // Validate required fields
     if (!bankData.account_holder || !bankData.iban || !bankData.bic) {
-      logger.warn('Bank data missing required fields:', {
-        account_holder: !!bankData.account_holder,
-        iban: !!bankData.iban,
-        bic: !!bankData.bic,
-        data: bankData
-      });
+      logger.warn('Bank data missing required fields');
       return null;
     }
     
-    logger.info('✅ Validated bank data:', bankData);
+    logger.info('Bank data validated successfully');
     return bankData;
   } catch (error) {
-    logger.error("=== BANK DATA ERROR ===");
     logger.error("Error fetching bank data:", error);
     
     if (error instanceof Error && error.message === 'CORS_ERROR') {
@@ -432,8 +382,7 @@ const getFallbackShopConfig = (shopId: string): ShopConfig => ({
 
 // Updated fetchOrderData function to return both order data and shop ID
 export const fetchOrderDataWithShopId = async (token: string): Promise<OrderDataWithShopId> => {
-  logger.dev(`=== ORDER DATA FETCH START ===`);
-  logger.dev(`Token: ${token?.substring(0, 10)}...`);
+  logger.dev("Fetching order data");
   
   if (!token || token.trim() === '') {
     logger.error('Invalid token provided');
@@ -446,9 +395,7 @@ export const fetchOrderDataWithShopId = async (token: string): Promise<OrderData
     const response = await fetchWithCorsHandling(url);
     
     if (!response.ok) {
-      logger.error(`=== ORDER DATA HTTP ERROR ===`);
-      logger.error(`Status: ${response.status}`);
-      logger.error(`Status Text: ${response.statusText}`);
+      logger.error(`Order data HTTP error: ${response.status}`);
       
       if (response.status === 401 || response.status === 403) {
         logger.error('Token expired or unauthorized');
@@ -466,8 +413,7 @@ export const fetchOrderDataWithShopId = async (token: string): Promise<OrderData
     }
     
     const rawData = await response.json();
-    logger.dev("=== ORDER DATA SUCCESS ===");
-    logger.dev("Raw order data received:", rawData);
+    logger.dev("Order data received successfully");
     
     // Transform the data to expected format
     const transformedData = transformOrderData(rawData);
@@ -485,14 +431,11 @@ export const fetchOrderDataWithShopId = async (token: string): Promise<OrderData
       throw new Error('VALIDATION_ERROR');
     }
     
-    logger.dev(`Extracted shop ID: ${shopId}`);
-    
     return {
       orderData: transformedData,
       shopId: shopId
     };
   } catch (error) {
-    logger.error("=== ORDER DATA ERROR ===");
     logger.error("Error fetching order data:", error);
     
     if (error instanceof Error) {
@@ -516,8 +459,7 @@ export const fetchOrderData = async (token: string): Promise<OrderData> => {
 };
 
 export const fetchShopConfig = async (shopId: string): Promise<ShopConfig> => {
-  logger.dev(`=== SHOP CONFIG FETCH START ===`);
-  logger.dev(`Shop ID: ${shopId}`);
+  logger.dev("Fetching shop config");
   
   if (!shopId || shopId.trim() === '') {
     logger.error('Invalid shop ID provided');
@@ -530,8 +472,7 @@ export const fetchShopConfig = async (shopId: string): Promise<ShopConfig> => {
     const response = await fetchWithCorsHandling(url);
     
     if (!response.ok) {
-      logger.warn(`=== SHOP CONFIG HTTP ERROR ===`);
-      logger.warn(`Status: ${response.status}`);
+      logger.warn(`Shop config HTTP error: ${response.status}`);
       
       if (response.status === 404) {
         logger.warn('Shop config not found - using fallback');
@@ -546,8 +487,7 @@ export const fetchShopConfig = async (shopId: string): Promise<ShopConfig> => {
     }
     
     const rawData = await response.json();
-    logger.dev("=== SHOP CONFIG SUCCESS ===");
-    logger.dev("Raw shop config received:", rawData);
+    logger.dev("Shop config received successfully");
     
     // Transform the data to expected format
     const transformedData = transformShopConfig(rawData);
@@ -560,7 +500,6 @@ export const fetchShopConfig = async (shopId: string): Promise<ShopConfig> => {
     
     return transformedData;
   } catch (error) {
-    logger.error("=== SHOP CONFIG ERROR ===");
     logger.error("Error fetching shop config:", error);
     
     if (error instanceof Error && error.message === 'CORS_ERROR') {
@@ -578,10 +517,7 @@ export const submitOrder = async (
   orderData: OrderData, 
   token: string
 ): Promise<OrderResponse> => {
-  logger.dev("=== ORDER SUBMISSION START ===");
-  logger.dev("Customer data:", customerData);
-  logger.dev("Order data:", orderData);
-  logger.dev("Token:", token?.substring(0, 10) + "...");
+  logger.dev("Submitting order");
   
   if (!token || token.trim() === '') {
     throw new Error('TOKEN_EXPIRED');
@@ -614,8 +550,7 @@ export const submitOrder = async (
     terms_accepted: true
   };
 
-  logger.dev("=== ORDER SUBMISSION PAYLOAD ===");
-  logger.dev("Payload:", JSON.stringify(payload, null, 2));
+  logger.devDetailed("Order submission payload:", payload);
 
   const url = "https://luhhnsvwtnmxztcmdxyq.supabase.co/functions/v1/create-order";
 
@@ -625,12 +560,8 @@ export const submitOrder = async (
       body: JSON.stringify(payload),
     });
     
-    logger.dev("=== ORDER SUBMISSION RESPONSE ===");
-    logger.dev(`Status: ${response.status}`);
-    logger.dev(`OK: ${response.ok}`);
-    
     if (!response.ok) {
-      logger.error(`=== ORDER SUBMISSION HTTP ERROR ===`);
+      logger.error(`Order submission HTTP error: ${response.status}`);
       
       let errorData: any = {};
       try {
@@ -650,15 +581,10 @@ export const submitOrder = async (
     }
     
     const result = await response.json();
-    logger.info("=== ORDER SUBMISSION SUCCESS ===");
-    logger.info("Order submitted successfully:", result);
+    logger.info("Order submitted successfully");
     
-    // Enhanced debugging for sessionStorage data
-    logger.dev("=== SESSION STORAGE DEBUG ===");
-    logger.dev("About to store in sessionStorage:");
-    logger.dev("- orderResponse:", JSON.stringify(result, null, 2));
-    logger.dev("- customerData:", JSON.stringify(customerData, null, 2));
-    logger.dev("- orderData:", JSON.stringify(orderData, null, 2));
+    // Store order confirmation data for the confirmation page
+    logger.dev("Preparing confirmation data for sessionStorage");
     
     // Fetch shop config and bank data for sessionStorage
     let shopConfigToStore = null;
@@ -666,23 +592,17 @@ export const submitOrder = async (
     
     if (orderData.shop_id) {
       try {
-        logger.dev("=== FETCHING ADDITIONAL DATA FOR SESSION STORAGE ===");
-        
         // Fetch shop config
-        logger.dev("Fetching shop config for sessionStorage...");
         shopConfigToStore = await fetchShopConfig(orderData.shop_id);
-        logger.dev("Shop config for sessionStorage:", JSON.stringify(shopConfigToStore, null, 2));
         
         // Check if this is express/instant mode and fetch bank data if needed
         if (shopConfigToStore && (shopConfigToStore.checkout_mode === "instant")) {
-          logger.dev("=== INSTANT MODE DETECTED - FETCHING BANK DATA ===");
-          logger.dev("Checkout mode:", shopConfigToStore.checkout_mode);
+          logger.dev("Instant mode detected - fetching bank data");
           
           bankDataToStore = await fetchBankData(orderData.shop_id);
-          logger.dev("Bank data for sessionStorage:", JSON.stringify(bankDataToStore, null, 2));
           
           if (bankDataToStore) {
-            logger.info("✅ Bank data successfully fetched for instant mode");
+            logger.info("Bank data successfully fetched for instant mode");
             
             // Inject bank data into the order response for the confirmation page
             // Use order_number as payment reference, fallback to order_id
@@ -697,13 +617,10 @@ export const submitOrder = async (
               }
             };
             
-            logger.info("✅ Bank details injected into order response with order_number reference:", result.payment_instructions.bank_details);
-            logger.dev("Payment reference used:", paymentReference);
+            logger.info("Bank details injected into order response");
           } else {
-            logger.warn("⚠️ No bank data available for instant mode - bank transfer instructions will not be shown");
+            logger.warn("No bank data available for instant mode - bank transfer instructions will not be shown");
           }
-        } else {
-          logger.dev("ℹ️ Not in instant mode or no shop config - checkout_mode:", shopConfigToStore?.checkout_mode);
         }
       } catch (error) {
         logger.warn("Could not fetch additional data for sessionStorage:", error);
@@ -719,26 +636,12 @@ export const submitOrder = async (
       submittedAt: new Date().toISOString()
     };
     
-    logger.dev("=== FINAL CONFIRMATION DATA ===");
-    logger.dev("Final confirmation data to store:", JSON.stringify(confirmationData, null, 2));
-    
-    // Enhanced debugging for bank details in the final result
-    logger.dev("=== BANK DETAILS FINAL CHECK ===");
-    logger.dev("Order response payment_instructions:", result.payment_instructions);
-    logger.dev("Bank details in payment_instructions:", result.payment_instructions?.bank_details);
-    logger.dev("Checkout mode:", shopConfigToStore?.checkout_mode);
-    logger.dev("Bank data separately stored:", bankDataToStore);
-    
     // Bestelldaten in sessionStorage für Bestätigungsseite speichern
     sessionStorage.setItem('orderConfirmation', JSON.stringify(confirmationData));
-    
-    // Verify storage
-    const storedData = sessionStorage.getItem('orderConfirmation');
-    logger.dev("Verification - data actually stored:", storedData);
+    logger.dev("Confirmation data stored in sessionStorage");
     
     return result;
   } catch (error) {
-    logger.error("=== ORDER SUBMISSION ERROR ===");
     logger.error("Error submitting order:", error);
     
     if (error instanceof Error) {

@@ -5,11 +5,21 @@
  */
 const isDevelopment = import.meta.env.DEV || import.meta.env.MODE === 'development';
 
+// Flag to control detailed logging - can be toggled for debugging
+const ENABLE_DETAILED_LOGGING = false;
+
 export const logger = {
   // Development-only logs
   dev: (message: string, ...args: any[]) => {
     if (isDevelopment) {
       console.log(`[DEV] ${message}`, ...args);
+    }
+  },
+  
+  // Detailed development logs (only when flag is enabled)
+  devDetailed: (message: string, ...args: any[]) => {
+    if (isDevelopment && ENABLE_DETAILED_LOGGING) {
+      console.log(`[DEV-DETAILED] ${message}`, ...args);
     }
   },
   
