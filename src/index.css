@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -111,108 +110,103 @@
   }
 
   body {
-    font-size: 11px !important;
-    line-height: 1.3 !important;
+    font-size: 12px !important;
+    line-height: 1.4 !important;
     color: black !important;
     background: white !important;
   }
 
-  /* Hide elements that shouldn't be printed */
+  /* Hide only specific interactive elements */
   .no-print,
-  button[onClick*="handleNewOrder"],
-  button[onClick*="handlePrint"],
-  button:has(svg),
+  button,
   .bg-gradient-to-br {
     display: none !important;
   }
 
-  /* Scale down the entire confirmation content */
+  /* Keep the main container visible but remove min-height */
   .min-h-screen {
     min-height: auto !important;
-    transform: scale(0.85);
-    transform-origin: top left;
-    width: 117.6%;
+    background: white !important;
   }
 
-  /* Reduce spacing and padding */
+  /* Adjust the main content container */
+  .max-w-6xl {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0.5rem !important;
+  }
+
+  /* Reduce spacing but keep content visible */
   .py-8 {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+  }
+
+  .py-6 {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+  }
+
+  .py-12 {
     padding-top: 1rem !important;
     padding-bottom: 1rem !important;
   }
 
-  .py-6 {
-    padding-top: 0.75rem !important;
-    padding-bottom: 0.75rem !important;
-  }
-
-  .py-12 {
-    padding-top: 2rem !important;
-    padding-bottom: 2rem !important;
-  }
-
   .space-y-6 > * + * {
-    margin-top: 1rem !important;
-  }
-
-  .space-y-4 > * + * {
     margin-top: 0.75rem !important;
   }
 
-  .p-6 {
-    padding: 1rem !important;
+  .space-y-4 > * + * {
+    margin-top: 0.5rem !important;
   }
 
-  .p-4 {
+  .p-6 {
     padding: 0.75rem !important;
   }
 
-  .mb-6 {
-    margin-bottom: 1rem !important;
+  .p-4 {
+    padding: 0.5rem !important;
   }
 
-  .mb-4 {
-    margin-bottom: 0.75rem !important;
-  }
-
-  .mt-6 {
-    margin-top: 1rem !important;
-  }
-
-  /* Reduce font sizes */
+  /* Adjust font sizes for better readability */
   .text-4xl {
     font-size: 1.5rem !important;
-    line-height: 1.4 !important;
+    line-height: 1.3 !important;
   }
 
   .text-2xl {
     font-size: 1.25rem !important;
-    line-height: 1.4 !important;
+    line-height: 1.3 !important;
   }
 
   .text-xl {
     font-size: 1.1rem !important;
-    line-height: 1.3 !important;
+    line-height: 1.2 !important;
   }
 
   .text-lg {
     font-size: 1rem !important;
-    line-height: 1.3 !important;
+    line-height: 1.2 !important;
   }
 
+  /* Ensure headers don't break across pages */
   h1, h2, h3, h4, h5 {
     page-break-after: avoid;
+    color: black !important;
   }
 
-  /* Ensure cards don't break across pages */
+  /* Card styling for print */
   .rounded-lg {
     page-break-inside: avoid;
     break-inside: avoid;
+    border: 1px solid #e5e7eb !important;
+    background: white !important;
   }
 
-  /* Icons smaller in print */
+  /* Make icons smaller but visible */
   .h-24.w-24 {
-    height: 3rem !important;
-    width: 3rem !important;
+    height: 2rem !important;
+    width: 2rem !important;
   }
 
   .h-5.w-5 {
@@ -221,46 +215,75 @@
   }
 
   .h-4.w-4 {
-    height: 0.875rem !important;
-    width: 0.875rem !important;
+    height: 0.75rem !important;
+    width: 0.75rem !important;
   }
 
-  /* Grid adjustments for print */
+  /* Grid layout adjustments */
   .grid-cols-1.lg\\:grid-cols-3 {
     grid-template-columns: 2fr 1fr !important;
+    gap: 0.5rem !important;
   }
 
-  .lg\\:col-span-2 {
-    grid-column: span 1 !important;
-  }
-
-  .lg\\:col-span-1 {
-    grid-column: span 1 !important;
-  }
-
-  /* Remove shadows and borders for cleaner print */
+  /* Remove shadows for cleaner print */
   .shadow-sm {
     box-shadow: none !important;
   }
 
-  .border {
-    border-width: 1px !important;
-    border-color: #e5e7eb !important;
+  /* Ensure colored backgrounds are visible in print */
+  .bg-blue-50 {
+    background-color: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+  }
+
+  .bg-amber-50 {
+    background-color: #fefdf8 !important;
+    border: 1px solid #fde68a !important;
+  }
+
+  .bg-gray-50 {
+    background-color: #f9fafb !important;
+    border: 1px solid #e5e7eb !important;
+  }
+
+  /* Ensure all text colors are visible */
+  .text-blue-900,
+  .text-blue-700,
+  .text-blue-600 {
+    color: #1e3a8a !important;
+  }
+
+  .text-amber-900,
+  .text-amber-800 {
+    color: #92400e !important;
+  }
+
+  .text-gray-900,
+  .text-gray-700,
+  .text-gray-600 {
+    color: #111827 !important;
+  }
+
+  /* Make sure step numbers are visible */
+  .bg-blue-600 {
+    background-color: #2563eb !important;
+    color: white !important;
+  }
+
+  /* Adjust grid for bank details */
+  .grid-cols-1.md\\:grid-cols-2 {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.5rem !important;
+  }
+
+  /* Hide copy buttons specifically */
+  button[title="Kopieren"] {
+    display: none !important;
   }
 
   /* Ensure proper page breaks */
   .text-center.py-12 {
     page-break-after: avoid;
-  }
-
-  /* Compact bank details section */
-  .bg-blue-50 {
-    background-color: #f8f9fa !important;
-    padding: 0.75rem !important;
-  }
-
-  .grid-cols-1.md\\:grid-cols-2 {
-    grid-template-columns: 1fr 1fr !important;
-    gap: 0.75rem !important;
+    padding: 1rem 0 !important;
   }
 }
