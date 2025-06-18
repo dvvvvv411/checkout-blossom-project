@@ -28,9 +28,10 @@ export const TermsCard = ({
 }: TermsCardProps) => {
   const [focused, setFocused] = useState(false);
 
-  const handleChange = (checked: boolean) => {
+  const handleChange = (checked: boolean | string) => {
     console.log("=== TERMS CARD: Terms checkbox changed ===", checked);
-    onChange(checked);
+    const isChecked = checked === true;
+    onChange(isChecked);
   };
 
   const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -102,11 +103,11 @@ export const TermsCard = ({
           type="submit"
           onClick={handleButtonClick}
           className={`w-full h-14 text-white font-semibold text-lg rounded-lg transition-all duration-200 disabled:opacity-50 ${
-            allStepsCompleted 
+            allStepsCompleted && termsAccepted
               ? "bg-gradient-to-r from-green-500 to-emerald-600 shadow-lg hover:shadow-xl hover:from-green-600 hover:to-emerald-700" 
               : "bg-gray-500"
           }`}
-          disabled={isSubmitting || !allStepsCompleted}
+          disabled={isSubmitting || !allStepsCompleted || !termsAccepted}
         >
           {isSubmitting 
             ? getTranslation("processing_order", language) 

@@ -64,17 +64,25 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
     hasFieldError,
   } = useFormValidation(supportedLanguage);
 
+  // Check step completion whenever form data changes
   useEffect(() => {
-    if (!showBillingAddress) {
-      setCompletedSteps(prev => ({ ...prev, billing: true }));
-    }
-  }, [showBillingAddress]);
-
-  useEffect(() => {
-    if (!shopConfig?.payment_methods || shopConfig.payment_methods.length <= 1) {
-      setCompletedSteps(prev => ({ ...prev, payment: true }));
-    }
-  }, [shopConfig]);
+    const newCompletedSteps = {
+      email: !!formData.email && formData.email.includes("@") && formData.email.includes("."),
+      contact: !!(formData.first_name && formData.last_name && formData.phone),
+      delivery: !!(formData.delivery_address.street && formData.delivery_address.postal_code && formData.delivery_address.city),
+      billing: !showBillingAddress || !!(formData.billing_address?.street && formData.billing_address?.postal_code && formData.billing_address?.city),
+      payment: true, // Payment is always completed since we have default values
+      terms: termsAccepted,
+    };
+    
+    console.log("=== STEP COMPLETION CHECK ===");
+    console.log("Form data:", formData);
+    console.log("Show billing address:", showBillingAddress);
+    console.log("Terms accepted:", termsAccepted);
+    console.log("Completed steps:", newCompletedSteps);
+    
+    setCompletedSteps(newCompletedSteps);
+  }, [formData, showBillingAddress, termsAccepted]);
 
   // Automatisch erste Zahlungsmethode auswählen wenn verfügbar
   useEffect(() => {
@@ -87,6 +95,8 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
   }, [shopConfig?.payment_methods, formData.payment_method]);
 
   const handleInputChange = (field: string, value: string) => {
+    console.log(`=== INPUT CHANGE: ${field} = ${value} ===`);
+    
     if (field.startsWith("delivery_address.")) {
       const addressField = field.split(".")[1];
       setFormData(prev => ({
@@ -112,13 +122,8 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
       }));
     }
 
-    // Validierung bei Eingabe
-    const error = validateField(field.replace("delivery_address.", "").replace("billing_address.", ""), value, showBillingAddress);
-    if (error) {
-      setFieldError(field, error);
-    } else {
-      clearFieldError(field);
-    }
+    // Clear any existing error for this field
+    clearFieldError(field);
   };
 
   const handleFieldBlur = (field: string) => {
@@ -129,8 +134,6 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
       setFieldError(field, error);
     } else {
       clearFieldError(field);
-      // Step als completed markieren wenn kein Fehler
-      updateStepCompletion(field);
     }
   };
 
@@ -146,27 +149,8 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
     }
   };
 
-  const updateStepCompletion = (field: string) => {
-    if (field === "email") {
-      setCompletedSteps(prev => ({ ...prev, email: true }));
-    } else if (["first_name", "last_name", "phone"].includes(field)) {
-      const contactComplete = formData.first_name && formData.last_name && formData.phone;
-      setCompletedSteps(prev => ({ ...prev, contact: !!contactComplete }));
-    } else if (field.startsWith("delivery_address.")) {
-      const deliveryComplete = formData.delivery_address.street && 
-                              formData.delivery_address.postal_code && 
-                              formData.delivery_address.city;
-      setCompletedSteps(prev => ({ ...prev, delivery: !!deliveryComplete }));
-    } else if (field.startsWith("billing_address.")) {
-      const billingComplete = !showBillingAddress || 
-                             (formData.billing_address?.street && 
-                              formData.billing_address?.postal_code && 
-                              formData.billing_address?.city);
-      setCompletedSteps(prev => ({ ...prev, billing: !!billingComplete }));
-    }
-  };
-
   const handleBillingAddressToggle = (checked: boolean) => {
+    console.log("=== BILLING ADDRESS TOGGLE ===", checked);
     setShowBillingAddress(checked);
     if (checked) {
       setFormData(prev => ({
@@ -177,24 +161,22 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
           city: "",
         },
       }));
-      setCompletedSteps(prev => ({ ...prev, billing: false }));
     } else {
       setFormData(prev => ({
         ...prev,
         billing_address: undefined,
       }));
-      setCompletedSteps(prev => ({ ...prev, billing: true }));
     }
   };
 
   const handleStepComplete = (step: string) => {
+    console.log(`=== STEP COMPLETED: ${step} ===`);
     setCompletedSteps(prev => ({ ...prev, [step]: true }));
   };
 
   const handleTermsAccepted = (accepted: boolean) => {
     console.log("=== CUSTOMER FORM: Terms accepted changed ===", accepted);
     setTermsAccepted(accepted);
-    setCompletedSteps(prev => ({ ...prev, terms: accepted }));
   };
 
   const handleBack = () => {
@@ -203,9 +185,6 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
 
   const handleSubmit = async (e: React.FormEvent) => {
     console.log("=== CUSTOMER FORM: handleSubmit called ===");
-    console.log("Event type:", e.type);
-    console.log("Event target:", e.target);
-    console.log("Event currentTarget:", e.currentTarget);
     e.preventDefault();
     
     console.log("=== FORM SUBMISSION START ===");
@@ -213,6 +192,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
     console.log("Terms accepted:", termsAccepted);
     console.log("Form data:", formData);
     console.log("All steps completed:", allStepsCompleted);
+    console.log("Completed steps:", completedSteps);
     
     if (!token) {
       console.error("Token missing");
@@ -250,11 +230,13 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
 
     console.log("=== FORM VALIDATION ===");
     console.log("Form values:", formValues);
+    console.log("Show billing address:", showBillingAddress);
     
     const isValid = validateForm(formValues, showBillingAddress);
     
     if (!isValid) {
       console.error("Form validation failed");
+      console.error("Validation errors:", errors);
       toast({
         title: getTranslation("order_error", supportedLanguage),
         description: getTranslation("order_error_message", supportedLanguage),
@@ -347,6 +329,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
 
   console.log("=== CUSTOMER FORM RENDER ===");
   console.log("All steps completed:", allStepsCompleted);
+  console.log("Completed steps breakdown:", completedSteps);
   console.log("Terms accepted:", termsAccepted);
   console.log("Is submitting:", isSubmitting);
 

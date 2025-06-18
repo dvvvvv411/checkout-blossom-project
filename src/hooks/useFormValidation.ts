@@ -25,6 +25,8 @@ export const useFormValidation = (language: "DE" | "EN" | "FR" | "IT" | "ES" | "
   const [touched, setTouched] = useState<{ [key: string]: boolean }>({});
 
   const validateField = (field: string, value: string, showBillingAddress?: boolean): string => {
+    console.log(`=== VALIDATING FIELD: ${field} = "${value}" ===`);
+    
     switch (field) {
       case "email":
         if (!validateRequired(value)) {
@@ -77,10 +79,16 @@ export const useFormValidation = (language: "DE" | "EN" | "FR" | "IT" | "ES" | "
         }
         break;
     }
+    
+    console.log(`Field ${field} validation passed`);
     return "";
   };
 
   const validateForm = (values: FormValues, showBillingAddress: boolean): boolean => {
+    console.log("=== FORM VALIDATION START ===");
+    console.log("Values to validate:", values);
+    console.log("Show billing address:", showBillingAddress);
+    
     const newErrors: ValidationErrors = {};
     
     // Standard-Felder validieren
@@ -89,23 +97,32 @@ export const useFormValidation = (language: "DE" | "EN" | "FR" | "IT" | "ES" | "
     for (const field of requiredFields) {
       const error = validateField(field, values[field], showBillingAddress);
       if (error) {
+        console.log(`Validation error for ${field}: ${error}`);
         newErrors[field] = error;
       }
     }
     
     // Rechnungsadresse validieren wenn angezeigt
     if (showBillingAddress) {
+      console.log("Validating billing address fields");
       const billingFields = ["billing_street", "billing_postal_code", "billing_city"];
       for (const field of billingFields) {
         const error = validateField(field, values[field] || "", showBillingAddress);
         if (error) {
+          console.log(`Validation error for ${field}: ${error}`);
           newErrors[field] = error;
         }
       }
     }
     
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    const isValid = Object.keys(newErrors).length === 0;
+    
+    console.log("=== FORM VALIDATION RESULT ===");
+    console.log("Errors found:", newErrors);
+    console.log("Is valid:", isValid);
+    
+    return isValid;
   };
 
   const setFieldTouched = (field: string) => {
