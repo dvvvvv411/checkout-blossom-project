@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -87,13 +86,8 @@ const Checkout = () => {
       {/* Header */}
       <div className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
+          <div className="flex justify-center">
             <h1 className="text-3xl font-bold text-gray-900">Checkout</h1>
-            {shopConfig && (
-              <div className="text-sm text-gray-500">
-                {shopConfig.company_name}
-              </div>
-            )}
           </div>
         </div>
       </div>
