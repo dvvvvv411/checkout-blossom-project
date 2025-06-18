@@ -1,22 +1,37 @@
 
-import { QueryClient } from "@tanstack/react-query";
+// API Services für Checkout-System
+
+import { 
+  transformOrderData, 
+  transformShopConfig, 
+  validateOrderData, 
+  validateShopConfig 
+} from "@/utils/dataTransform";
 
 export interface OrderData {
+  shop_id: string;
   product_name: string;
+  product_type: "standard" | "premium";
   quantity_liters: number;
   price_per_liter: number;
   delivery_fee: number;
+  tax_rate: number;
+  currency: string;
   total_net: number;
   total_tax: number;
   total_gross: number;
-  tax_rate: number;
-  currency?: string;
 }
 
-export interface Address {
-  street: string;
-  postal_code: string;
-  city: string;
+export interface ShopConfig {
+  shop_id: string;
+  accent_color: string;
+  language: "DE" | "EN" | "FR";
+  payment_methods: Array<"vorkasse" | "rechnung">;
+  currency: string;
+  company_name: string;
+  logo_url?: string;
+  support_phone?: string;
+  checkout_mode?: "express" | "standard";
 }
 
 export interface CustomerData {
@@ -24,257 +39,448 @@ export interface CustomerData {
   first_name: string;
   last_name: string;
   phone: string;
-  delivery_address: Address;
-  billing_address?: Address;
+  delivery_address: {
+    street: string;
+    postal_code: string;
+    city: string;
+  };
+  billing_address?: {
+    street: string;
+    postal_code: string;
+    city: string;
+  };
   payment_method: "vorkasse" | "rechnung";
 }
 
-export interface ShopConfig {
-  shop_name?: string;
-  company_name?: string;
-  logo_url?: string;
-  primary_color?: string;
-  accent_color?: string;
-  language?: string;
-  payment_methods?: string[];
-  terms_url?: string;
-  privacy_url?: string;
-  support_phone?: string;
-  checkout_mode?: string;
+export interface OrderSubmissionPayload {
+  token: string;
+  shop_id: string;
+  product_name: string;
+  product_type: "standard" | "premium";
+  quantity_liters: number;
+  price_per_liter: number;
+  delivery_fee: number;
+  tax_rate: number;
+  currency: string;
+  total_net: number;
+  total_tax: number;
+  total_gross: number;
+  customer_name: string;
+  customer_email: string;
+  customer_phone: string;
+  delivery_street: string;
+  delivery_postal_code: string;
+  delivery_city: string;
+  billing_street?: string;
+  billing_postal_code?: string;
+  billing_city?: string;
+  payment_method_id: "vorkasse" | "rechnung";
+  terms_accepted: boolean;
 }
 
 export interface OrderResponse {
-  success: boolean;
-  order_id?: string;
-  error?: string;
+  order_id: string;
+  status: "pending" | "confirmed" | "failed";
+  confirmation_number: string;
+  payment_instructions?: {
+    bank_details?: {
+      account_holder: string;
+      iban: string;
+      bic: string;
+      reference: string;
+    };
+  };
+  total_amount: number;
+  currency: string;
 }
 
+// New interface for the combined order data and shop ID response
 export interface OrderDataWithShopId {
   orderData: OrderData;
   shopId: string;
 }
 
-// Validation functions
-export const validateRequired = (value: string): boolean => {
-  return value.trim().length > 0;
-};
+// Error types für bessere Fehlerbehandlung
+export interface ApiError {
+  type: 'CORS_ERROR' | 'TOKEN_EXPIRED' | 'VALIDATION_ERROR' | 'SERVER_ERROR' | 'NETWORK_ERROR';
+  message: string;
+  statusCode?: number;
+}
 
+// Validierungsfunktionen
 export const validateEmail = (email: string): boolean => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 };
 
 export const validatePhone = (phone: string): boolean => {
-  // Basic phone validation - at least 6 digits
-  const phoneRegex = /^[\+]?[\d\s\-\(\)]{6,}$/;
-  return phoneRegex.test(phone);
+  // Internationale Telefonnummern-Validierung (flexibel)
+  const phoneRegex = /^[\+]?[\s\-\(\)]*([0-9][\s\-\(\)]*){7,15}$/;
+  return phoneRegex.test(phone.replace(/\s/g, ''));
 };
 
-// Updated to support all 7 languages
-export const formatCurrency = (amount: number, currency: string = "EUR", language: "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL" = "DE"): string => {
-  const locale = {
-    DE: "de-DE",
-    EN: "en-US", 
-    FR: "fr-FR",
-    IT: "it-IT",
-    ES: "es-ES",
-    PL: "pl-PL",
-    NL: "nl-NL"
-  }[language];
+export const validateRequired = (value: string): boolean => {
+  return value.trim().length > 0;
+};
 
+// Währungsformatierung
+export const formatCurrency = (amount: number, currency: string, language: "DE" | "EN" | "FR"): string => {
+  const localeMap = {
+    DE: "de-DE",
+    EN: "en-GB", 
+    FR: "fr-FR"
+  };
+  
+  const locale = localeMap[language] || "de-DE";
+  
   return new Intl.NumberFormat(locale, {
     style: "currency",
-    currency: currency,
+    currency: currency || "EUR",
   }).format(amount);
 };
 
-// Updated to support all 7 languages
-export const formatLiters = (liters: number, language: "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL" = "DE"): string => {
-  const locale = {
+export const formatLiters = (liters: number, language: "DE" | "EN" | "FR"): string => {
+  const localeMap = {
     DE: "de-DE",
-    EN: "en-US",
-    FR: "fr-FR", 
-    IT: "it-IT",
-    ES: "es-ES",
-    PL: "pl-PL",
-    NL: "nl-NL"
-  }[language];
-
-  return new Intl.NumberFormat(locale, {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
-  }).format(liters);
+    EN: "en-GB", 
+    FR: "fr-FR"
+  };
+  
+  const locale = localeMap[language] || "de-DE";
+  return new Intl.NumberFormat(locale).format(liters);
 };
 
-export const fetchOrderDataWithShopId = async (token: string): Promise<OrderDataWithShopId> => {
-  console.log("=== FETCHING ORDER DATA WITH SHOP ID ===");
-  console.log("Token:", token);
+// Enhanced Fetch-Funktion mit verbessertem CORS-Handling und Debugging
+const fetchWithCorsHandling = async (url: string, options: RequestInit = {}): Promise<Response> => {
+  console.log(`=== FETCH REQUEST DEBUG ===`);
+  console.log(`URL: ${url}`);
+  console.log(`Method: ${options.method || 'GET'}`);
+  console.log(`Headers:`, options.headers);
+  console.log(`Body:`, options.body);
+  console.log(`Current Origin: ${window.location.origin}`);
   
-  try {
-    const response = await fetch(`https://api.heizoel24.de/api/v1/checkout/${token}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+  const enhancedOptions: RequestInit = {
+    ...options,
+    mode: 'cors',
+    credentials: 'omit',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      ...options.headers,
+    },
+  };
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("API Error Response:", errorText);
-      
-      if (response.status === 404) {
-        throw new Error("TOKEN_EXPIRED");
-      } else if (response.status >= 500) {
-        throw new Error("SERVER_ERROR");
-      } else {
-        throw new Error(`API_ERROR_${response.status}`);
+  console.log(`Enhanced options:`, enhancedOptions);
+
+  try {
+    console.log(`Making fetch request...`);
+    const response = await fetch(url, enhancedOptions);
+    
+    console.log(`=== FETCH RESPONSE DEBUG ===`);
+    console.log(`Status: ${response.status} ${response.statusText}`);
+    console.log(`Headers:`, Object.fromEntries(response.headers.entries()));
+    console.log(`OK: ${response.ok}`);
+    console.log(`Type: ${response.type}`);
+    console.log(`URL: ${response.url}`);
+    
+    return response;
+  } catch (error) {
+    console.error(`=== FETCH ERROR DEBUG ===`);
+    console.error('Error object:', error);
+    console.error('Error type:', typeof error);
+    console.error('Error constructor:', error?.constructor?.name);
+    console.error('Error message:', error?.message);
+    console.error('Error stack:', error?.stack);
+    
+    if (error instanceof TypeError) {
+      console.error('TypeError detected - likely CORS or network issue');
+      if (error.message.includes('Failed to fetch')) {
+        console.error('Failed to fetch - definitive CORS or network error');
+        throw new Error('CORS_ERROR');
       }
     }
-
-    const data = await response.json();
-    console.log("Order data with shop ID received:", data);
     
-    // Assuming the API returns both order data and shop ID
+    console.error('Rethrowing original error');
+    throw error;
+  }
+};
+
+// Updated fallback data functions
+const getFallbackOrderDataWithShopId = (token: string): OrderDataWithShopId => ({
+  orderData: {
+    shop_id: "demo-shop-123",
+    product_name: "Premium Heizöl",
+    product_type: "premium",
+    quantity_liters: 1000,
+    price_per_liter: 1.05,
+    delivery_fee: 0,
+    tax_rate: 0.19,
+    currency: "EUR",
+    total_net: 882.35,
+    total_tax: 167.65,
+    total_gross: 1050.00
+  },
+  shopId: "demo-shop-123"
+});
+
+const getFallbackShopConfig = (shopId: string): ShopConfig => ({
+  shop_id: shopId,
+  accent_color: "#2563eb",
+  language: "DE",
+  payment_methods: ["vorkasse", "rechnung"],
+  currency: "EUR",
+  company_name: "Heizöl Premium GmbH",
+  logo_url: undefined,
+  support_phone: "+49 123 456789",
+  checkout_mode: "standard"
+});
+
+// Updated fetchOrderData function to return both order data and shop ID
+export const fetchOrderDataWithShopId = async (token: string): Promise<OrderDataWithShopId> => {
+  console.log(`=== ORDER DATA FETCH START ===`);
+  console.log(`Token: ${token?.substring(0, 10)}...`);
+  
+  if (!token || token.trim() === '') {
+    console.error('Invalid token provided');
+    throw new Error('TOKEN_EXPIRED');
+  }
+
+  const url = `https://luhhnsvwtnmxztcmdxyq.supabase.co/functions/v1/get-order-token?token=${encodeURIComponent(token)}`;
+  
+  try {
+    const response = await fetchWithCorsHandling(url);
+    
+    if (!response.ok) {
+      console.error(`=== ORDER DATA HTTP ERROR ===`);
+      console.error(`Status: ${response.status}`);
+      console.error(`Status Text: ${response.statusText}`);
+      
+      if (response.status === 401 || response.status === 403) {
+        console.error('Token expired or unauthorized');
+        throw new Error('TOKEN_EXPIRED');
+      } else if (response.status === 404) {
+        console.error('Order not found');
+        throw new Error('TOKEN_EXPIRED');
+      } else if (response.status >= 500) {
+        console.error('Server error');
+        throw new Error('SERVER_ERROR');
+      } else {
+        console.error(`HTTP error: ${response.status}`);
+        throw new Error('VALIDATION_ERROR');
+      }
+    }
+    
+    const rawData = await response.json();
+    console.log("=== ORDER DATA SUCCESS ===");
+    console.log("Raw order data received:", rawData);
+    
+    // Transform the data to expected format
+    const transformedData = transformOrderData(rawData);
+    
+    // Validate the transformed data
+    if (!validateOrderData(transformedData)) {
+      console.error('Order data validation failed after transformation');
+      throw new Error('VALIDATION_ERROR');
+    }
+
+    // Extract shop ID from the transformed data
+    const shopId = transformedData.shop_id;
+    if (!shopId) {
+      console.error('Shop ID missing from order data');
+      throw new Error('VALIDATION_ERROR');
+    }
+    
+    console.log(`Extracted shop ID: ${shopId}`);
+    
     return {
-      orderData: data.orderData || data,
-      shopId: data.shopId || data.shop_id || "default"
+      orderData: transformedData,
+      shopId: shopId
     };
   } catch (error) {
-    console.error("=== FETCH ORDER DATA WITH SHOP ID ERROR ===");
-    console.error("Error details:", error);
+    console.error("=== ORDER DATA ERROR ===");
+    console.error("Error fetching order data:", error);
     
-    if (error instanceof TypeError && error.message.includes("Failed to fetch")) {
-      throw new Error("CORS_ERROR");
+    if (error instanceof Error) {
+      if (error.message === 'CORS_ERROR') {
+        console.warn('CORS error - using fallback data for demo');
+        return getFallbackOrderDataWithShopId(token);
+      } else if (['TOKEN_EXPIRED', 'SERVER_ERROR', 'VALIDATION_ERROR'].includes(error.message)) {
+        throw error;
+      }
     }
     
-    throw error;
+    console.warn('Unknown error - using fallback data for demo');
+    return getFallbackOrderDataWithShopId(token);
   }
 };
 
+// Keep the old fetchOrderData function for backward compatibility
 export const fetchOrderData = async (token: string): Promise<OrderData> => {
-  console.log("=== FETCHING ORDER DATA ===");
-  console.log("Token:", token);
-  
-  try {
-    const response = await fetch(`https://api.heizoel24.de/api/v1/checkout/${token}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("API Error Response:", errorText);
-      
-      if (response.status === 404) {
-        throw new Error("TOKEN_EXPIRED");
-      } else if (response.status >= 500) {
-        throw new Error("SERVER_ERROR");
-      } else {
-        throw new Error(`API_ERROR_${response.status}`);
-      }
-    }
-
-    const data = await response.json();
-    console.log("Order data received:", data);
-    return data;
-  } catch (error) {
-    console.error("=== FETCH ORDER DATA ERROR ===");
-    console.error("Error details:", error);
-    
-    if (error instanceof TypeError && error.message.includes("Failed to fetch")) {
-      throw new Error("CORS_ERROR");
-    }
-    
-    throw error;
-  }
+  const result = await fetchOrderDataWithShopId(token);
+  return result.orderData;
 };
 
 export const fetchShopConfig = async (shopId: string): Promise<ShopConfig> => {
-  console.log("=== FETCHING SHOP CONFIG ===");
-  console.log("Shop ID:", shopId);
+  console.log(`=== SHOP CONFIG FETCH START ===`);
+  console.log(`Shop ID: ${shopId}`);
+  
+  if (!shopId || shopId.trim() === '') {
+    console.error('Invalid shop ID provided');
+    return getFallbackShopConfig('demo-shop');
+  }
+
+  const url = `https://luhhnsvwtnmxztcmdxyq.supabase.co/functions/v1/get-shop-config/shop/${encodeURIComponent(shopId)}/config`;
   
   try {
-    const response = await fetch(`https://api.heizoel24.de/api/v1/shop-config/${shopId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
+    const response = await fetchWithCorsHandling(url);
+    
     if (!response.ok) {
-      console.warn("Shop config not found, using defaults");
-      return {};
+      console.warn(`=== SHOP CONFIG HTTP ERROR ===`);
+      console.warn(`Status: ${response.status}`);
+      
+      if (response.status === 404) {
+        console.warn('Shop config not found - using fallback');
+        return getFallbackShopConfig(shopId);
+      } else if (response.status >= 500) {
+        console.error('Server error');
+        throw new Error('SERVER_ERROR');
+      } else {
+        console.error(`HTTP error: ${response.status}`);
+        throw new Error('VALIDATION_ERROR');
+      }
     }
-
-    const data = await response.json();
-    console.log("Shop config received:", data);
-    return data;
+    
+    const rawData = await response.json();
+    console.log("=== SHOP CONFIG SUCCESS ===");
+    console.log("Raw shop config received:", rawData);
+    
+    // Transform the data to expected format
+    const transformedData = transformShopConfig(rawData);
+    
+    // Validate the transformed data
+    if (!validateShopConfig(transformedData)) {
+      console.warn('Shop config validation failed after transformation - using fallback');
+      return getFallbackShopConfig(shopId);
+    }
+    
+    return transformedData;
   } catch (error) {
-    console.warn("Failed to fetch shop config, using defaults:", error);
-    return {};
+    console.error("=== SHOP CONFIG ERROR ===");
+    console.error("Error fetching shop config:", error);
+    
+    if (error instanceof Error && error.message === 'CORS_ERROR') {
+      console.warn('CORS error - using fallback shop config');
+    } else {
+      console.warn('Error fetching shop config - using fallback');
+    }
+    
+    return getFallbackShopConfig(shopId);
   }
 };
 
 export const submitOrder = async (
-  customerData: CustomerData,
-  orderData: OrderData,
+  customerData: CustomerData, 
+  orderData: OrderData, 
   token: string
 ): Promise<OrderResponse> => {
-  console.log("=== SUBMITTING ORDER ===");
+  console.log("=== ORDER SUBMISSION START ===");
   console.log("Customer data:", customerData);
   console.log("Order data:", orderData);
-  console.log("Token:", token);
+  console.log("Token:", token?.substring(0, 10) + "...");
+  
+  if (!token || token.trim() === '') {
+    throw new Error('TOKEN_EXPIRED');
+  }
+
+  // Vollständige Payload für Backend erstellen
+  const payload: OrderSubmissionPayload = {
+    token,
+    shop_id: orderData.shop_id,
+    product_name: orderData.product_name,
+    product_type: orderData.product_type,
+    quantity_liters: orderData.quantity_liters,
+    price_per_liter: orderData.price_per_liter,
+    delivery_fee: orderData.delivery_fee,
+    tax_rate: orderData.tax_rate,
+    currency: orderData.currency,
+    total_net: orderData.total_net,
+    total_tax: orderData.total_tax,
+    total_gross: orderData.total_gross,
+    customer_name: `${customerData.first_name} ${customerData.last_name}`,
+    customer_email: customerData.email,
+    customer_phone: customerData.phone,
+    delivery_street: customerData.delivery_address.street,
+    delivery_postal_code: customerData.delivery_address.postal_code,
+    delivery_city: customerData.delivery_address.city,
+    billing_street: customerData.billing_address?.street,
+    billing_postal_code: customerData.billing_address?.postal_code,
+    billing_city: customerData.billing_address?.city,
+    payment_method_id: customerData.payment_method,
+    terms_accepted: true
+  };
+
+  console.log("=== ORDER SUBMISSION PAYLOAD ===");
+  console.log("Payload:", JSON.stringify(payload, null, 2));
+
+  const url = "https://luhhnsvwtnmxztcmdxyq.supabase.co/functions/v1/create-order";
 
   try {
-    const response = await fetch(`https://api.heizoel24.de/api/v1/orders`, {
+    const response = await fetchWithCorsHandling(url, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        customer: customerData,
-        order: orderData,
-      }),
+      body: JSON.stringify(payload),
     });
-
+    
+    console.log("=== ORDER SUBMISSION RESPONSE ===");
+    console.log(`Status: ${response.status}`);
+    console.log(`OK: ${response.ok}`);
+    
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error("API Error Response:", errorText);
+      console.error(`=== ORDER SUBMISSION HTTP ERROR ===`);
       
-      if (response.status === 401) {
+      let errorData: any = {};
+      try {
+        errorData = await response.json();
+        console.error("Error response data:", errorData);
+      } catch (parseError) {
+        console.error("Could not parse error response:", parseError);
+      }
+      
+      if (response.status === 401 || response.status === 403) {
         throw new Error("TOKEN_EXPIRED");
-      } else if (response.status === 400) {
-        throw new Error("VALIDATION_ERROR");
-      } else if (response.status >= 500) {
-        throw new Error("SERVER_ERROR");
+      } else if (response.status >= 400 && response.status < 500) {
+        throw new Error(`VALIDATION_ERROR: ${errorData.message || 'Invalid request data'}`);
       } else {
-        throw new Error(`API_ERROR_${response.status}`);
+        throw new Error(`SERVER_ERROR: ${response.status}`);
       }
     }
-
+    
     const result = await response.json();
+    console.log("=== ORDER SUBMISSION SUCCESS ===");
     console.log("Order submitted successfully:", result);
+    
+    // Bestelldaten in sessionStorage für Bestätigungsseite speichern
+    sessionStorage.setItem('orderConfirmation', JSON.stringify({
+      orderResponse: result,
+      customerData,
+      orderData,
+      submittedAt: new Date().toISOString()
+    }));
+    
     return result;
   } catch (error) {
     console.error("=== ORDER SUBMISSION ERROR ===");
-    console.error("Error details:", error);
+    console.error("Error submitting order:", error);
     
-    if (error instanceof TypeError && error.message.includes("Failed to fetch")) {
-      throw new Error("CORS_ERROR");
+    if (error instanceof Error) {
+      if (error.message === 'CORS_ERROR') {
+        throw new Error("CORS_ERROR");
+      } else if (error.message.includes('TOKEN_EXPIRED') || 
+                 error.message.includes('VALIDATION_ERROR') || 
+                 error.message.includes('SERVER_ERROR')) {
+        throw error;
+      }
     }
     
-    throw error;
+    throw new Error("NETWORK_ERROR");
   }
 };
-
-export const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 1,
-      refetchOnWindowFocus: false,
-    },
-  },
-});

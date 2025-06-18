@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { User, Phone, MapPin, Check, Building, AlertCircle } from "lucide-react";
-import { getTranslation } from "@/utils/translations";
 
 interface ContactDeliveryCardProps {
   firstName: string;
@@ -16,7 +15,6 @@ interface ContactDeliveryCardProps {
   onChange: (field: string, value: string) => void;
   onComplete: () => void;
   isCompleted: boolean;
-  language?: "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL";
   // Error props
   firstNameError?: string;
   lastNameError?: string;
@@ -43,7 +41,6 @@ export const ContactDeliveryCard = ({
   onChange, 
   onComplete, 
   isCompleted,
-  language = "DE",
   firstNameError,
   lastNameError,
   phoneError,
@@ -133,11 +130,11 @@ export const ContactDeliveryCard = ({
             </div>
             <div>
               <div className="text-lg font-semibold text-gray-900">
-                {getTranslation("delivery_address", language)}
+                Lieferadresse
               </div>
               <div className="text-sm text-gray-600 font-normal flex items-center gap-1">
                 <Building className="h-3 w-3 text-gray-500" />
-                {getTranslation("delivery_description", language)}
+                Wohin soll das Heizöl geliefert werden?
               </div>
             </div>
           </div>
@@ -151,7 +148,7 @@ export const ContactDeliveryCard = ({
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="first_name" className="text-sm font-medium text-gray-700 mb-2 block">
-                    {getTranslation("first_name", language)} *
+                    Vorname *
                   </Label>
                   <Input
                     id="first_name"
@@ -168,7 +165,7 @@ export const ContactDeliveryCard = ({
                         ? "border-red-500 focus:border-red-500 focus:ring-red-500" 
                         : "border-gray-300"
                     }`}
-                    placeholder={getTranslation("first_name", language)}
+                    placeholder="Vorname"
                   />
                   {firstNameError && (
                     <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
@@ -180,7 +177,7 @@ export const ContactDeliveryCard = ({
                 
                 <div>
                   <Label htmlFor="last_name" className="text-sm font-medium text-gray-700 mb-2 block">
-                    {getTranslation("last_name", language)} *
+                    Nachname *
                   </Label>
                   <Input
                     id="last_name"
@@ -197,7 +194,7 @@ export const ContactDeliveryCard = ({
                         ? "border-red-500 focus:border-red-500 focus:ring-red-500" 
                         : "border-gray-300"
                     }`}
-                    placeholder={getTranslation("last_name", language)}
+                    placeholder="Nachname"
                   />
                   {lastNameError && (
                     <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
@@ -210,7 +207,7 @@ export const ContactDeliveryCard = ({
               
               <div>
                 <Label htmlFor="phone" className="text-sm font-medium text-gray-700 mb-2 block">
-                  {getTranslation("phone_number", language)} *
+                  Telefonnummer *
                 </Label>
                 <div className="relative">
                   <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -230,7 +227,7 @@ export const ContactDeliveryCard = ({
                         ? "border-red-500 focus:border-red-500 focus:ring-red-500" 
                         : "border-gray-300"
                     }`}
-                    placeholder={getTranslation("phone_number", language)}
+                    placeholder="Telefonnummer"
                   />
                 </div>
                 {phoneError && (
@@ -248,7 +245,7 @@ export const ContactDeliveryCard = ({
             <div className="space-y-4">
               <div>
                 <Label htmlFor="delivery_street" className="text-sm font-medium text-gray-700 mb-2 block">
-                  {getTranslation("street_number", language)} *
+                  Straße und Hausnummer *
                 </Label>
                 <Input
                   id="delivery_street"
@@ -265,7 +262,7 @@ export const ContactDeliveryCard = ({
                       ? "border-red-500 focus:border-red-500 focus:ring-red-500" 
                       : "border-gray-300"
                   }`}
-                  placeholder={getTranslation("street_number", language)}
+                  placeholder="Straße und Hausnummer"
                 />
                 {streetError && (
                   <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
@@ -278,7 +275,7 @@ export const ContactDeliveryCard = ({
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="delivery_postal_code" className="text-sm font-medium text-gray-700 mb-2 block">
-                    {getTranslation("postal_code", language)} *
+                    PLZ *
                   </Label>
                   <Input
                     id="delivery_postal_code"
@@ -295,7 +292,7 @@ export const ContactDeliveryCard = ({
                         ? "border-red-500 focus:border-red-500 focus:ring-red-500" 
                         : "border-gray-300"
                     }`}
-                    placeholder={getTranslation("postal_code", language)}
+                    placeholder="PLZ"
                   />
                   {postalCodeError && (
                     <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
@@ -307,7 +304,7 @@ export const ContactDeliveryCard = ({
                 
                 <div>
                   <Label htmlFor="delivery_city" className="text-sm font-medium text-gray-700 mb-2 block">
-                    {getTranslation("city", language)} *
+                    Stadt *
                   </Label>
                   <Input
                     id="delivery_city"
@@ -324,7 +321,7 @@ export const ContactDeliveryCard = ({
                         ? "border-red-500 focus:border-red-500 focus:ring-red-500" 
                         : "border-gray-300"
                     }`}
-                    placeholder={getTranslation("city", language)}
+                    placeholder="Stadt"
                   />
                   {cityError && (
                     <p className="mt-1 text-sm text-red-600 flex items-center gap-1">

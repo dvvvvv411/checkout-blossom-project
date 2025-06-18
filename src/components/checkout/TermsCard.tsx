@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { FileText, Shield, Check } from "lucide-react";
-import { getTranslation, SupportedLanguage } from "@/utils/translations";
+import { getTranslation } from "@/utils/translations";
 
 interface TermsCardProps {
   termsAccepted: boolean;
@@ -14,7 +14,7 @@ interface TermsCardProps {
   isSubmitting: boolean;
   allStepsCompleted: boolean;
   accentColor: string;
-  language?: SupportedLanguage;
+  language?: "DE" | "EN" | "FR";
 }
 
 export const TermsCard = ({ 

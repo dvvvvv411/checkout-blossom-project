@@ -4,14 +4,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Mail, Check, Shield, AlertCircle } from "lucide-react";
-import { getTranslation, SupportedLanguage } from "@/utils/translations";
+import { getTranslation } from "@/utils/translations";
 
 interface EmailCardProps {
   email: string;
   onChange: (email: string) => void;
   onComplete: () => void;
   isCompleted: boolean;
-  language?: SupportedLanguage;
+  language?: "DE" | "EN" | "FR";
   error?: string;
   onBlur?: () => void;
 }
