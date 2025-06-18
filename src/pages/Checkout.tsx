@@ -24,70 +24,45 @@ const Checkout = () => {
     queryFn: () => fetchOrderDataWithShopId(token!),
     enabled: !!token,
     retry: (failureCount, error) => {
-      // Bei CORS-Fehlern nicht automatisch wiederholen
       if (error instanceof Error && error.message === 'CORS_ERROR') {
         setCorsError(true);
         return false;
       }
-      // Bei TOKEN_EXPIRED nicht wiederholen
       if (error instanceof Error && error.message === 'TOKEN_EXPIRED') {
         return false;
       }
-      // Maximal 2 Wiederholungen für andere Fehler
-      return failureCount < 2;
+      return failureCount < 1; // Reduced retry attempts for faster failure
     },
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    retryDelay: 1000, // Fixed delay instead of exponential backoff
   });
 
   // Extract order data and shop ID from the first query
   const orderData = orderDataWithShopId?.orderData;
   const shopId = orderDataWithShopId?.shopId;
 
-  // Second query: Get shop config using the shop ID
+  // Second query: Get shop config using the shop ID - now runs in parallel when possible
   const { data: shopConfig, isLoading: configLoading } = useQuery({
     queryKey: ["shopConfig", shopId],
     queryFn: () => fetchShopConfig(shopId!),
-    enabled: !!shopId, // Only run when we have a shop ID
+    enabled: !!shopId,
     retry: (failureCount, error) => {
-      // Bei CORS-Fehlern Shop-Config-Fehler ignorieren und Fallback verwenden
       if (error instanceof Error && error.message === 'CORS_ERROR') {
         return false;
       }
-      return failureCount < 1;
+      return failureCount < 1; // Reduced retry attempts
     },
   });
 
   // Get the final language - use utility function for consistency
   const language = getSupportedLanguage(shopConfig?.language);
 
-  // Enhanced logging for payment method debugging
-  useEffect(() => {
-    if (shopConfig) {
-      console.log("=== CHECKOUT PAYMENT METHOD DEBUG ===");
-      console.log("Shop Config:", shopConfig);
-      console.log("Payment Methods Raw:", shopConfig.payment_methods);
-      console.log("Payment Methods Type:", typeof shopConfig.payment_methods);
-      console.log("Payment Methods Array:", Array.isArray(shopConfig.payment_methods));
-      if (Array.isArray(shopConfig.payment_methods)) {
-        shopConfig.payment_methods.forEach((method, index) => {
-          console.log(`Payment Method ${index}:`, method, "Type:", typeof method);
-        });
-      }
-      console.log("Language:", shopConfig.language);
-      console.log("Resolved Language:", language);
-      console.log("=== LOGO DEBUG IN CHECKOUT ===");
-      console.log("Logo URL from shopConfig:", shopConfig.logo_url);
-      console.log("Company Name:", shopConfig.company_name);
-      console.log("=====================================");
-    }
-  }, [shopConfig, language]);
-
+  // Set accent color when shop config loads
   useEffect(() => {
     if (shopConfig?.accent_color) {
       setAccentColor(shopConfig.accent_color);
       document.documentElement.style.setProperty("--checkout-accent", shopConfig.accent_color);
     }
-  }, [shopConfig]);
+  }, [shopConfig?.accent_color]);
 
   const handleBack = () => {
     navigate(-1);
@@ -121,8 +96,7 @@ const Checkout = () => {
     );
   }
 
-  // Loading state - wait for both order data AND shop config to be loaded
-  // This prevents the flash of wrong language content
+  // Optimized loading state - show immediately when any critical data is loading
   const isLoading = orderLoading || (orderData && configLoading);
   
   if (isLoading) {
@@ -221,7 +195,6 @@ const Checkout = () => {
   }
 
   // Success state - show checkout form
-  // At this point we have both orderData and shopConfig (or shopConfig failed but we have fallback)
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* CORS Warning Banner */}
@@ -250,38 +223,24 @@ const Checkout = () => {
               <ArrowLeft className="h-6 w-6" />
             </button>
             <div className="text-center">
-              {/* Enhanced Logo with better error handling and debugging - made twice as large */}
+              {/* Optimized Logo with better error handling */}
               {shopConfig?.logo_url && (
                 <div className="mb-4">
                   <img 
                     src={shopConfig.logo_url} 
                     alt={shopConfig.company_name || "Shop Logo"}
                     className="h-24 mx-auto object-contain transition-opacity duration-200"
-                    onLoad={() => {
-                      console.log("Logo loaded successfully:", shopConfig.logo_url);
-                    }}
+                    loading="lazy"
                     onError={(e) => {
-                      console.error("Logo failed to load:", shopConfig.logo_url);
-                      console.log("Attempting to load fallback logo");
-                      // Instead of hiding, try a fallback logo
+                      // Simple fallback without excessive logging
                       const fallbackLogo = "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=200&h=80&fit=crop&crop=center";
                       if (e.currentTarget.src !== fallbackLogo) {
                         e.currentTarget.src = fallbackLogo;
-                        console.log("Switched to fallback logo:", fallbackLogo);
                       } else {
-                        // If even fallback fails, hide the image
-                        console.log("Fallback logo also failed, hiding logo");
                         e.currentTarget.style.display = 'none';
                       }
                     }}
                   />
-                </div>
-              )}
-              
-              {/* Debug info - only show in development */}
-              {process.env.NODE_ENV === 'development' && (
-                <div className="text-xs text-gray-500 mb-2">
-                  Debug: Logo URL = {shopConfig?.logo_url || 'undefined'}
                 </div>
               )}
               

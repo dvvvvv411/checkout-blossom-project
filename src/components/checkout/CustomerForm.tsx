@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { OrderData, ShopConfig, CustomerData, submitOrder } from "@/services/api";
@@ -66,9 +67,6 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
   // Auto-copy delivery address to billing address when billing address is not shown separately
   useEffect(() => {
     if (!showBillingAddress) {
-      console.log("=== AUTO-COPYING DELIVERY TO BILLING ===");
-      console.log("Delivery address:", formData.delivery_address);
-      
       setFormData(prev => ({
         ...prev,
         billing_address: {
@@ -91,12 +89,6 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
       terms: termsAccepted,
     };
     
-    console.log("=== STEP COMPLETION CHECK ===");
-    console.log("Form data:", formData);
-    console.log("Show billing address:", showBillingAddress);
-    console.log("Terms accepted:", termsAccepted);
-    console.log("Completed steps:", newCompletedSteps);
-    
     setCompletedSteps(newCompletedSteps);
   }, [formData, showBillingAddress, termsAccepted]);
 
@@ -111,8 +103,6 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
   }, [shopConfig?.payment_methods, formData.payment_method]);
 
   const handleInputChange = (field: string, value: string) => {
-    console.log(`=== INPUT CHANGE: ${field} = ${value} ===`);
-    
     if (field.startsWith("delivery_address.")) {
       const addressField = field.split(".")[1];
       setFormData(prev => ({
@@ -166,7 +156,6 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
   };
 
   const handleBillingAddressToggle = (checked: boolean) => {
-    console.log("=== BILLING ADDRESS TOGGLE ===", checked);
     setShowBillingAddress(checked);
     if (checked) {
       // Initialize with empty billing address for separate input
@@ -183,12 +172,10 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
   };
 
   const handleStepComplete = (step: string) => {
-    console.log(`=== STEP COMPLETED: ${step} ===`);
     setCompletedSteps(prev => ({ ...prev, [step]: true }));
   };
 
   const handleTermsAccepted = (accepted: boolean) => {
-    console.log("=== CUSTOMER FORM: Terms accepted changed ===", accepted);
     setTermsAccepted(accepted);
   };
 
@@ -197,18 +184,9 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log("=== CUSTOMER FORM: handleSubmit called ===");
     e.preventDefault();
     
-    console.log("=== FORM SUBMISSION START ===");
-    console.log("Token:", token);
-    console.log("Terms accepted:", termsAccepted);
-    console.log("Form data:", formData);
-    console.log("All steps completed:", allStepsCompleted);
-    console.log("Completed steps:", completedSteps);
-    
     if (!token) {
-      console.error("Token missing");
       toast({
         title: getTranslation("order_error", language),
         description: getTranslation("checkout_token_missing", language),
@@ -218,7 +196,6 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
     }
 
     if (!termsAccepted) {
-      console.error("Terms not accepted");
       toast({
         title: getTranslation("order_error", language),
         description: getTranslation("terms_required", language),
@@ -241,15 +218,9 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
       billing_city: formData.billing_address?.city,
     };
 
-    console.log("=== FORM VALIDATION ===");
-    console.log("Form values:", formValues);
-    console.log("Show billing address:", showBillingAddress);
-    
     const isValid = validateForm(formValues, showBillingAddress);
     
     if (!isValid) {
-      console.error("Form validation failed");
-      console.error("Validation errors:", errors);
       toast({
         title: getTranslation("order_error", language),
         description: getTranslation("order_error_message", language),
@@ -258,16 +229,10 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
       return;
     }
 
-    console.log("Form validation passed");
     setIsSubmitting(true);
 
     try {
-      console.log("=== API SUBMISSION START ===");
-      
       const orderResponse = await submitOrder(formData, orderData, token);
-      
-      console.log("=== API SUBMISSION SUCCESS ===");
-      console.log("Order response:", orderResponse);
       
       toast({
         title: getTranslation("order_success", language),
@@ -280,21 +245,15 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
       }, 1500);
       
     } catch (error) {
-      console.error("=== API SUBMISSION ERROR ===");
-      console.error("Order submission failed:", error);
-      
       const errorMessage = error instanceof Error ? error.message : "Unknown error";
-      console.error("Error message:", errorMessage);
       
       if (errorMessage === "CORS_ERROR") {
-        console.error("CORS error detected");
         toast({
           title: "Verbindungsfehler (CORS)",
           description: "Die Verbindung zum Server wurde durch Browser-Sicherheitsrichtlinien blockiert. Dies ist ein CORS-Problem. Bitte kontaktieren Sie den Support.",
           variant: "destructive",
         });
       } else if (errorMessage === "TOKEN_EXPIRED") {
-        console.error("Token expired");
         toast({
           title: getTranslation("order_error", language),
           description: "Der Checkout-Link ist abgelaufen. Sie werden zur Startseite weitergeleitet.",
@@ -304,28 +263,24 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
           window.location.href = '/';
         }, 3000);
       } else if (errorMessage.startsWith("VALIDATION_ERROR")) {
-        console.error("Validation error");
         toast({
           title: getTranslation("order_error", language),
           description: "Die eingegebenen Daten sind ungültig. Bitte überprüfen Sie Ihre Eingaben.",
           variant: "destructive",
         });
       } else if (errorMessage.startsWith("SERVER_ERROR")) {
-        console.error("Server error");
         toast({
           title: getTranslation("order_error", language),
           description: "Es gibt ein Problem mit dem Server. Bitte versuchen Sie es später erneut.",
           variant: "destructive",
         });
       } else if (errorMessage === "NETWORK_ERROR") {
-        console.error("Network error");
         toast({
           title: getTranslation("order_error", language),
           description: "Netzwerkfehler. Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.",
           variant: "destructive",
         });
       } else {
-        console.error("Unknown error");
         toast({
           title: getTranslation("order_error", language),
           description: "Ein unbekannter Fehler ist aufgetreten. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
@@ -334,17 +289,10 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
       }
     } finally {
       setIsSubmitting(false);
-      console.log("=== FORM SUBMISSION END ===");
     }
   };
 
   const allStepsCompleted = Object.values(completedSteps).every(Boolean);
-
-  console.log("=== CUSTOMER FORM RENDER ===");
-  console.log("All steps completed:", allStepsCompleted);
-  console.log("Completed steps breakdown:", completedSteps);
-  console.log("Terms accepted:", termsAccepted);
-  console.log("Is submitting:", isSubmitting);
 
   return (
     <div className="space-y-4">

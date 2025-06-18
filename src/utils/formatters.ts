@@ -13,3 +13,10 @@ export const formatIBAN = (iban: string): string => {
   // Add spaces every 4 characters
   return cleanIban.replace(/(.{4})/g, '$1 ').trim();
 };
+
+/**
+ * Performance-optimized skeleton loading utility
+ */
+export const createSkeletonArray = (count: number): number[] => {
+  return Array.from({ length: count }, (_, i) => i);
+};
