@@ -62,7 +62,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
     clearFieldError,
     getFieldError,
     hasFieldError,
-  } = useFormValidation(language);
+  } = useFormValidation(language as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL");
 
   useEffect(() => {
     if (!showBillingAddress) {
@@ -209,8 +209,8 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
     
     if (!token) {
       toast({
-        title: getTranslation("order_error", language),
-        description: getTranslation("checkout_token_missing", language),
+        title: getTranslation("order_error", language as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL"),
+        description: getTranslation("checkout_token_missing", language as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL"),
         variant: "destructive",
       });
       return;
@@ -218,8 +218,8 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
 
     if (!termsAccepted) {
       toast({
-        title: getTranslation("order_error", language),
-        description: getTranslation("terms_required", language),
+        title: getTranslation("order_error", language as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL"),
+        description: getTranslation("terms_required", language as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL"),
         variant: "destructive",
       });
       return;
@@ -291,8 +291,8 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
     
     if (!isValid) {
       toast({
-        title: getTranslation("order_error", language),
-        description: getTranslation("order_error_message", language),
+        title: getTranslation("order_error", language as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL"),
+        description: getTranslation("order_error_message", language as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL"),
         variant: "destructive",
       });
       return;
@@ -308,8 +308,8 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
       console.log("Order submission successful:", orderResponse);
       
       toast({
-        title: getTranslation("order_success", language),
-        description: getTranslation("order_success_message", language),
+        title: getTranslation("order_success", language as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL"),
+        description: getTranslation("order_success_message", language as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL"),
       });
       
       // Zur Bestätigungsseite weiterleiten
@@ -324,8 +324,8 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
       
       if (errorMessage === "TOKEN_EXPIRED") {
         toast({
-          title: getTranslation("order_error", language),
-          description: getTranslation("token_expired", language),
+          title: getTranslation("order_error", language as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL"),
+          description: getTranslation("token_expired", language as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL"),
           variant: "destructive",
         });
         // Nach 3 Sekunden zur Startseite redirecten
@@ -334,20 +334,20 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
         }, 3000);
       } else if (errorMessage.startsWith("VALIDATION_ERROR")) {
         toast({
-          title: getTranslation("order_error", language),
-          description: getTranslation("validation_error", language),
+          title: getTranslation("order_error", language as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL"),
+          description: getTranslation("validation_error", language as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL"),
           variant: "destructive",
         });
       } else if (errorMessage.startsWith("SERVER_ERROR")) {
         toast({
-          title: getTranslation("order_error", language),
-          description: getTranslation("server_error", language),
+          title: getTranslation("order_error", language as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL"),
+          description: getTranslation("server_error", language as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL"),
           variant: "destructive",
         });
       } else {
         toast({
-          title: getTranslation("order_error", language),
-          description: getTranslation("network_error", language),
+          title: getTranslation("order_error", language as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL"),
+          description: getTranslation("network_error", language as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL"),
           variant: "destructive",
         });
       }
@@ -367,17 +367,17 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
           className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
         >
           <ArrowLeft className="h-5 w-5" />
-          <span>{getTranslation("back", language)}</span>
+          <span>{getTranslation("back", language as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL")}</span>
         </button>
         
         <div className="flex items-center text-sm">
-          <span className="text-gray-500">{getTranslation("cart", language)}</span>
+          <span className="text-gray-500">{getTranslation("cart", language as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL")}</span>
           <span className="mx-2 text-gray-400">{'>'}</span>
-          <span className="font-semibold text-gray-900">{getTranslation("information", language)}</span>
+          <span className="font-semibold text-gray-900">{getTranslation("information", language as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL")}</span>
           <span className="mx-2 text-gray-400">{'>'}</span>
-          <span className="text-gray-500">{getTranslation("shipping", language)}</span>
+          <span className="text-gray-500">{getTranslation("shipping", language as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL")}</span>
           <span className="mx-2 text-gray-400">{'>'}</span>
-          <span className="text-gray-500">{getTranslation("payment", language)}</span>
+          <span className="text-gray-500">{getTranslation("payment", language as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL")}</span>
         </div>
       </div>
       
@@ -389,7 +389,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
             onChange={(email) => handleInputChange("email", email)}
             onComplete={() => handleStepComplete("email")}
             isCompleted={completedSteps.email}
-            language={language}
+            language={language as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL"}
             error={getFieldError("email")}
             onBlur={() => handleFieldBlur("email")}
           />
@@ -427,7 +427,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
               onChange={(method) => handleInputChange("payment_method", method)}
               onComplete={() => handleStepComplete("payment")}
               isCompleted={completedSteps.payment}
-              language={language}
+              language={language as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL"}
             />
           )}
 
@@ -439,7 +439,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
             isSubmitting={isSubmitting}
             allStepsCompleted={allStepsCompleted}
             accentColor={accentColor}
-            language={language}
+            language={language as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL"}
             testMode={testMode}
             onTestModeChange={handleTestModeChange}
           />

@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -37,7 +38,7 @@ const Checkout = () => {
     navigate(-1);
   };
 
-  const language = shopConfig?.language || "DE";
+  const language = (shopConfig?.language || "DE") as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL";
 
   if (!token) {
     return (
