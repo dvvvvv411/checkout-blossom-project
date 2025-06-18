@@ -1,3 +1,4 @@
+
 const translations = {
   // Email section
   email_address: {
@@ -756,7 +757,7 @@ const translations = {
     DE: "Informationen",
     EN: "Information", 
     FR: "Informations",
-    IT: "Informazioni",
+    IT: "Inform azioni",
     ES: "Información",
     PL: "Informazioni",
     NL: "Informatie"
@@ -967,6 +968,314 @@ const translations = {
     ES: "Encriptado SSL",
     PL: "Szyfrowanie SSL",
     NL: "SSL-versleuteld"
+  },
+
+  // CONFIRMATION PAGE TRANSLATIONS - NEW
+  order_confirmation: {
+    DE: "Bestellbestätigung",
+    EN: "Order Confirmation",
+    FR: "Confirmation de commande",
+    IT: "Conferma dell'ordine",
+    ES: "Confirmación de pedido",
+    PL: "Potwierdzenie zamówienia",
+    NL: "Bevestiging bestelling"
+  },
+  order_number: {
+    DE: "Bestellnummer",
+    EN: "Order Number",
+    FR: "Numéro de commande",
+    IT: "Numero d'ordine",
+    ES: "Número de pedido",
+    PL: "Numer zamówienia",
+    NL: "Bestelnummer"
+  },
+  order_confirmed: {
+    DE: "Bestellung bestätigt!",
+    EN: "Order Confirmed!",
+    FR: "Commande confirmée!",
+    IT: "Ordine confermato!",
+    ES: "Pedido confirmado!",
+    PL: "Zamówienie potwierdzone!",
+    NL: "Bestelling bevestigd!"
+  },
+  order_received: {
+    DE: "Bestellung erhalten!",
+    EN: "Order Received!",
+    FR: "Commande reçue!",
+    IT: "Ordine ricevuto!",
+    ES: "Pedido recibido!",
+    PL: "Zamówienie otrzymane!",
+    NL: "Bestelling ontvangen!"
+  },
+  order_confirmed_message: {
+    DE: "Vielen Dank für Ihre Bestellung! Wir haben Ihre Zahlung erhalten und Ihre Bestellung wird bearbeitet.",
+    EN: "Thank you for your order! We have received your payment and your order is being processed.",
+    FR: "Merci pour votre commande! Nous avons reçu votre paiement et votre commande est en cours de traitement.",
+    IT: "Grazie per il tuo ordine! Abbiamo ricevuto il tuo pagamento e il tuo ordine è in elaborazione.",
+    ES: "¡Gracias por su pedido! Hemos recibido su pago y su pedido está siendo procesado.",
+    PL: "Dziękujemy za zamówienie! Otrzymaliśmy Twoją płatność i Twoje zamówienie jest przetwarzane.",
+    NL: "Bedankt voor uw bestelling! We hebben uw betaling ontvangen en uw bestelling wordt verwerkt."
+  },
+  order_received_message: {
+    DE: "Vielen Dank für Ihre Bestellung! Wir werden Sie in Kürze kontaktieren, um die Details zu besprechen.",
+    EN: "Thank you for your order! We will contact you shortly to discuss the details.",
+    FR: "Merci pour votre commande! Nous vous contacterons bientôt pour discuter des détails.",
+    IT: "Grazie per il tuo ordine! Ti contatteremo presto per discutere i dettagli.",
+    ES: "¡Gracias por su pedido! Lo contactaremos pronto para discutir los detalles.",
+    PL: "Dziękujemy za zamówienie! Wkrótce skontaktujemy się z Tobą, aby omówić szczegóły.",
+    NL: "Bedankt voor uw bestelling! We nemen binnenkort contact met u op om de details te bespreken."
+  },
+  invoice_sent_email: {
+    DE: "Die Rechnung wurde an Ihre E-Mail-Adresse gesendet.",
+    EN: "The invoice has been sent to your email address.",
+    FR: "La facture a été envoyée à votre adresse e-mail.",
+    IT: "La fattura è stata inviata al tuo indirizzo email.",
+    ES: "La factura ha sido enviada a su dirección de correo electrónico.",
+    PL: "Faktura została wysłana na Twój adres e-mail.",
+    NL: "De factuur is verzonden naar uw e-mailadres."
+  },
+  confirmation_sent_email: {
+    DE: "Eine Bestätigung wurde an Ihre E-Mail-Adresse gesendet.",
+    EN: "A confirmation has been sent to your email address.",
+    FR: "Une confirmation a été envoyée à votre adresse e-mail.",
+    IT: "Una conferma è stata inviata al tuo indirizzo email.",
+    ES: "Se ha enviado una confirmación a su dirección de correo electrónico.",
+    PL: "Potwierdzenie zostało wysłane na Twój adres e-mail.",
+    NL: "Een bevestiging is verzonden naar uw e-mailadres."
+  },
+  payment_instructions: {
+    DE: "Zahlungsanweisungen",
+    EN: "Payment Instructions",
+    FR: "Instructions de paiement",
+    IT: "Istruzioni di pagamento",
+    ES: "Instrucciones de pago",
+    PL: "Instrukcje płatności",
+    NL: "Betalingsinstructies"
+  },
+  next_steps: {
+    DE: "Nächste Schritte",
+    EN: "Next Steps",
+    FR: "Prochaines étapes",
+    IT: "Prossimi passi",
+    ES: "Próximos pasos",
+    PL: "Kolejne kroki",
+    NL: "Volgende stappen"
+  },
+  bank_transfer: {
+    DE: "Banküberweisung",
+    EN: "Bank Transfer",
+    FR: "Virement bancaire",
+    IT: "Bonifico bancario",
+    ES: "Transferencia bancaria",
+    PL: "Przelew bankowy",
+    NL: "Bankoverschrijving"
+  },
+  bank_transfer_description: {
+    DE: "Überweisen Sie bitte den Betrag von",
+    EN: "Please transfer the amount of",
+    FR: "Veuillez virer le montant de",
+    IT: "Si prega di trasferire l'importo di",
+    ES: "Por favor transfiera el monto de",
+    PL: "Proszę przelać kwotę",
+    NL: "Gelieve het bedrag over te maken van"
+  },
+  bank_transfer_to_account: {
+    DE: "auf das unten angegebene Konto.",
+    EN: "to the account shown below.",
+    FR: "vers le compte indiqué ci-dessous.",
+    IT: "al conto mostrato di seguito.",
+    ES: "a la cuenta que se muestra a continuación.",
+    PL: "na konto podane poniżej.",
+    NL: "naar de onderstaande rekening."
+  },
+  delivery_after_payment: {
+    DE: "Nach Eingang der Zahlung wird Ihre Bestellung innerhalb von 1-3 Werktagen geliefert.",
+    EN: "After receipt of payment, your order will be delivered within 1-3 business days.",
+    FR: "Après réception du paiement, votre commande sera livrée dans un délai de 1 à 3 jours ouvrables.",
+    IT: "Dopo la ricezione del pagamento, il tuo ordine sarà consegnato entro 1-3 giorni lavorativi.",
+    ES: "Después de recibir el pago, su pedido será entregado dentro de 1-3 días hábiles.",
+    PL: "Po otrzymaniu płatności Twoje zamówienie zostanie dostarczone w ciągu 1-3 dni roboczych.",
+    NL: "Na ontvangst van de betaling wordt uw bestelling binnen 1-3 werkdagen geleverd."
+  },
+  order_review: {
+    DE: "Bestellprüfung",
+    EN: "Order Review",
+    FR: "Révision de commande",
+    IT: "Revisione dell'ordine",
+    ES: "Revisión del pedido",
+    PL: "Przegląd zamówienia",
+    NL: "Bestellingbeoordeling"
+  },
+  order_review_description: {
+    DE: "Wir prüfen Ihre Bestellung und kontaktieren Sie zur Bestätigung der Details.",
+    EN: "We are reviewing your order and will contact you to confirm the details.",
+    FR: "Nous examinons votre commande et vous contacterons pour confirmer les détails.",
+    IT: "Stiamo rivedendo il tuo ordine e ti contatteremo per confermare i dettagli.",
+    ES: "Estamos revisando su pedido y lo contactaremos para confirmar los detalles.",
+    PL: "Przeglądamy Twoje zamówienie i skontaktujemy się z Tobą w celu potwierdzenia szczegółów.",
+    NL: "We beoordelen uw bestelling en nemen contact met u op om de details te bevestigen."
+  },
+  phone_contact: {
+    DE: "Telefonkontakt",
+    EN: "Phone Contact",
+    FR: "Contact téléphonique",
+    IT: "Contatto telefonico",
+    ES: "Contacto telefónico",
+    PL: "Kontakt telefoniczny",
+    NL: "Telefonisch contact"
+  },
+  phone_contact_description: {
+    DE: "Wir rufen Sie an, um den Liefertermin zu vereinbaren und eventuelle Fragen zu klären.",
+    EN: "We will call you to arrange the delivery date and clarify any questions.",
+    FR: "Nous vous appellerons pour organiser la date de livraison et clarifier toute question.",
+    IT: "Ti chiameremo per organizzare la data di consegna e chiarire eventuali domande.",
+    ES: "Lo llamaremos para coordinar la fecha de entrega y aclarar cualquier pregunta.",
+    PL: "Zadzwonimy do Ciebie, aby umówić termin dostawy i wyjaśnić wszelkie pytania.",
+    NL: "We bellen u om de leveringsdatum af te spreken en eventuele vragen te verduidelijken."
+  },
+  delivery_timeframe: {
+    DE: "Die Lieferung erfolgt nach telefonischer Absprache, in der Regel innerhalb von 1-5 Werktagen.",
+    EN: "Delivery takes place after telephone consultation, usually within 1-5 business days.",
+    FR: "La livraison a lieu après consultation téléphonique, généralement dans un délai de 1 à 5 jours ouvrables.",
+    IT: "La consegna avviene dopo consultazione telefonica, di solito entro 1-5 giorni lavorativi.",
+    ES: "La entrega tiene lugar después de la consulta telefónica, generalmente dentro de 1-5 días hábiles.",
+    PL: "Dostawa odbywa się po konsultacji telefonicznej, zwykle w ciągu 1-5 dni roboczych.",
+    NL: "Levering vindt plaats na telefonisch overleg, meestal binnen 1-5 werkdagen."
+  },
+  bank_transfer_details: {
+    DE: "Bankverbindung für die Überweisung",
+    EN: "Bank Details for Transfer",
+    FR: "Détails bancaires pour le virement",
+    IT: "Dettagli bancari per il bonifico",
+    ES: "Detalles bancarios para la transferencia",
+    PL: "Dane bankowe do przelewu",
+    NL: "Bankgegevens voor overschrijving"
+  },
+  account_holder: {
+    DE: "Kontoinhaber",
+    EN: "Account Holder",
+    FR: "Titulaire du compte",
+    IT: "Intestatario del conto",
+    ES: "Titular de la cuenta",
+    PL: "Właściciel konta",
+    NL: "Rekeninghouder"
+  },
+  reference: {
+    DE: "Verwendungszweck",
+    EN: "Reference",
+    FR: "Référence",
+    IT: "Riferimento",
+    ES: "Referencia",
+    PL: "Odniesienie",
+    NL: "Referentie"
+  },
+  copy_tooltip: {
+    DE: "In die Zwischenablage kopieren",
+    EN: "Copy to clipboard",
+    FR: "Copier dans le presse-papiers",
+    IT: "Copia negli appunti",
+    ES: "Copiar al portapapeles",
+    PL: "Kopiuj do schowka",
+    NL: "Kopiëren naar klembord"
+  },
+  important_notice: {
+    DE: "Wichtiger Hinweis",
+    EN: "Important Notice",
+    FR: "Avis important",
+    IT: "Avviso importante",
+    ES: "Aviso importante",
+    PL: "Ważna uwaga",
+    NL: "Belangrijke mededeling"
+  },
+  manual_mode_notice: {
+    DE: "Ihre Bestellung wird manuell bearbeitet. Wir kontaktieren Sie in Kürze zur Bestätigung und Terminvereinbarung.",
+    EN: "Your order will be processed manually. We will contact you shortly for confirmation and appointment scheduling.",
+    FR: "Votre commande sera traitée manuellement. Nous vous contacterons sous peu pour confirmation et prise de rendez-vous.",
+    IT: "Il tuo ordine sarà elaborato manualmente. Ti contatteremo a breve per la conferma e la programmazione dell'appuntamento.",
+    ES: "Su pedido será procesado manualmente. Lo contactaremos en breve para confirmación y programación de cita.",
+    PL: "Twoje zamówienie zostanie przetworzone ręcznie. Wkrótce skontaktujemy się z Tobą w celu potwierdzenia i umówienia terminu.",
+    NL: "Uw bestelling wordt handmatig verwerkt. We nemen binnenkort contact met u op voor bevestiging en afspraakplanning."
+  },
+  manual_mode_phone_notice: {
+    DE: "Bitte stellen Sie sicher, dass Sie unter der Telefonnummer",
+    EN: "Please ensure that you are reachable at the phone number",
+    FR: "Veuillez vous assurer que vous êtes joignable au numéro de téléphone",
+    IT: "Assicurati di essere raggiungibile al numero di telefono",
+    ES: "Por favor asegúrese de estar disponible en el número de teléfono",
+    PL: "Upewnij się, że jesteś dostępny pod numerem telefonu",
+    NL: "Zorg ervoor dat u bereikbaar bent op telefoonnummer"
+  },
+  delivery_info: {
+    DE: "Lieferinformationen",
+    EN: "Delivery Information",
+    FR: "Informations de livraison",
+    IT: "Informazioni sulla consegna",
+    ES: "Información de entrega",
+    PL: "Informacje o dostawie",
+    NL: "Leveringsinformatie"
+  },
+  delivery_notice_title: {
+    DE: "Wichtig für die Lieferung",
+    EN: "Important for Delivery",
+    FR: "Important pour la livraison",
+    IT: "Importante per la consegna",
+    ES: "Importante para la entrega",
+    PL: "Ważne dla dostawy",
+    NL: "Belangrijk voor levering"
+  },
+  delivery_notice_description: {
+    DE: "Bitte stellen Sie sicher, dass Sie am Liefertag unter der angegebenen Telefonnummer",
+    EN: "Please ensure that you are reachable on the delivery day at the specified phone number",
+    FR: "Veuillez vous assurer que vous êtes joignable le jour de la livraison au numéro de téléphone spécifié",
+    IT: "Assicurati di essere raggiungibile il giorno della consegna al numero di telefono specificato",
+    ES: "Por favor asegúrese de estar disponible el día de la entrega en el número de teléfono especificado",
+    PL: "Upewnij się, że jesteś dostępny w dniu dostawy pod podanym numerem telefonu",
+    NL: "Zorg ervoor dat u op de leveringsdag bereikbaar bent op het opgegeven telefoonnummer"
+  },
+  delivery_notice_reachable: {
+    DE: "erreichbar sind.",
+    EN: "are reachable.",
+    FR: "êtes joignable.",
+    IT: "sei raggiungibile.",
+    ES: "esté disponible.",
+    PL: "jesteś dostępny.",
+    NL: "bereikbaar bent."
+  },
+  order_details: {
+    DE: "Bestelldetails",
+    EN: "Order Details",
+    FR: "Détails de la commande",
+    IT: "Dettagli dell'ordine",
+    ES: "Detalles del pedido",
+    PL: "Szczegóły zamówienia",
+    NL: "Besteldetails"
+  },
+  customer_information: {
+    DE: "Kundeninformationen",
+    EN: "Customer Information",
+    FR: "Informations client",
+    IT: "Informazioni cliente",
+    ES: "Información del cliente",
+    PL: "Informacje o kliencie",
+    NL: "Klantinformatie"
+  },
+  print_confirmation: {
+    DE: "Bestätigung drucken",
+    EN: "Print Confirmation",
+    FR: "Imprimer la confirmation",
+    IT: "Stampa conferma",
+    ES: "Imprimir confirmación",
+    PL: "Drukuj potwierdzenie",
+    NL: "Bevestiging afdrukken"
+  },
+  new_order: {
+    DE: "Neue Bestellung",
+    EN: "New Order",
+    FR: "Nouvelle commande",
+    IT: "Nuovo ordine",
+    ES: "Nuevo pedido",
+    PL: "Nowe zamówienie",
+    NL: "Nieuwe bestelling"
   }
 };
 
