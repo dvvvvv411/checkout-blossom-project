@@ -18,6 +18,14 @@ export const VerifiedShopCard = ({ language = "DE", shopConfig }: VerifiedShopCa
   const [showContent, setShowContent] = useState(false);
   const [greenOutline, setGreenOutline] = useState(false);
 
+  // Ensure we have a valid language for getTranslation
+  const validLanguage = (language && typeof language === 'string' && 
+    ["DE", "EN", "FR", "IT", "ES", "PL", "NL"].includes(language.toUpperCase())) 
+    ? language.toUpperCase() as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL"
+    : "DE";
+
+  console.log("VerifiedShopCard language processing:", { original: language, valid: validLanguage });
+
   useEffect(() => {
     // Loading animation with 5 stars over 2 seconds
     const loadingSteps = [0, 1, 2, 3, 4];
@@ -51,14 +59,6 @@ export const VerifiedShopCard = ({ language = "DE", shopConfig }: VerifiedShopCa
       clearInterval(loadingInterval);
     };
   }, []);
-
-  // Ensure we have a valid language for getTranslation
-  const validLanguage = (language && typeof language === 'string' && 
-    ["DE", "EN", "FR", "IT", "ES", "PL", "NL"].includes(language.toUpperCase())) 
-    ? language.toUpperCase() as "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL"
-    : "DE";
-
-  console.log("VerifiedShopCard language processing:", { original: language, valid: validLanguage });
 
   const renderStars = () => {
     const stars = [];
