@@ -1,6 +1,8 @@
 
 // Payment method utilities for handling various payment method formats
 
+import { logger } from "./logger";
+
 export type PaymentMethodCode = "vorkasse" | "rechnung";
 
 export interface PaymentMethodMapping {
@@ -71,7 +73,7 @@ export const PAYMENT_METHOD_MAPPINGS: PaymentMethodMapping[] = [
  * Maps various payment method formats to standardized codes
  */
 export const mapPaymentMethodToCode = (method: any): PaymentMethodCode | null => {
-  console.log("Mapping payment method:", method, "type:", typeof method);
+  logger.dev("Mapping payment method", { method, type: typeof method });
   
   if (!method) return null;
   
@@ -91,12 +93,12 @@ export const mapPaymentMethodToCode = (method: any): PaymentMethodCode | null =>
   // Find matching payment method
   for (const mapping of PAYMENT_METHOD_MAPPINGS) {
     if (mapping.aliases.some(alias => alias.toLowerCase() === lowercaseMethod)) {
-      console.log("Mapped", method, "to", mapping.code);
+      logger.dev("Successfully mapped payment method", { from: method, to: mapping.code });
       return mapping.code;
     }
   }
   
-  console.warn("Could not map payment method:", method);
+  logger.warn("Could not map payment method", method);
   return null;
 };
 
@@ -127,7 +129,7 @@ export const processPaymentMethods = (methods: any[]): Array<{
   displayName: string;
 }> => {
   if (!Array.isArray(methods)) {
-    console.warn("Payment methods is not an array:", methods);
+    logger.warn("Payment methods is not an array", methods);
     return [];
   }
   
@@ -144,6 +146,11 @@ export const processPaymentMethods = (methods: any[]): Array<{
     })
     .filter((item): item is NonNullable<typeof item> => item !== null);
   
-  console.log("Processed payment methods:", processed);
+  logger.dev("Processed payment methods", { 
+    input: methods.length, 
+    output: processed.length,
+    methods: processed.map(p => p.code)
+  });
+  
   return processed;
 };

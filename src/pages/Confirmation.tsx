@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,6 +7,7 @@ import { CheckCircle, Info, CreditCard, MapPin, Mail, Phone, ArrowLeft, Truck, C
 import { formatCurrency, fetchShopConfig, fetchBankData, ShopConfig, BankData } from "@/services/api";
 import { getTranslation, getProductNameTranslation } from "@/utils/translations";
 import { formatIBAN } from "@/utils/formatters";
+import { logger } from "@/utils/logger";
 
 interface OrderConfirmationData {
   orderResponse: {
@@ -39,54 +41,49 @@ const Confirmation = () => {
   const [language, setLanguage] = useState<"DE" | "EN" | "FR">("DE");
 
   useEffect(() => {
-    console.log("=== CONFIRMATION PAGE DEBUG START ===");
+    logger.dev("Confirmation page loading");
     
     const storedData = sessionStorage.getItem('orderConfirmation');
-    console.log("Raw sessionStorage data:", storedData);
     
     if (!storedData) {
-      console.error("No order confirmation data found in sessionStorage");
+      logger.error("No order confirmation data found in sessionStorage");
       navigate('/');
       return;
     }
 
     try {
       const data = JSON.parse(storedData);
-      console.log("Parsed confirmation data:", JSON.stringify(data, null, 2));
-      
-      // Debug orderResponse structure
-      console.log("=== ORDER RESPONSE DEBUG ===");
-      console.log("orderResponse:", data.orderResponse);
-      console.log("orderResponse.payment_instructions:", data.orderResponse?.payment_instructions);
-      console.log("orderResponse.payment_instructions.bank_details:", data.orderResponse?.payment_instructions?.bank_details);
-      
-      // Debug bank data
-      console.log("=== BANK DATA DEBUG ===");
-      console.log("bankData from sessionStorage:", data.bankData);
+      logger.dev("Order confirmation data loaded", {
+        hasOrderResponse: !!data.orderResponse,
+        hasCustomerData: !!data.customerData,
+        hasOrderData: !!data.orderData,
+        hasShopConfig: !!data.shopConfig,
+        hasBankData: !!data.bankData
+      });
       
       setConfirmationData(data);
       
-      // Sprache aus den Daten setzen falls verfügbar
+      // Set language from order data if available
       if (data.orderData?.language) {
-        console.log("Setting language from orderData:", data.orderData.language);
+        logger.dev("Setting language from orderData", data.orderData.language);
         setLanguage(data.orderData.language);
       }
 
-      // Shop-Konfiguration verwenden - zuerst aus sessionStorage, dann API
+      // Use shop configuration - first from sessionStorage, then API
       if (data.shopConfig) {
-        console.log("=== SHOP CONFIG FROM SESSION STORAGE ===");
-        console.log("shopConfig from sessionStorage:", JSON.stringify(data.shopConfig, null, 2));
-        console.log("checkout_mode:", data.shopConfig.checkout_mode);
+        logger.dev("Using shop config from sessionStorage", {
+          checkoutMode: data.shopConfig.checkout_mode
+        });
         setShopConfig(data.shopConfig);
         if (data.shopConfig.language) {
           setLanguage(data.shopConfig.language);
         }
       } else if (data.orderData?.shop_id) {
-        console.log("=== FETCHING SHOP CONFIG FROM API ===");
-        console.log("shop_id:", data.orderData.shop_id);
+        logger.dev("Fetching shop config from API", data.orderData.shop_id);
         fetchShopConfig(data.orderData.shop_id).then(config => {
-          console.log("shopConfig from API:", JSON.stringify(config, null, 2));
-          console.log("checkout_mode from API:", config.checkout_mode);
+          logger.dev("Shop config loaded from API", {
+            checkoutMode: config.checkout_mode
+          });
           setShopConfig(config);
           if (config.language) {
             setLanguage(config.language);
@@ -94,7 +91,7 @@ const Confirmation = () => {
         });
       }
     } catch (error) {
-      console.error("Error parsing confirmation data:", error);
+      logger.error("Error parsing confirmation data", error);
       navigate('/');
     }
   }, [navigate]);
@@ -102,49 +99,35 @@ const Confirmation = () => {
   // Enhanced Express Mode detection with comprehensive debugging
   useEffect(() => {
     if (confirmationData && shopConfig) {
-      console.log("=== ENHANCED INSTANT MODE DETECTION DEBUG ===");
-      console.log("shopConfig:", JSON.stringify(shopConfig, null, 2));
-      console.log("shopConfig.checkout_mode:", shopConfig.checkout_mode);
-      
-      // Check for "instant" mode only
       const checkoutMode = shopConfig.checkout_mode;
       const isInstantMode = checkoutMode === "instant";
-      console.log("isInstantMode check:", isInstantMode);
       
-      console.log("=== BANK DETAILS AVAILABILITY DEBUG ===");
-      console.log("orderResponse:", JSON.stringify(confirmationData.orderResponse, null, 2));
-      console.log("payment_instructions exists:", !!confirmationData.orderResponse.payment_instructions);
-      console.log("bank_details exists:", !!confirmationData.orderResponse.payment_instructions?.bank_details);
+      logger.dev("Instant mode detection", {
+        checkoutMode,
+        isInstantMode
+      });
       
       const bankDetailsFromResponse = confirmationData.orderResponse.payment_instructions?.bank_details;
-      console.log("Bank details from order response:", bankDetailsFromResponse);
-      
       const bankDataFromStorage = confirmationData.bankData;
-      console.log("Bank data from sessionStorage:", bankDataFromStorage);
-      
       const bankDetailsAvailable = bankDetailsFromResponse || bankDataFromStorage;
-      console.log("Bank details available (from either source):", !!bankDetailsAvailable);
       
-      const shouldShowBankDetails = isInstantMode && bankDetailsAvailable;
-      console.log("Should show bank details:", shouldShowBankDetails);
+      logger.dev("Bank details availability", {
+        fromResponse: !!bankDetailsFromResponse,
+        fromStorage: !!bankDataFromStorage,
+        available: !!bankDetailsAvailable
+      });
       
       if (isInstantMode && !bankDetailsAvailable) {
-        console.warn("⚠️ INSTANT MODE IS ENABLED BUT NO BANK DETAILS FOUND!");
-        console.warn("This might indicate an API issue or missing bank account configuration");
-        console.warn("Checkout mode:", shopConfig.checkout_mode);
-        console.warn("Bank details in response:", bankDetailsFromResponse);
-        console.warn("Bank data in storage:", bankDataFromStorage);
-      }
-      
-      if (!isInstantMode) {
-        console.info("ℹ️ Not in Instant Mode - checkout_mode is:", shopConfig.checkout_mode);
-      } else {
-        console.info("✅ Instant Mode detected - checkout_mode is:", shopConfig.checkout_mode);
+        logger.warn("Instant mode enabled but no bank details found", {
+          checkoutMode: shopConfig.checkout_mode,
+          hasBankDetailsInResponse: !!bankDetailsFromResponse,
+          hasBankDataInStorage: !!bankDataFromStorage
+        });
       }
     }
   }, [confirmationData, shopConfig]);
 
-  // New useEffect to fetch bank data when in instant mode and no bank data is available
+  // Fetch bank data when in instant mode and no bank data is available
   useEffect(() => {
     if (confirmationData && shopConfig) {
       const isInstantMode = shopConfig.checkout_mode === "instant";
@@ -152,38 +135,27 @@ const Confirmation = () => {
       const bankDataFromStorage = confirmationData.bankData;
       const hasBankDetails = !!(bankDetailsFromResponse || bankDataFromStorage || loadedBankData);
       
-      console.log("=== BANK DATA FETCH DECISION ===");
-      console.log("isInstantMode:", isInstantMode);
-      console.log("hasBankDetails:", hasBankDetails);
-      console.log("shop_id:", confirmationData.orderData?.shop_id);
-      console.log("loadedBankData:", loadedBankData);
-      
       if (isInstantMode && !hasBankDetails && confirmationData.orderData?.shop_id) {
-        console.log("=== FETCHING BANK DATA FOR INSTANT MODE ===");
-        console.log("Fetching bank data for shop:", confirmationData.orderData.shop_id);
+        logger.info("Fetching bank data for instant mode", confirmationData.orderData.shop_id);
         
         fetchBankData(confirmationData.orderData.shop_id)
           .then(bankData => {
-            console.log("=== BANK DATA FETCH RESULT ===");
-            console.log("Fetched bank data:", bankData);
-            
             if (bankData) {
               setLoadedBankData(bankData);
-              console.log("✅ Bank data successfully loaded and set to state");
+              logger.info("Bank data successfully loaded");
             } else {
-              console.warn("⚠️ No bank data returned from API");
+              logger.warn("No bank data returned from API");
             }
           })
           .catch(error => {
-            console.error("=== BANK DATA FETCH ERROR ===");
-            console.error("Error fetching bank data:", error);
+            logger.error("Error fetching bank data", error);
           });
       }
     }
   }, [confirmationData, shopConfig, loadedBankData]);
 
   const handleNewOrder = () => {
-    // Bestätigungsdaten löschen und zur Startseite
+    // Clear confirmation data and go to home
     sessionStorage.removeItem('orderConfirmation');
     navigate('/');
   };
@@ -197,9 +169,9 @@ const Confirmation = () => {
       // For IBAN, copy the clean version without spaces
       const cleanText = label === "IBAN" ? text.replace(/\s/g, '') : text;
       await navigator.clipboard.writeText(cleanText);
-      console.log(`${label} copied to clipboard: ${cleanText}`);
+      logger.dev("Copied to clipboard", { label, text: cleanText });
     } catch (err) {
-      console.error('Failed to copy to clipboard:', err);
+      logger.error("Failed to copy to clipboard", err);
     }
   };
 
@@ -243,24 +215,15 @@ const Confirmation = () => {
   // Get display order number - prefer order_number, fallback to order_id
   const displayOrderNumber = orderResponse.order_number || orderResponse.order_id;
 
-  // Get translated product name - NEW
+  // Get translated product name
   const translatedProductName = getProductNameTranslation(orderData.product_name, language);
 
-  // Additional runtime debugging
-  console.log("=== RENDER TIME DEBUG ===");
-  console.log("Final isInstantMode value:", isInstantMode);
-  console.log("Final shopConfig:", shopConfig);
-  console.log("Bank details from response:", bankDetailsFromResponse);
-  console.log("Bank data from storage:", bankDataFromStorage);
-  console.log("Loaded bank data:", loadedBankData);
-  console.log("Has bank details (any source):", hasBankDetails);
-  console.log("Final bank details to display:", bankDetails);
-  console.log("Order number:", orderResponse.order_number);
-  console.log("Order ID:", orderResponse.order_id);
-  console.log("Display order number:", displayOrderNumber);
-  console.log("Payment reference:", paymentReference);
-  console.log("Original product name:", orderData.product_name);
-  console.log("Translated product name:", translatedProductName);
+  logger.dev("Confirmation page render", {
+    isInstantMode,
+    hasBankDetails,
+    displayOrderNumber,
+    translatedProductName
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
@@ -486,8 +449,8 @@ const Confirmation = () => {
                       </div>
                     )}
 
-                    {/* Enhanced debug section for missing bank details in Instant Mode */}
-                    {isInstantMode && !hasBankDetails && (
+                    {/* Debug section for missing bank details in Instant Mode - only in development */}
+                    {isInstantMode && !hasBankDetails && import.meta.env.DEV && (
                       <div className="bg-red-50 border-2 border-red-200 rounded-lg p-6 mt-6">
                         <h4 className="font-bold text-red-900 mb-3 text-lg">
                           🐛 DEBUG: Missing Bank Details in Instant Mode
@@ -495,13 +458,6 @@ const Confirmation = () => {
                         <p className="text-red-800 mb-2">
                           Instant Mode is enabled but no bank details were found from any source.
                         </p>
-                        <div className="text-sm text-red-700 space-y-1">
-                          <p><strong>Checkout Mode:</strong> {shopConfig?.checkout_mode}</p>
-                          <p><strong>Bank details in order response:</strong> {JSON.stringify(bankDetailsFromResponse)}</p>
-                          <p><strong>Bank data in sessionStorage:</strong> {JSON.stringify(bankDataFromStorage)}</p>
-                          <p><strong>Loaded bank data:</strong> {JSON.stringify(loadedBankData)}</p>
-                          <p><strong>Order response payment_instructions:</strong> {JSON.stringify(orderResponse.payment_instructions)}</p>
-                        </div>
                       </div>
                     )}
 

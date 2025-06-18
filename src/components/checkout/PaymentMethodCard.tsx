@@ -6,6 +6,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { CreditCard, Check, Shield } from "lucide-react";
 import { getTranslation } from "@/utils/translations";
 import { processPaymentMethods, PaymentMethodCode } from "@/utils/paymentMethodUtils";
+import { logger } from "@/utils/logger";
 
 interface PaymentMethodCardProps {
   paymentMethod: "vorkasse" | "rechnung";
@@ -26,43 +27,36 @@ export const PaymentMethodCard = ({
 }: PaymentMethodCardProps) => {
   const [focused, setFocused] = useState(false);
 
-  console.log("PaymentMethodCard - Debug Info:", {
+  logger.dev("PaymentMethodCard rendered", {
     paymentMethod,
-    paymentMethods,
-    paymentMethodsLength: paymentMethods?.length,
-    paymentMethodsTypes: paymentMethods?.map(m => typeof m),
-    language,
+    paymentMethodsCount: paymentMethods?.length,
     isCompleted
   });
 
   // Process payment methods using the utility function
   const processedPaymentMethods = processPaymentMethods(paymentMethods || []);
 
-  console.log("Processed payment methods:", processedPaymentMethods);
-
   // Automatically select first available payment method if none is selected
   useEffect(() => {
     if (processedPaymentMethods.length > 0 && !paymentMethod) {
       const firstMethod = processedPaymentMethods[0].code;
-      console.log("Auto-selecting first payment method:", firstMethod);
+      logger.dev("Auto-selecting first payment method", firstMethod);
       onChange(firstMethod);
       onComplete();
     }
   }, [processedPaymentMethods, paymentMethod, onChange, onComplete]);
 
   const handleChange = (value: string) => {
-    console.log("Payment method change:", value);
+    logger.dev("Payment method changed to", value);
     if (value === "vorkasse" || value === "rechnung") {
       onChange(value);
       onComplete();
     } else {
-      console.warn("Invalid payment method selected:", value);
+      logger.warn("Invalid payment method selected", value);
     }
   };
 
   const getPaymentMethodDetails = (method: PaymentMethodCode) => {
-    console.log("Getting details for payment method:", method);
-    
     const details = {
       vorkasse: {
         title: getTranslation("vorkasse", language),
@@ -81,7 +75,7 @@ export const PaymentMethodCard = ({
 
   // Show error state if no payment methods available
   if (!paymentMethods || paymentMethods.length === 0) {
-    console.log("No payment methods available");
+    logger.warn("No payment methods available");
     return (
       <Card className="border-red-300 bg-red-50">
         <CardContent className="p-6">
@@ -96,7 +90,7 @@ export const PaymentMethodCard = ({
 
   // Show processing state if no valid methods after processing
   if (processedPaymentMethods.length === 0) {
-    console.log("No valid payment methods after processing");
+    logger.warn("No valid payment methods after processing", paymentMethods);
     return (
       <Card className="border-yellow-300 bg-yellow-50">
         <CardContent className="p-6">
@@ -157,13 +151,6 @@ export const PaymentMethodCard = ({
           {processedPaymentMethods.map((methodInfo, index) => {
             const details = getPaymentMethodDetails(methodInfo.code);
             const isSelected = paymentMethod === methodInfo.code;
-            
-            console.log("Rendering payment method:", { 
-              original: methodInfo.original,
-              code: methodInfo.code,
-              isSelected,
-              displayName: methodInfo.displayName
-            });
             
             return (
               <div key={`${methodInfo.code}-${index}`} className={`transition-all duration-200 ${
