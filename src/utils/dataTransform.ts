@@ -1,3 +1,4 @@
+
 // Data transformation utilities for backend/frontend compatibility
 
 export interface BackendOrderData {
@@ -57,18 +58,31 @@ export const transformOrderData = (backendData: any): any => {
     total_net = backendData.basePrice;
     total_gross = backendData.totalAmount;
     total_tax = total_gross - total_net;
-    console.log("Calculated total_tax from basePrice and totalAmount:", total_tax);
+    console.log("Using provided basePrice and totalAmount:", { total_net, total_gross, total_tax });
   }
-  // If we don't have the totals, calculate them
+  // If we don't have the totals, calculate them correctly
   else if (!total_net || !total_gross) {
-    const net_amount = (quantity_liters * price_per_liter) + delivery_fee;
-    const tax_amount = net_amount * tax_rate;
+    // Calculate the gross amount first (this is the total price including VAT)
+    const gross_amount = (quantity_liters * price_per_liter) + delivery_fee;
+    console.log("Calculated gross amount:", gross_amount);
+    
+    // Calculate net amount: gross / (1 + tax_rate)
+    const net_amount = gross_amount / (1 + tax_rate);
+    
+    // Calculate tax amount: gross - net
+    const tax_amount = gross_amount - net_amount;
     
     total_net = net_amount;
     total_tax = tax_amount;
-    total_gross = net_amount + tax_amount;
+    total_gross = gross_amount;
     
-    console.log("Calculated missing totals:", { total_net, total_tax, total_gross });
+    console.log("Corrected tax calculation:", { 
+      gross_amount, 
+      net_amount, 
+      tax_amount, 
+      tax_rate,
+      calculation: `${gross_amount} / (1 + ${tax_rate}) = ${net_amount}`
+    });
   }
   // If we only have total_tax missing, calculate it
   else if (!total_tax) {
