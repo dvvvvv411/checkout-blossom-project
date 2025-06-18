@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -163,10 +164,6 @@ export const ContactDeliveryCard = ({
 
           {/* Delivery Address Section */}
           <div>
-            <h4 className="text-sm font-semibold text-gray-800 mb-4 flex items-center">
-              <MapPin className="h-4 w-4 mr-2 text-gray-600" />
-              Lieferadresse
-            </h4>
             <div className="space-y-4">
               <div>
                 <Label htmlFor="delivery_street" className="text-sm font-medium text-gray-700 mb-2 block">
