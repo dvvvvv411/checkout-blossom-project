@@ -1,3 +1,4 @@
+
 // API Services für Checkout-System
 
 import { 
@@ -149,8 +150,15 @@ export const formatLiters = (liters: number, language: "DE" | "EN" | "FR"): stri
   return new Intl.NumberFormat(locale).format(liters);
 };
 
-// Verbesserte Fetch-Funktion mit CORS-Handling
+// Enhanced Fetch-Funktion mit verbessertem CORS-Handling und Debugging
 const fetchWithCorsHandling = async (url: string, options: RequestInit = {}): Promise<Response> => {
+  console.log(`=== FETCH REQUEST DEBUG ===`);
+  console.log(`URL: ${url}`);
+  console.log(`Method: ${options.method || 'GET'}`);
+  console.log(`Headers:`, options.headers);
+  console.log(`Body:`, options.body);
+  console.log(`Current Origin: ${window.location.origin}`);
+  
   const enhancedOptions: RequestInit = {
     ...options,
     mode: 'cors',
@@ -162,21 +170,37 @@ const fetchWithCorsHandling = async (url: string, options: RequestInit = {}): Pr
     },
   };
 
-  console.log(`Making request to: ${url}`);
-  console.log('Request options:', enhancedOptions);
+  console.log(`Enhanced options:`, enhancedOptions);
 
   try {
+    console.log(`Making fetch request...`);
     const response = await fetch(url, enhancedOptions);
-    console.log(`Response status: ${response.status}`);
+    
+    console.log(`=== FETCH RESPONSE DEBUG ===`);
+    console.log(`Status: ${response.status} ${response.statusText}`);
+    console.log(`Headers:`, Object.fromEntries(response.headers.entries()));
+    console.log(`OK: ${response.ok}`);
+    console.log(`Type: ${response.type}`);
+    console.log(`URL: ${response.url}`);
+    
     return response;
   } catch (error) {
-    console.error('Fetch error:', error);
+    console.error(`=== FETCH ERROR DEBUG ===`);
+    console.error('Error object:', error);
+    console.error('Error type:', typeof error);
+    console.error('Error constructor:', error?.constructor?.name);
+    console.error('Error message:', error?.message);
+    console.error('Error stack:', error?.stack);
     
-    if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
-      console.error('CORS or network error detected');
-      throw new Error('CORS_ERROR');
+    if (error instanceof TypeError) {
+      console.error('TypeError detected - likely CORS or network issue');
+      if (error.message.includes('Failed to fetch')) {
+        console.error('Failed to fetch - definitive CORS or network error');
+        throw new Error('CORS_ERROR');
+      }
     }
     
+    console.error('Rethrowing original error');
     throw error;
   }
 };
@@ -213,19 +237,24 @@ const getFallbackShopConfig = (shopId: string): ShopConfig => ({
 
 // Updated fetchOrderData function to return both order data and shop ID
 export const fetchOrderDataWithShopId = async (token: string): Promise<OrderDataWithShopId> => {
-  console.log(`Fetching order data with shop ID for token: ${token}`);
+  console.log(`=== ORDER DATA FETCH START ===`);
+  console.log(`Token: ${token?.substring(0, 10)}...`);
   
   if (!token || token.trim() === '') {
     console.error('Invalid token provided');
     throw new Error('TOKEN_EXPIRED');
   }
 
+  const url = `https://luhhnsvwtnmxztcmdxyq.supabase.co/functions/v1/get-order-token?token=${encodeURIComponent(token)}`;
+  
   try {
-    const response = await fetchWithCorsHandling(
-      `https://luhhnsvwtnmxztcmdxyq.supabase.co/functions/v1/get-order-token?token=${encodeURIComponent(token)}`
-    );
+    const response = await fetchWithCorsHandling(url);
     
     if (!response.ok) {
+      console.error(`=== ORDER DATA HTTP ERROR ===`);
+      console.error(`Status: ${response.status}`);
+      console.error(`Status Text: ${response.statusText}`);
+      
       if (response.status === 401 || response.status === 403) {
         console.error('Token expired or unauthorized');
         throw new Error('TOKEN_EXPIRED');
@@ -242,6 +271,7 @@ export const fetchOrderDataWithShopId = async (token: string): Promise<OrderData
     }
     
     const rawData = await response.json();
+    console.log("=== ORDER DATA SUCCESS ===");
     console.log("Raw order data received:", rawData);
     
     // Transform the data to expected format
@@ -267,6 +297,7 @@ export const fetchOrderDataWithShopId = async (token: string): Promise<OrderData
       shopId: shopId
     };
   } catch (error) {
+    console.error("=== ORDER DATA ERROR ===");
     console.error("Error fetching order data:", error);
     
     if (error instanceof Error) {
@@ -290,19 +321,23 @@ export const fetchOrderData = async (token: string): Promise<OrderData> => {
 };
 
 export const fetchShopConfig = async (shopId: string): Promise<ShopConfig> => {
-  console.log(`Fetching shop config for shop: ${shopId}`);
+  console.log(`=== SHOP CONFIG FETCH START ===`);
+  console.log(`Shop ID: ${shopId}`);
   
   if (!shopId || shopId.trim() === '') {
     console.error('Invalid shop ID provided');
     return getFallbackShopConfig('demo-shop');
   }
 
+  const url = `https://luhhnsvwtnmxztcmdxyq.supabase.co/functions/v1/get-shop-config/shop/${encodeURIComponent(shopId)}/config`;
+  
   try {
-    const response = await fetchWithCorsHandling(
-      `https://luhhnsvwtnmxztcmdxyq.supabase.co/functions/v1/get-shop-config/shop/${encodeURIComponent(shopId)}/config`
-    );
+    const response = await fetchWithCorsHandling(url);
     
     if (!response.ok) {
+      console.warn(`=== SHOP CONFIG HTTP ERROR ===`);
+      console.warn(`Status: ${response.status}`);
+      
       if (response.status === 404) {
         console.warn('Shop config not found - using fallback');
         return getFallbackShopConfig(shopId);
@@ -316,6 +351,7 @@ export const fetchShopConfig = async (shopId: string): Promise<ShopConfig> => {
     }
     
     const rawData = await response.json();
+    console.log("=== SHOP CONFIG SUCCESS ===");
     console.log("Raw shop config received:", rawData);
     
     // Transform the data to expected format
@@ -329,6 +365,7 @@ export const fetchShopConfig = async (shopId: string): Promise<ShopConfig> => {
     
     return transformedData;
   } catch (error) {
+    console.error("=== SHOP CONFIG ERROR ===");
     console.error("Error fetching shop config:", error);
     
     if (error instanceof Error && error.message === 'CORS_ERROR') {
@@ -346,7 +383,10 @@ export const submitOrder = async (
   orderData: OrderData, 
   token: string
 ): Promise<OrderResponse> => {
-  console.log("Submitting order:", { customerData, orderData, token });
+  console.log("=== ORDER SUBMISSION START ===");
+  console.log("Customer data:", customerData);
+  console.log("Order data:", orderData);
+  console.log("Token:", token?.substring(0, 10) + "...");
   
   if (!token || token.trim() === '') {
     throw new Error('TOKEN_EXPIRED');
@@ -379,20 +419,35 @@ export const submitOrder = async (
     terms_accepted: true
   };
 
+  console.log("=== ORDER SUBMISSION PAYLOAD ===");
+  console.log("Payload:", JSON.stringify(payload, null, 2));
+
+  const url = "https://luhhnsvwtnmxztcmdxyq.supabase.co/functions/v1/create-order";
+
   try {
-    const response = await fetchWithCorsHandling(
-      "https://luhhnsvwtnmxztcmdxyq.supabase.co/functions/v1/create-order",
-      {
-        method: "POST",
-        body: JSON.stringify(payload),
-      }
-    );
+    const response = await fetchWithCorsHandling(url, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+    
+    console.log("=== ORDER SUBMISSION RESPONSE ===");
+    console.log(`Status: ${response.status}`);
+    console.log(`OK: ${response.ok}`);
     
     if (!response.ok) {
+      console.error(`=== ORDER SUBMISSION HTTP ERROR ===`);
+      
+      let errorData: any = {};
+      try {
+        errorData = await response.json();
+        console.error("Error response data:", errorData);
+      } catch (parseError) {
+        console.error("Could not parse error response:", parseError);
+      }
+      
       if (response.status === 401 || response.status === 403) {
         throw new Error("TOKEN_EXPIRED");
       } else if (response.status >= 400 && response.status < 500) {
-        const errorData = await response.json().catch(() => ({}));
         throw new Error(`VALIDATION_ERROR: ${errorData.message || 'Invalid request data'}`);
       } else {
         throw new Error(`SERVER_ERROR: ${response.status}`);
@@ -400,6 +455,7 @@ export const submitOrder = async (
     }
     
     const result = await response.json();
+    console.log("=== ORDER SUBMISSION SUCCESS ===");
     console.log("Order submitted successfully:", result);
     
     // Bestelldaten in sessionStorage für Bestätigungsseite speichern
@@ -412,6 +468,7 @@ export const submitOrder = async (
     
     return result;
   } catch (error) {
+    console.error("=== ORDER SUBMISSION ERROR ===");
     console.error("Error submitting order:", error);
     
     if (error instanceof Error) {

@@ -209,7 +209,14 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log("=== FORM SUBMISSION START ===");
+    console.log("Token:", token);
+    console.log("Terms accepted:", termsAccepted);
+    console.log("Test mode:", testMode);
+    console.log("Form data:", formData);
+    
     if (!token) {
+      console.error("Token missing");
       toast({
         title: getTranslation("order_error", supportedLanguage),
         description: getTranslation("checkout_token_missing", supportedLanguage),
@@ -219,6 +226,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
     }
 
     if (!termsAccepted) {
+      console.error("Terms not accepted");
       toast({
         title: getTranslation("order_error", supportedLanguage),
         description: getTranslation("terms_required", supportedLanguage),
@@ -229,7 +237,8 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
 
     // Testmodus: Direkt zur Bestätigungsseite ohne API-Call
     if (testMode) {
-      console.log("Testmodus aktiviert - simuliere erfolgreiche Bestellung");
+      console.log("=== TEST MODE ACTIVATED ===");
+      console.log("Simulating successful order submission");
       
       // Simuliere Bestelldaten für Testmodus - IMMER als Manual/Standard Mode
       const mockOrderResponse = {
@@ -289,9 +298,13 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
       billing_city: formData.billing_address?.city,
     };
 
+    console.log("=== FORM VALIDATION ===");
+    console.log("Form values:", formValues);
+    
     const isValid = validateForm(formValues, showBillingAddress);
     
     if (!isValid) {
+      console.error("Form validation failed");
       toast({
         title: getTranslation("order_error", supportedLanguage),
         description: getTranslation("order_error_message", supportedLanguage),
@@ -300,14 +313,16 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
       return;
     }
 
+    console.log("Form validation passed");
     setIsSubmitting(true);
 
     try {
-      console.log("Starting order submission...");
+      console.log("=== API SUBMISSION START ===");
       
       const orderResponse = await submitOrder(formData, orderData, token);
       
-      console.log("Order submission successful:", orderResponse);
+      console.log("=== API SUBMISSION SUCCESS ===");
+      console.log("Order response:", orderResponse);
       
       toast({
         title: getTranslation("order_success", supportedLanguage),
@@ -320,55 +335,61 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
       }, 1500);
       
     } catch (error) {
+      console.error("=== API SUBMISSION ERROR ===");
       console.error("Order submission failed:", error);
       
       const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      console.error("Error message:", errorMessage);
       
       if (errorMessage === "CORS_ERROR") {
+        console.error("CORS error detected");
         toast({
-          title: "Verbindungsfehler",
-          description: "Die Verbindung zum Server ist derzeit nicht verfügbar. Dies liegt an CORS-Konfigurationsproblemen. Bitte versuchen Sie es später erneut oder kontaktieren Sie den Support.",
+          title: "Verbindungsfehler (CORS)",
+          description: "Die Verbindung zum Server wurde durch Browser-Sicherheitsrichtlinien blockiert. Dies ist ein CORS-Problem. Bitte verwenden Sie den Testmodus oder kontaktieren Sie den Support.",
           variant: "destructive",
         });
-        // Bei CORS-Fehlern NICHT zur Startseite redirecten - Benutzer soll auf der Checkout-Seite bleiben
-        // und kann den Testmodus verwenden
       } else if (errorMessage === "TOKEN_EXPIRED") {
+        console.error("Token expired");
         toast({
           title: getTranslation("order_error", supportedLanguage),
           description: "Der Checkout-Link ist abgelaufen. Sie werden zur Startseite weitergeleitet.",
           variant: "destructive",
         });
-        // Nach 3 Sekunden zur Startseite redirecten
         setTimeout(() => {
           window.location.href = '/';
         }, 3000);
       } else if (errorMessage.startsWith("VALIDATION_ERROR")) {
+        console.error("Validation error");
         toast({
           title: getTranslation("order_error", supportedLanguage),
           description: "Die eingegebenen Daten sind ungültig. Bitte überprüfen Sie Ihre Eingaben.",
           variant: "destructive",
         });
       } else if (errorMessage.startsWith("SERVER_ERROR")) {
+        console.error("Server error");
         toast({
           title: getTranslation("order_error", supportedLanguage),
           description: "Es gibt ein Problem mit dem Server. Bitte versuchen Sie es später erneut.",
           variant: "destructive",
         });
       } else if (errorMessage === "NETWORK_ERROR") {
+        console.error("Network error");
         toast({
           title: getTranslation("order_error", supportedLanguage),
           description: "Netzwerkfehler. Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.",
           variant: "destructive",
         });
       } else {
+        console.error("Unknown error");
         toast({
           title: getTranslation("order_error", supportedLanguage),
-          description: "Ein unbekannter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+          description: "Ein unbekannter Fehler ist aufgetreten. Bitte versuchen Sie es erneut oder verwenden Sie den Testmodus.",
           variant: "destructive",
         });
       }
     } finally {
       setIsSubmitting(false);
+      console.log("=== FORM SUBMISSION END ===");
     }
   };
 
