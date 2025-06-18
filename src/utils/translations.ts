@@ -1,4 +1,3 @@
-
 const translations = {
   // Email section
   email_address: {
@@ -343,6 +342,15 @@ const translations = {
     ES: "Vendedor:",
     PL: "Sprzedawca:",
     NL: "Verkoper:"
+  },
+  per_liter: {
+    DE: "pro Liter",
+    EN: "per liter",
+    FR: "par litre",
+    IT: "per litro",
+    ES: "por litro",
+    PL: "za litr",
+    NL: "per liter"
   },
 
   // VerifiedShopCard translations - CORRECTED

@@ -58,7 +58,7 @@ export const OrderSummary = ({ orderData, shopConfig, accentColor }: OrderSummar
                 {formatQuantity(orderData.quantity_liters)} Liter
               </p>
               <p className="text-sm text-gray-500 mt-0.5">
-                {formatPrice(orderData.price_per_liter)} pro Liter
+                {formatPrice(orderData.price_per_liter)} {getTranslation("per_liter", language)}
               </p>
             </div>
             <div className="text-right">
