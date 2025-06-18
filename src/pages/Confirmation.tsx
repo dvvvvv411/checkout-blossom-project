@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, Info, CreditCard, MapPin, Mail, Phone, ArrowLeft } from "lucide-react";
+import { CheckCircle, Info, CreditCard, MapPin, Mail, Phone, ArrowLeft, Truck } from "lucide-react";
 import { formatCurrency, fetchShopConfig, ShopConfig } from "@/services/api";
 import { getTranslation } from "@/utils/translations";
 
@@ -124,31 +124,25 @@ const Confirmation = () => {
       {/* Main Content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-6">
-          {/* Success Message */}
-          <Card className={`border-2 ${isExpressMode ? 'border-green-200 bg-green-50' : 'border-blue-200 bg-blue-50'}`}>
-            <CardContent className="pt-6">
-              <div className="flex items-center space-x-4">
-                <div className="flex-shrink-0">
-                  {isExpressMode ? (
-                    <CheckCircle className="h-16 w-16 text-green-600" />
-                  ) : (
-                    <Info className="h-16 w-16 text-blue-600" />
-                  )}
-                </div>
-                <div className="flex-1">
-                  <h2 className={`text-2xl font-bold ${isExpressMode ? 'text-green-900' : 'text-blue-900'}`}>
-                    {getTranslation(isExpressMode ? "order_confirmed" : "order_received", language)}
-                  </h2>
-                  <p className={`${isExpressMode ? 'text-green-700' : 'text-blue-700'} mt-2 text-lg`}>
-                    {getTranslation(isExpressMode ? "order_confirmed_message" : "order_received_message", language)}
-                  </p>
-                  <p className={`${isExpressMode ? 'text-green-600' : 'text-blue-600'} mt-3 text-sm font-medium`}>
-                    {getTranslation(isExpressMode ? "invoice_sent_email" : "confirmation_sent_email", language)}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Success Message - Modernized */}
+          <div className="text-center py-12">
+            <div className="flex justify-center mb-6">
+              {isExpressMode ? (
+                <CheckCircle className="h-24 w-24 text-green-600" />
+              ) : (
+                <Info className="h-24 w-24 text-blue-600" />
+              )}
+            </div>
+            <h2 className={`text-4xl font-bold mb-4 ${isExpressMode ? 'text-green-900' : 'text-blue-900'}`}>
+              {getTranslation(isExpressMode ? "order_confirmed" : "order_received", language)}
+            </h2>
+            <p className={`text-xl mb-6 ${isExpressMode ? 'text-green-700' : 'text-blue-700'}`}>
+              {getTranslation(isExpressMode ? "order_confirmed_message" : "order_received_message", language)}
+            </p>
+            <p className={`text-lg font-medium ${isExpressMode ? 'text-green-600' : 'text-blue-600'}`}>
+              {getTranslation(isExpressMode ? "invoice_sent_email" : "confirmation_sent_email", language)}
+            </p>
+          </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Order Details */}
@@ -183,6 +177,14 @@ const Confirmation = () => {
                       {formatCurrency(orderData.total_net, orderData.currency, language)}
                     </span>
                   </div>
+                  {orderData.delivery_cost && orderData.delivery_cost > 0 && (
+                    <div className="flex justify-between py-1 border-b border-gray-100">
+                      <span className="text-gray-600">{getTranslation("delivery", language)}:</span>
+                      <span className="font-medium">
+                        {formatCurrency(orderData.delivery_cost, orderData.currency, language)}
+                      </span>
+                    </div>
+                  )}
                   <div className="flex justify-between py-1 border-b border-gray-100">
                     <span className="text-gray-600">
                       {getTranslation("vat", language)} ({Math.round(orderData.tax_rate * 100)}%):
@@ -240,17 +242,96 @@ const Confirmation = () => {
             </Card>
           </div>
 
-          {/* Payment Instructions - Only show for express mode or when bank details are available */}
-          {(isExpressMode || orderResponse.payment_instructions?.bank_details) && (
-            <Card>
-              <CardHeader>
-                <CardTitle style={{ color: accentColor }}>
-                  {getTranslation("payment_instructions", language)}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {orderResponse.payment_instructions?.bank_details ? (
-                  <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-6">
+          {/* Payment Instructions */}
+          <Card>
+            <CardHeader>
+              <CardTitle style={{ color: accentColor }}>
+                {getTranslation("payment_instructions", language)}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {/* Next Steps */}
+                <div>
+                  <h4 className="font-bold text-gray-900 mb-4 text-lg">
+                    Nächste Schritte
+                  </h4>
+                  
+                  {isExpressMode ? (
+                    <div className="space-y-4">
+                      <div className="flex items-start space-x-3">
+                        <div className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                          1
+                        </div>
+                        <div>
+                          <h5 className="font-semibold text-gray-900 mb-1">Überweisung</h5>
+                          <p className="text-gray-700">
+                            Nach unserem Anruf überweisen Sie den Betrag von{' '}
+                            <span className="font-bold">
+                              {formatCurrency(orderResponse.total_amount, orderResponse.currency, language)}
+                            </span>{' '}
+                            auf unser Konto.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-start space-x-3">
+                        <div className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                          2
+                        </div>
+                        <div>
+                          <h5 className="font-semibold text-gray-900 mb-1">Lieferung</h5>
+                          <p className="text-gray-700">
+                            Nach Zahlungseingang erfolgt die Lieferung innerhalb weniger Werktage.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      <div className="flex items-start space-x-3">
+                        <div className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                          1
+                        </div>
+                        <div>
+                          <h5 className="font-semibold text-gray-900 mb-1">Telefonischer Kontakt</h5>
+                          <p className="text-gray-700">
+                            Wir rufen Sie in den nächsten 24 Stunden an, um Ihre Bestellung zu bestätigen.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-start space-x-3">
+                        <div className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                          2
+                        </div>
+                        <div>
+                          <h5 className="font-semibold text-gray-900 mb-1">Überweisung</h5>
+                          <p className="text-gray-700">
+                            Nach unserem Anruf überweisen Sie den Betrag von{' '}
+                            <span className="font-bold">
+                              {formatCurrency(orderResponse.total_amount, orderResponse.currency, language)}
+                            </span>{' '}
+                            auf unser Konto.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-start space-x-3">
+                        <div className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                          3
+                        </div>
+                        <div>
+                          <h5 className="font-semibold text-gray-900 mb-1">Lieferung</h5>
+                          <p className="text-gray-700">
+                            Nach Zahlungseingang erfolgt die Lieferung in 4-7 Werktagen.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Bank Details */}
+                {orderResponse.payment_instructions?.bank_details && (
+                  <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-6 mt-6">
                     <h4 className="font-bold text-blue-900 mb-4 text-lg">
                       {getTranslation("bank_transfer_details", language)}
                     </h4>
@@ -285,16 +366,31 @@ const Confirmation = () => {
                       </div>
                     </div>
                   </div>
-                ) : (
-                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                    <p className="text-gray-700">
-                      {getTranslation("confirmation_sent_email", language)}
-                    </p>
-                  </div>
                 )}
-              </CardContent>
-            </Card>
-          )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Delivery Information */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Truck className="h-5 w-5" style={{ color: accentColor }} />
+                <span>Lieferinformationen</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="bg-amber-50 border-2 border-amber-200 rounded-lg p-6">
+                <h4 className="font-bold text-amber-900 mb-3 text-lg">
+                  Wichtiger Hinweis zur Lieferung
+                </h4>
+                <p className="text-amber-800">
+                  Unser Fahrer wird Sie am Liefertag telefonisch kontaktieren. Bitte stellen Sie sicher, dass Sie unter{' '}
+                  <span className="font-bold">{customerData.phone}</span> erreichbar sind.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Actions */}
           <div className="flex flex-col sm:flex-row gap-4 pt-6">
