@@ -1,3 +1,4 @@
+
 const translations = {
   // Email section
   email_address: {
@@ -169,7 +170,72 @@ const translations = {
     NL: "Ik ga akkoord met de Algemene Voorwaarden en het Privacybeleid en bevestig dat ik deze heb gelezen en begrepen."
   },
 
-  // Order Summary translations - NEW
+  // Validation error messages - NEW
+  first_name_required: {
+    DE: "Vorname ist erforderlich",
+    EN: "First name is required",
+    FR: "Le prénom est requis",
+    IT: "Il nome è obbligatorio",
+    ES: "El nombre es obligatorio",
+    PL: "Imię jest wymagane",
+    NL: "Voornaam is verplicht"
+  },
+  last_name_required: {
+    DE: "Nachname ist erforderlich",
+    EN: "Last name is required",
+    FR: "Le nom de famille est requis",
+    IT: "Il cognome è obbligatorio",
+    ES: "El apellido es obligatorio",
+    PL: "Nazwisko jest wymagane",
+    NL: "Achternaam is verplicht"
+  },
+  phone_required: {
+    DE: "Telefonnummer ist erforderlich",
+    EN: "Phone number is required",
+    FR: "Le numéro de téléphone est requis",
+    IT: "Il numero di telefono è obbligatorio",
+    ES: "El número de teléfono es obligatorio",
+    PL: "Numer telefonu jest wymagany",
+    NL: "Telefoonnummer is verplicht"
+  },
+  street_required: {
+    DE: "Straße und Hausnummer sind erforderlich",
+    EN: "Street and house number are required",
+    FR: "La rue et le numéro sont requis",
+    IT: "Via e numero civico sono obbligatori",
+    ES: "La calle y el número son obligatorios",
+    PL: "Ulica i numer domu są wymagane",
+    NL: "Straat en huisnummer zijn verplicht"
+  },
+  postal_code_required: {
+    DE: "Postleitzahl ist erforderlich",
+    EN: "Postal code is required",
+    FR: "Le code postal est requis",
+    IT: "Il codice postale è obbligatorio",
+    ES: "El código postal es obligatorio",
+    PL: "Kod pocztowy jest wymagany",
+    NL: "Postcode is verplicht"
+  },
+  city_required: {
+    DE: "Stadt ist erforderlich",
+    EN: "City is required",
+    FR: "La ville est requise",
+    IT: "La città è obbligatoria",
+    ES: "La ciudad es obligatoria",
+    PL: "Miasto jest wymagane",
+    NL: "Stad is verplicht"
+  },
+  email_required: {
+    DE: "E-Mail-Adresse ist erforderlich",
+    EN: "Email address is required",
+    FR: "L'adresse e-mail est requise",
+    IT: "L'indirizzo email è obbligatorio",
+    ES: "La dirección de correo es obligatoria",
+    PL: "Adres e-mail jest wymagany",
+    NL: "E-mailadres is verplicht"
+  },
+
+  // Order Summary translations - ENHANCED
   your_order: {
     DE: "Ihre Bestellung",
     EN: "Your Order",
@@ -268,6 +334,15 @@ const translations = {
     ES: "Total",
     PL: "Razem",
     NL: "Totaal"
+  },
+  seller: {
+    DE: "Verkäufer:",
+    EN: "Seller:",
+    FR: "Vendeur:",
+    IT: "Venditore:",
+    ES: "Vendedor:",
+    PL: "Sprzedawca:",
+    NL: "Verkoper:"
   },
 
   // VerifiedShopCard translations - CORRECTED
