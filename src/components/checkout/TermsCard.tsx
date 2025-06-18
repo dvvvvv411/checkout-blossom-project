@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { FileText, Shield, Check } from "lucide-react";
+import { getTranslation } from "@/utils/translations";
 
 interface TermsCardProps {
   termsAccepted: boolean;
@@ -14,7 +15,7 @@ interface TermsCardProps {
   isSubmitting: boolean;
   allStepsCompleted: boolean;
   accentColor: string;
-  submitButtonText: string;
+  language?: "DE" | "EN" | "FR";
 }
 
 export const TermsCard = ({ 
@@ -25,7 +26,7 @@ export const TermsCard = ({
   isSubmitting,
   allStepsCompleted,
   accentColor,
-  submitButtonText
+  language = "DE"
 }: TermsCardProps) => {
   const [focused, setFocused] = useState(false);
 
@@ -54,11 +55,11 @@ export const TermsCard = ({
             </div>
             <div>
               <div className="text-lg font-semibold text-gray-900">
-                Geschäftsbedingungen
+                {getTranslation("terms_conditions", language)}
               </div>
               <div className="text-sm text-gray-600 font-normal flex items-center gap-1">
                 <Shield className="h-3 w-3 text-gray-500" />
-                Rechtliche Bestätigung erforderlich
+                {getTranslation("terms_description", language)}
               </div>
             </div>
           </div>
@@ -81,7 +82,7 @@ export const TermsCard = ({
             />
             <div className="flex-1">
               <Label htmlFor="terms_accepted" className="text-sm text-gray-800 leading-relaxed cursor-pointer">
-                Ich stimme den Allgemeinen Geschäftsbedingungen und der Widerrufsbelehrung zu.
+                {getTranslation("terms_text", language)}
               </Label>
             </div>
           </div>
@@ -97,7 +98,10 @@ export const TermsCard = ({
           }`}
           disabled={isSubmitting || !allStepsCompleted}
         >
-          {isSubmitting ? "Bestellung wird verarbeitet..." : submitButtonText}
+          {isSubmitting 
+            ? getTranslation("processing_order", language) 
+            : getTranslation("submit_order", language)
+          }
         </button>
       </CardContent>
     </Card>

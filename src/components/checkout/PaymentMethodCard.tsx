@@ -1,9 +1,10 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { CreditCard, Check, Shield } from "lucide-react";
+import { getTranslation } from "@/utils/translations";
 
 interface PaymentMethodCardProps {
   paymentMethod: "vorkasse" | "rechnung";
@@ -11,7 +12,7 @@ interface PaymentMethodCardProps {
   onChange: (method: "vorkasse" | "rechnung") => void;
   onComplete: () => void;
   isCompleted: boolean;
-  getTranslation: (key: string) => string;
+  language?: "DE" | "EN" | "FR";
 }
 
 export const PaymentMethodCard = ({ 
@@ -20,9 +21,18 @@ export const PaymentMethodCard = ({
   onChange, 
   onComplete,
   isCompleted,
-  getTranslation 
+  language = "DE"
 }: PaymentMethodCardProps) => {
   const [focused, setFocused] = useState(false);
+
+  // Automatisch erste verfügbare Zahlungsmethode auswählen
+  useEffect(() => {
+    if (paymentMethods.length > 0 && !paymentMethod) {
+      const firstMethod = paymentMethods[0] as "vorkasse" | "rechnung";
+      onChange(firstMethod);
+      onComplete();
+    }
+  }, [paymentMethods, paymentMethod, onChange, onComplete]);
 
   const handleChange = (value: "vorkasse" | "rechnung") => {
     onChange(value);
@@ -32,12 +42,12 @@ export const PaymentMethodCard = ({
   const getPaymentMethodDetails = (method: string) => {
     const details = {
       vorkasse: {
-        description: "Überweisung vor Lieferung",
-        badge: "Empfohlen"
+        description: getTranslation("vorkasse_description", language),
+        badge: getTranslation("recommended", language)
       },
       rechnung: {
-        description: "Kauf auf Rechnung",
-        badge: "Nur für Bestandskunden"
+        description: getTranslation("rechnung_description", language),
+        badge: getTranslation("existing_customers_only", language)
       }
     };
     return details[method] || details.rechnung;
@@ -70,11 +80,11 @@ export const PaymentMethodCard = ({
             </div>
             <div>
               <div className="text-lg font-semibold text-gray-900">
-                {getTranslation("payment_method")}
+                {getTranslation("payment_method", language)}
               </div>
               <div className="text-sm text-gray-600 font-normal flex items-center gap-1">
                 <Shield className="h-3 w-3 text-gray-500" />
-                Wählen Sie Ihre bevorzugte Zahlungsart
+                {getTranslation("payment_description", language)}
               </div>
             </div>
           </div>
@@ -110,10 +120,10 @@ export const PaymentMethodCard = ({
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <Label htmlFor={method} className="flex items-center text-base font-semibold text-gray-900 cursor-pointer">
-                          {getTranslation(method)}
+                          {getTranslation(method, language)}
                         </Label>
                         <span className={`text-xs px-2 py-1 rounded font-medium ${
-                          details.badge === "Empfohlen" 
+                          details.badge === getTranslation("recommended", language)
                             ? "bg-green-100 text-green-700" 
                             : "bg-gray-100 text-gray-600"
                         }`}>

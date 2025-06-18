@@ -1,8 +1,10 @@
+
 import { useState } from "react";
-import { OrderData, ShopConfig } from "@/services/api";
+import { OrderData, ShopConfig, formatCurrency, formatLiters } from "@/services/api";
 import { Package, AlertCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { getTranslation } from "@/utils/translations";
 
 interface OrderSummaryProps {
   orderData: OrderData;
@@ -14,15 +16,14 @@ export const OrderSummary = ({ orderData, shopConfig, accentColor }: OrderSummar
   const [discountCode, setDiscountCode] = useState("");
   const [showError, setShowError] = useState(false);
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("de-DE", {
-      style: "currency",
-      currency: orderData.currency || "EUR",
-    }).format(amount);
+  const language = shopConfig?.language || "DE";
+
+  const formatPrice = (amount: number) => {
+    return formatCurrency(amount, orderData.currency || "EUR", language);
   };
 
-  const formatLiters = (liters: number) => {
-    return new Intl.NumberFormat("de-DE").format(liters);
+  const formatQuantity = (liters: number) => {
+    return formatLiters(liters, language);
   };
 
   const isDeliveryFree = orderData.delivery_fee === 0;
@@ -42,7 +43,9 @@ export const OrderSummary = ({ orderData, shopConfig, accentColor }: OrderSummar
           <div className="p-1.5 bg-gray-100 rounded-lg">
             <Package className="h-4 w-4 text-gray-600" />
           </div>
-          <h2 className="text-lg font-semibold text-gray-900">Ihre Bestellung</h2>
+          <h2 className="text-lg font-semibold text-gray-900">
+            {getTranslation("your_order", language)}
+          </h2>
         </div>
 
         <div className="bg-gray-50 rounded-lg p-2 border border-gray-100">
@@ -52,15 +55,15 @@ export const OrderSummary = ({ orderData, shopConfig, accentColor }: OrderSummar
                 {orderData.product_name}
               </h3>
               <p className="text-gray-600 mt-0.5 text-sm">
-                {formatLiters(orderData.quantity_liters)} Liter
+                {formatQuantity(orderData.quantity_liters)} Liter
               </p>
               <p className="text-sm text-gray-500 mt-0.5">
-                {formatCurrency(orderData.price_per_liter)} pro Liter
+                {formatPrice(orderData.price_per_liter)} pro Liter
               </p>
             </div>
             <div className="text-right">
               <p className="text-lg font-semibold text-gray-900">
-                {formatCurrency(orderData.price_per_liter * orderData.quantity_liters)}
+                {formatPrice(orderData.price_per_liter * orderData.quantity_liters)}
               </p>
             </div>
           </div>
@@ -73,7 +76,7 @@ export const OrderSummary = ({ orderData, shopConfig, accentColor }: OrderSummar
           <Input
             value={discountCode}
             onChange={(e) => setDiscountCode(e.target.value)}
-            placeholder="Rabattcode eingeben"
+            placeholder={getTranslation("discount_code", language)}
             className="flex-1 border-2 border-gray-300 focus-visible:ring-2 focus-visible:ring-gray-400"
           />
           <Button 
@@ -82,57 +85,61 @@ export const OrderSummary = ({ orderData, shopConfig, accentColor }: OrderSummar
             size="sm"
             className="bg-black text-white hover:bg-gray-800"
           >
-            Anwenden
+            {getTranslation("apply", language)}
           </Button>
         </div>
         
         {showError && (
           <div className="flex items-center space-x-2 text-red-600 text-sm mt-1">
             <AlertCircle className="h-4 w-4" />
-            <span>Der eingegebene Code ist nicht gültig</span>
+            <span>{getTranslation("discount_invalid", language)}</span>
           </div>
         )}
       </div>
 
       {/* Cost Breakdown */}
       <div className="bg-white rounded-xl border border-gray-200 p-3">
-        <h3 className="font-semibold text-gray-900 mb-2">Kostenaufstellung</h3>
+        <h3 className="font-semibold text-gray-900 mb-2">
+          {getTranslation("cost_breakdown", language)}
+        </h3>
         
         <div className="space-y-0.5">
           <div className="flex justify-between items-center py-1 border-b border-gray-100">
-            <span className="text-gray-700 text-sm">Zwischensumme</span>
+            <span className="text-gray-700 text-sm">{getTranslation("subtotal", language)}</span>
             <span className="font-medium text-gray-900 text-sm">
-              {formatCurrency(orderData.price_per_liter * orderData.quantity_liters)}
+              {formatPrice(orderData.price_per_liter * orderData.quantity_liters)}
             </span>
           </div>
           
           <div className="flex justify-between items-center py-1 border-b border-gray-100">
-            <span className="text-gray-700 text-sm">Lieferung</span>
+            <span className="text-gray-700 text-sm">{getTranslation("delivery", language)}</span>
             <span className={`font-medium text-sm ${isDeliveryFree ? "text-green-600" : "text-gray-900"}`}>
-              {isDeliveryFree ? "Kostenlos" : formatCurrency(orderData.delivery_fee)}
+              {isDeliveryFree ? getTranslation("free", language) : formatPrice(orderData.delivery_fee)}
             </span>
           </div>
           
           <div className="flex justify-between items-center py-1 border-b border-gray-100">
-            <span className="text-gray-700 text-sm">Netto-Betrag</span>
+            <span className="text-gray-700 text-sm">{getTranslation("net_amount", language)}</span>
             <span className="font-medium text-gray-900 text-sm">
-              {formatCurrency(orderData.total_net)}
+              {formatPrice(orderData.total_net)}
             </span>
           </div>
           
           <div className="flex justify-between items-center py-1 border-b border-gray-100">
-            <span className="text-gray-700 text-sm">MwSt ({Math.round(orderData.tax_rate * 100)}%)</span>
+            <span className="text-gray-700 text-sm">
+              {getTranslation("vat", language)} ({Math.round(orderData.tax_rate * 100)}%)
+            </span>
             <span className="font-medium text-gray-900 text-sm">
-              {formatCurrency(orderData.total_tax)}
+              {formatPrice(orderData.total_tax)}
             </span>
           </div>
         </div>
         
         <div className="mt-2 pt-2 border-t-2 border-gray-200">
           <div className="flex justify-between items-center">
-            <span className="text-xl font-bold text-gray-900">Gesamtpreis</span>
+            <span className="text-xl font-bold text-gray-900">{getTranslation("total", language)}</span>
             <span className="text-2xl font-bold bg-gradient-to-r from-green-500 to-emerald-600 bg-clip-text text-transparent">
-              {formatCurrency(orderData.total_gross)}
+              {formatPrice(orderData.total_gross)}
             </span>
           </div>
         </div>

@@ -1,11 +1,13 @@
+
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowLeft, Phone } from "lucide-react";
 import { OrderSummary } from "@/components/checkout/OrderSummary";
 import { CustomerForm } from "@/components/checkout/CustomerForm";
 import { VerifiedShopCard } from "@/components/checkout/VerifiedShopCard";
 import { fetchOrderData, fetchShopConfig } from "@/services/api";
+import { getTranslation } from "@/utils/translations";
 
 const Checkout = () => {
   const [searchParams] = useSearchParams();
@@ -36,16 +38,18 @@ const Checkout = () => {
     navigate(-1);
   };
 
+  const language = shopConfig?.language || "DE";
+
   if (!token) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center max-w-md mx-auto px-6">
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
             <h1 className="text-2xl font-semibold text-gray-900 mb-3">
-              Ungültiger Checkout-Link
+              {getTranslation("invalid_checkout_link", language)}
             </h1>
             <p className="text-gray-600 leading-relaxed">
-              Bitte verwenden Sie einen gültigen Checkout-Link mit Token.
+              {getTranslation("invalid_checkout_message", language)}
             </p>
           </div>
         </div>
@@ -58,7 +62,9 @@ const Checkout = () => {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="flex flex-col items-center space-y-4">
           <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
-          <span className="text-lg text-gray-600 font-medium">Checkout wird geladen...</span>
+          <span className="text-lg text-gray-600 font-medium">
+            {getTranslation("loading_checkout", language)}
+          </span>
         </div>
       </div>
     );
@@ -70,10 +76,10 @@ const Checkout = () => {
         <div className="text-center max-w-md mx-auto px-6">
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
             <h1 className="text-2xl font-semibold text-red-600 mb-3">
-              Fehler beim Laden der Bestelldaten
+              {getTranslation("error_loading_order", language)}
             </h1>
             <p className="text-gray-600 leading-relaxed">
-              Bitte überprüfen Sie Ihren Checkout-Link oder versuchen Sie es später erneut.
+              {getTranslation("error_loading_message", language)}
             </p>
           </div>
         </div>
@@ -95,16 +101,32 @@ const Checkout = () => {
               <ArrowLeft className="h-6 w-6" />
             </button>
             <div className="text-center">
-              <h1 className="text-3xl font-bold text-gray-900 mb-3">Checkout</h1>
+              {/* Logo */}
+              {shopConfig?.logo_url && (
+                <div className="mb-4">
+                  <img 
+                    src={shopConfig.logo_url} 
+                    alt={shopConfig.company_name}
+                    className="h-12 mx-auto object-contain"
+                    onError={(e) => {
+                      // Verstecke Logo bei Fehler
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
+                </div>
+              )}
+              <h1 className="text-3xl font-bold text-gray-900 mb-3">
+                {getTranslation("checkout", language)}
+              </h1>
               {/* Security indicators */}
               <div className="flex items-center justify-center space-x-4 text-sm text-gray-600">
                 <div className="flex items-center space-x-2">
                   <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                  <span>Sichere Zahlung</span>
+                  <span>{getTranslation("secure_payment", language)}</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                  <span>SSL verschlüsselt</span>
+                  <span>{getTranslation("ssl_encrypted", language)}</span>
                 </div>
               </div>
             </div>
@@ -116,13 +138,13 @@ const Checkout = () => {
       <div className="lg:hidden bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 py-4 space-y-3">
           <div className="flex items-center text-sm">
-            <span className="text-gray-500">Warenkorb</span>
+            <span className="text-gray-500">{getTranslation("cart", language)}</span>
             <span className="mx-2 text-gray-400">{'>'}</span>
-            <span className="font-semibold text-gray-900">Informationen</span>
+            <span className="font-semibold text-gray-900">{getTranslation("information", language)}</span>
             <span className="mx-2 text-gray-400">{'>'}</span>
-            <span className="text-gray-500">Versand</span>
+            <span className="text-gray-500">{getTranslation("shipping", language)}</span>
             <span className="mx-2 text-gray-400">{'>'}</span>
-            <span className="text-gray-500">Zahlung</span>
+            <span className="text-gray-500">{getTranslation("payment", language)}</span>
           </div>
         </div>
       </div>
@@ -161,6 +183,18 @@ const Checkout = () => {
           </div>
         </div>
       </div>
+
+      {/* Footer mit Support-Telefon */}
+      {shopConfig?.support_phone && (
+        <div className="bg-white border-t border-gray-200 mt-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex items-center justify-center space-x-2 text-sm text-gray-600">
+              <Phone className="h-4 w-4" />
+              <span>Support: {shopConfig.support_phone}</span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

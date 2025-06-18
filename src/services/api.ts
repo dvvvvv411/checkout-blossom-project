@@ -22,6 +22,8 @@ export interface ShopConfig {
   payment_methods: Array<"vorkasse" | "rechnung">;
   currency: string;
   company_name: string;
+  logo_url?: string;
+  support_phone?: string;
 }
 
 export interface CustomerData {
@@ -41,6 +43,49 @@ export interface CustomerData {
   };
   payment_method: "vorkasse" | "rechnung";
 }
+
+// Validierungsfunktionen
+export const validateEmail = (email: string): boolean => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+export const validatePhone = (phone: string): boolean => {
+  // Internationale Telefonnummern-Validierung (flexibel)
+  const phoneRegex = /^[\+]?[\s\-\(\)]*([0-9][\s\-\(\)]*){7,15}$/;
+  return phoneRegex.test(phone.replace(/\s/g, ''));
+};
+
+export const validateRequired = (value: string): boolean => {
+  return value.trim().length > 0;
+};
+
+// Währungsformatierung
+export const formatCurrency = (amount: number, currency: string, language: "DE" | "EN" | "FR"): string => {
+  const localeMap = {
+    DE: "de-DE",
+    EN: "en-GB", 
+    FR: "fr-FR"
+  };
+  
+  const locale = localeMap[language] || "de-DE";
+  
+  return new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: currency || "EUR",
+  }).format(amount);
+};
+
+export const formatLiters = (liters: number, language: "DE" | "EN" | "FR"): string => {
+  const localeMap = {
+    DE: "de-DE",
+    EN: "en-GB", 
+    FR: "fr-FR"
+  };
+  
+  const locale = localeMap[language] || "de-DE";
+  return new Intl.NumberFormat(locale).format(liters);
+};
 
 export const fetchOrderData = async (token: string): Promise<OrderData> => {
   console.log(`Fetching order data for token: ${token}`);
@@ -96,7 +141,9 @@ export const fetchShopConfig = async (shopId: string): Promise<ShopConfig> => {
       language: "DE",
       payment_methods: ["vorkasse", "rechnung"],
       currency: "EUR",
-      company_name: "Heizöl Premium GmbH"
+      company_name: "Heizöl Premium GmbH",
+      logo_url: undefined,
+      support_phone: "+49 123 456789"
     };
   }
 };

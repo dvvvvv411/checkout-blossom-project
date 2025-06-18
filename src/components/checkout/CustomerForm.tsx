@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { OrderData, ShopConfig, CustomerData, submitOrder } from "@/services/api";
@@ -9,6 +10,8 @@ import { BillingAddressCard } from "./BillingAddressCard";
 import { PaymentMethodCard } from "./PaymentMethodCard";
 import { TermsCard } from "./TermsCard";
 import { ArrowLeft } from "lucide-react";
+import { useFormValidation, FormValues } from "@/hooks/useFormValidation";
+import { getTranslation } from "@/utils/translations";
 
 interface CustomerFormProps {
   orderData: OrderData;
@@ -22,6 +25,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
   const navigate = useNavigate();
   const token = searchParams.get("token");
   const { toast } = useToast();
+  const language = shopConfig?.language || "DE";
   
   const [formData, setFormData] = useState<CustomerData>({
     email: "",
@@ -48,6 +52,18 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
     terms: false,
   });
 
+  const {
+    errors,
+    touched,
+    validateField,
+    validateForm,
+    setFieldTouched,
+    setFieldError,
+    clearFieldError,
+    getFieldError,
+    hasFieldError,
+  } = useFormValidation(language);
+
   useEffect(() => {
     if (!showBillingAddress) {
       setCompletedSteps(prev => ({ ...prev, billing: true }));
@@ -59,6 +75,16 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
       setCompletedSteps(prev => ({ ...prev, payment: true }));
     }
   }, [shopConfig]);
+
+  // Automatisch erste Zahlungsmethode auswählen wenn verfügbar
+  useEffect(() => {
+    if (shopConfig?.payment_methods && shopConfig.payment_methods.length > 0 && !formData.payment_method) {
+      setFormData(prev => ({
+        ...prev,
+        payment_method: shopConfig.payment_methods[0] as "vorkasse" | "rechnung"
+      }));
+    }
+  }, [shopConfig?.payment_methods, formData.payment_method]);
 
   const handleInputChange = (field: string, value: string) => {
     if (field.startsWith("delivery_address.")) {
@@ -84,6 +110,59 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
         ...prev,
         [field]: value,
       }));
+    }
+
+    // Validierung bei Eingabe
+    const error = validateField(field.replace("delivery_address.", "").replace("billing_address.", ""), value, showBillingAddress);
+    if (error) {
+      setFieldError(field, error);
+    } else {
+      clearFieldError(field);
+    }
+  };
+
+  const handleFieldBlur = (field: string) => {
+    setFieldTouched(field);
+    const value = getFieldValue(field);
+    const error = validateField(field.replace("delivery_address.", "").replace("billing_address.", ""), value, showBillingAddress);
+    if (error) {
+      setFieldError(field, error);
+    } else {
+      clearFieldError(field);
+      // Step als completed markieren wenn kein Fehler
+      updateStepCompletion(field);
+    }
+  };
+
+  const getFieldValue = (field: string): string => {
+    if (field.startsWith("delivery_address.")) {
+      const addressField = field.split(".")[1];
+      return formData.delivery_address[addressField] || "";
+    } else if (field.startsWith("billing_address.")) {
+      const addressField = field.split(".")[1];
+      return formData.billing_address?.[addressField] || "";
+    } else {
+      return formData[field] || "";
+    }
+  };
+
+  const updateStepCompletion = (field: string) => {
+    if (field === "email") {
+      setCompletedSteps(prev => ({ ...prev, email: true }));
+    } else if (["first_name", "last_name", "phone"].includes(field)) {
+      const contactComplete = formData.first_name && formData.last_name && formData.phone;
+      setCompletedSteps(prev => ({ ...prev, contact: !!contactComplete }));
+    } else if (field.startsWith("delivery_address.")) {
+      const deliveryComplete = formData.delivery_address.street && 
+                              formData.delivery_address.postal_code && 
+                              formData.delivery_address.city;
+      setCompletedSteps(prev => ({ ...prev, delivery: !!deliveryComplete }));
+    } else if (field.startsWith("billing_address.")) {
+      const billingComplete = !showBillingAddress || 
+                             (formData.billing_address?.street && 
+                              formData.billing_address?.postal_code && 
+                              formData.billing_address?.city);
+      setCompletedSteps(prev => ({ ...prev, billing: !!billingComplete }));
     }
   };
 
@@ -126,8 +205,8 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
     
     if (!token) {
       toast({
-        title: "Fehler",
-        description: "Checkout-Token fehlt",
+        title: getTranslation("order_error", language),
+        description: getTranslation("checkout_token_missing", language),
         variant: "destructive",
       });
       return;
@@ -135,8 +214,33 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
 
     if (!termsAccepted) {
       toast({
-        title: "Fehler",
-        description: "Bitte bestätigen Sie die Geschäftsbedingungen",
+        title: getTranslation("order_error", language),
+        description: getTranslation("terms_required", language),
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Vollständige Formvalidierung
+    const formValues: FormValues = {
+      email: formData.email,
+      first_name: formData.first_name,
+      last_name: formData.last_name,
+      phone: formData.phone,
+      street: formData.delivery_address.street,
+      postal_code: formData.delivery_address.postal_code,
+      city: formData.delivery_address.city,
+      billing_street: formData.billing_address?.street,
+      billing_postal_code: formData.billing_address?.postal_code,
+      billing_city: formData.billing_address?.city,
+    };
+
+    const isValid = validateForm(formValues, showBillingAddress);
+    
+    if (!isValid) {
+      toast({
+        title: getTranslation("order_error", language),
+        description: getTranslation("order_error_message", language),
         variant: "destructive",
       });
       return;
@@ -148,76 +252,20 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
       await submitOrder(formData, token);
       
       toast({
-        title: "Bestellung erfolgreich",
-        description: "Ihre Bestellung wurde erfolgreich übermittelt.",
+        title: getTranslation("order_success", language),
+        description: getTranslation("order_success_message", language),
       });
       
     } catch (error) {
       console.error("Order submission failed:", error);
       toast({
-        title: "Fehler",
-        description: "Bei der Bestellübermittlung ist ein Fehler aufgetreten.",
+        title: getTranslation("order_error", language),
+        description: getTranslation("order_error_message", language),
         variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const getTranslation = (key: string) => {
-    const translations = {
-      DE: {
-        email: "E-Mail-Adresse",
-        first_name: "Vorname",
-        last_name: "Nachname",
-        phone: "Telefonnummer",
-        delivery_address: "Lieferadresse",
-        street: "Straße und Hausnummer",
-        postal_code: "Postleitzahl",
-        city: "Stadt",
-        billing_different: "Rechnungsadresse abweichend",
-        billing_address: "Rechnungsadresse",
-        payment_method: "Zahlungsart",
-        vorkasse: "Vorkasse",
-        rechnung: "Rechnung",
-        submit: "Bestellung abschließen",
-      },
-      EN: {
-        email: "Email Address",
-        first_name: "First Name",
-        last_name: "Last Name",
-        phone: "Phone Number",
-        delivery_address: "Delivery Address",
-        street: "Street and House Number",
-        postal_code: "Postal Code",
-        city: "City",
-        billing_different: "Different billing address",
-        billing_address: "Billing Address",
-        payment_method: "Payment Method",
-        vorkasse: "Prepayment",
-        rechnung: "Invoice",
-        submit: "Complete Order",
-      },
-      FR: {
-        email: "Adresse e-mail",
-        first_name: "Prénom",
-        last_name: "Nom",
-        phone: "Numéro de téléphone",
-        delivery_address: "Adresse de livraison",
-        street: "Rue et numéro",
-        postal_code: "Code postal",
-        city: "Ville",
-        billing_different: "Adresse de facturation différente",
-        billing_address: "Adresse de facturation",
-        payment_method: "Mode de paiement",
-        vorkasse: "Paiement anticipé",
-        rechnung: "Facture",
-        submit: "Finaliser la commande",
-      },
-    };
-
-    const lang = shopConfig?.language || "DE";
-    return translations[lang][key] || translations.DE[key];
   };
 
   const allStepsCompleted = Object.values(completedSteps).every(Boolean);
@@ -231,17 +279,17 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
           className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
         >
           <ArrowLeft className="h-5 w-5" />
-          <span>Zurück</span>
+          <span>{getTranslation("back", language)}</span>
         </button>
         
         <div className="flex items-center text-sm">
-          <span className="text-gray-500">Warenkorb</span>
+          <span className="text-gray-500">{getTranslation("cart", language)}</span>
           <span className="mx-2 text-gray-400">{'>'}</span>
-          <span className="font-semibold text-gray-900">Informationen</span>
+          <span className="font-semibold text-gray-900">{getTranslation("information", language)}</span>
           <span className="mx-2 text-gray-400">{'>'}</span>
-          <span className="text-gray-500">Versand</span>
+          <span className="text-gray-500">{getTranslation("shipping", language)}</span>
           <span className="mx-2 text-gray-400">{'>'}</span>
-          <span className="text-gray-500">Zahlung</span>
+          <span className="text-gray-500">{getTranslation("payment", language)}</span>
         </div>
       </div>
       
@@ -251,6 +299,9 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
           onChange={(email) => handleInputChange("email", email)}
           onComplete={() => handleStepComplete("email")}
           isCompleted={completedSteps.email}
+          language={language}
+          error={getFieldError("email")}
+          onBlur={() => handleFieldBlur("email")}
         />
 
         <ContactDeliveryCard
@@ -286,7 +337,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
             onChange={(method) => handleInputChange("payment_method", method)}
             onComplete={() => handleStepComplete("payment")}
             isCompleted={completedSteps.payment}
-            getTranslation={getTranslation}
+            language={language}
           />
         )}
 
@@ -298,7 +349,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
           isSubmitting={isSubmitting}
           allStepsCompleted={allStepsCompleted}
           accentColor={accentColor}
-          submitButtonText={getTranslation("submit")}
+          language={language}
         />
       </form>
     </div>
