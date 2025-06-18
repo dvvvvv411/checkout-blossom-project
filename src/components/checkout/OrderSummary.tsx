@@ -69,8 +69,8 @@ export const OrderSummary = ({ orderData, shopConfig, accentColor }: OrderSummar
       </div>
 
       {/* Discount Code */}
-      <div className="bg-white rounded-xl border border-gray-200 p-3">
-        <div className="flex space-x-2 mb-2">
+      <div className="bg-white rounded-xl border border-gray-200 p-2">
+        <div className="flex space-x-2 mb-1">
           <Input
             value={discountCode}
             onChange={(e) => setDiscountCode(e.target.value)}
