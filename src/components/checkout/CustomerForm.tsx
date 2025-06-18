@@ -324,7 +324,14 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
       
       const errorMessage = error instanceof Error ? error.message : "Unknown error";
       
-      if (errorMessage === "TOKEN_EXPIRED") {
+      if (errorMessage === "CORS_ERROR") {
+        toast({
+          title: "Verbindungsfehler",
+          description: "Die Verbindung zum Server ist fehlgeschlagen. Bitte versuchen Sie es später erneut oder kontaktieren Sie den Support.",
+          variant: "destructive",
+        });
+        // Bei CORS-Fehlern NICHT zur Startseite redirecten - Benutzer soll auf der Checkout-Seite bleiben
+      } else if (errorMessage === "TOKEN_EXPIRED") {
         toast({
           title: getTranslation("order_error", supportedLanguage),
           description: getTranslation("token_expired", supportedLanguage),

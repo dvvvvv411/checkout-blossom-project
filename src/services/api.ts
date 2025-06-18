@@ -1,4 +1,3 @@
-
 // API Services für Checkout-System
 
 export interface OrderData {
@@ -134,9 +133,20 @@ export const fetchOrderData = async (token: string): Promise<OrderData> => {
   console.log(`Fetching order data for token: ${token}`);
   
   try {
-    const response = await fetch(`https://luhhnsvwtnmxztcmdxyq.supabase.co/functions/v1/order-token/${token}`);
+    const response = await fetch(`https://luhhnsvwtnmxztcmdxyq.supabase.co/functions/v1/order-token/${token}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Origin': window.location.origin,
+      },
+      mode: 'cors',
+    });
     
     if (!response.ok) {
+      if (response.status === 0) {
+        console.error("CORS error: Cannot connect to backend");
+        throw new Error("CORS_ERROR");
+      }
       throw new Error(`Failed to fetch order data: ${response.status}`);
     }
     
@@ -145,6 +155,16 @@ export const fetchOrderData = async (token: string): Promise<OrderData> => {
     return data;
   } catch (error) {
     console.error("Error fetching order data:", error);
+    
+    if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
+      console.error("Network error - likely CORS issue");
+      throw new Error("CORS_ERROR");
+    }
+    
+    if (error instanceof Error && error.message === "CORS_ERROR") {
+      throw error;
+    }
+    
     // Fallback mit Beispieldaten für Demo-Zwecke
     return {
       shop_id: "demo-shop-123",
@@ -166,9 +186,20 @@ export const fetchShopConfig = async (shopId: string): Promise<ShopConfig> => {
   console.log(`Fetching shop config for shop: ${shopId}`);
   
   try {
-    const response = await fetch(`https://luhhnsvwtnmxztcmdxyq.supabase.co/functions/v1/shop/${shopId}/config`);
+    const response = await fetch(`https://luhhnsvwtnmxztcmdxyq.supabase.co/functions/v1/shop/${shopId}/config`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Origin': window.location.origin,
+      },
+      mode: 'cors',
+    });
     
     if (!response.ok) {
+      if (response.status === 0) {
+        console.error("CORS error: Cannot connect to backend");
+        throw new Error("CORS_ERROR");
+      }
       throw new Error(`Failed to fetch shop config: ${response.status}`);
     }
     
@@ -177,6 +208,16 @@ export const fetchShopConfig = async (shopId: string): Promise<ShopConfig> => {
     return data;
   } catch (error) {
     console.error("Error fetching shop config:", error);
+    
+    if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
+      console.error("Network error - likely CORS issue");
+      throw new Error("CORS_ERROR");
+    }
+    
+    if (error instanceof Error && error.message === "CORS_ERROR") {
+      throw error;
+    }
+    
     // Fallback mit Beispieldaten für Demo-Zwecke
     return {
       shop_id: shopId,
@@ -231,12 +272,17 @@ export const submitOrder = async (
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "Origin": window.location.origin,
       },
+      mode: "cors",
       body: JSON.stringify(payload),
     });
     
     if (!response.ok) {
-      if (response.status === 401 || response.status === 403) {
+      if (response.status === 0) {
+        console.error("CORS error: Cannot connect to backend");
+        throw new Error("CORS_ERROR");
+      } else if (response.status === 401 || response.status === 403) {
         throw new Error("TOKEN_EXPIRED");
       } else if (response.status >= 400 && response.status < 500) {
         const errorData = await response.json().catch(() => ({}));
@@ -260,6 +306,12 @@ export const submitOrder = async (
     return result;
   } catch (error) {
     console.error("Error submitting order:", error);
+    
+    if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
+      console.error("Network error - likely CORS issue");
+      throw new Error("CORS_ERROR");
+    }
+    
     throw error;
   }
 };
