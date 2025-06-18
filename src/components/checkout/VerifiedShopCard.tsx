@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Star, Lock } from "lucide-react";
@@ -10,18 +9,24 @@ interface VerifiedShopCardProps {
 export const VerifiedShopCard = ({ language = "DE" }: VerifiedShopCardProps) => {
   const [isVisible, setIsVisible] = useState(false);
   const [animateStars, setAnimateStars] = useState(false);
+  const [animateContent, setAnimateContent] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsVisible(true);
-    }, 500);
+    }, 300);
+
+    const contentTimer = setTimeout(() => {
+      setAnimateContent(true);
+    }, 600);
 
     const starTimer = setTimeout(() => {
       setAnimateStars(true);
-    }, 1000);
+    }, 900);
 
     return () => {
       clearTimeout(timer);
+      clearTimeout(contentTimer);
       clearTimeout(starTimer);
     };
   }, []);
@@ -97,16 +102,22 @@ export const VerifiedShopCard = ({ language = "DE" }: VerifiedShopCardProps) => 
 
   return (
     <div
-      className={`transition-all duration-1000 transform ${
+      className={`transition-all duration-1000 ease-out transform ${
         isVisible
           ? "translate-y-0 opacity-100 scale-100"
-          : "translate-y-8 opacity-0 scale-95"
+          : "translate-y-12 opacity-0 scale-90"
       }`}
     >
-      <Card className="relative overflow-hidden bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 border-2 border-yellow-300/50 shadow-lg hover:shadow-xl transition-all duration-500">
+      <Card className="relative overflow-hidden bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 border-2 border-yellow-300/50 shadow-lg hover:shadow-xl transition-all duration-500 hover:-translate-y-1">
         <CardContent className="p-6 relative text-center">
           {/* Header with custom image */}
-          <div className="flex items-center justify-center space-x-3 mb-4">
+          <div 
+            className={`flex items-center justify-center space-x-3 mb-4 transition-all duration-800 ease-out ${
+              animateContent 
+                ? "translate-y-0 opacity-100" 
+                : "translate-y-4 opacity-0"
+            }`}
+          >
             <img 
               src="https://i.imgur.com/Nw7FDia.png" 
               alt="Verified Shop Badge"
@@ -124,19 +135,40 @@ export const VerifiedShopCard = ({ language = "DE" }: VerifiedShopCardProps) => 
           </div>
 
           {/* Stars rating */}
-          <div className="flex items-center justify-center space-x-2 mb-4">
+          <div 
+            className={`flex items-center justify-center space-x-2 mb-4 transition-all duration-800 ease-out ${
+              animateContent 
+                ? "translate-y-0 opacity-100" 
+                : "translate-y-4 opacity-0"
+            }`}
+            style={{ transitionDelay: "200ms" }}
+          >
             <div className="flex space-x-1">
               {renderStars()}
             </div>
             <span className="text-lg font-bold text-gray-800 ml-2">4.8</span>
           </div>
 
-          <p className="text-sm text-gray-700 mb-4 font-medium">
+          <p 
+            className={`text-sm text-gray-700 mb-4 font-medium transition-all duration-800 ease-out ${
+              animateContent 
+                ? "translate-y-0 opacity-100" 
+                : "translate-y-4 opacity-0"
+            }`}
+            style={{ transitionDelay: "400ms" }}
+          >
             {getTranslation("subtitle")}
           </p>
 
           {/* Secure payment banner */}
-          <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-3 rounded-lg shadow-md">
+          <div 
+            className={`bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-3 rounded-lg shadow-md transition-all duration-800 ease-out ${
+              animateContent 
+                ? "translate-y-0 opacity-100" 
+                : "translate-y-4 opacity-0"
+            }`}
+            style={{ transitionDelay: "600ms" }}
+          >
             <div className="flex items-center justify-center space-x-2">
               <Lock className="h-5 w-5" />
               <span className="font-bold text-sm">
