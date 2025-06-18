@@ -1,4 +1,3 @@
-
 // API Services für Checkout-System
 
 import { 
@@ -684,17 +683,18 @@ export const submitOrder = async (
             console.log("✅ Bank data successfully fetched for instant mode");
             
             // Inject bank data into the order response for the confirmation page
+            // Use order_id as the payment reference instead of confirmation_number
             result.payment_instructions = {
               ...result.payment_instructions,
               bank_details: {
                 account_holder: bankDataToStore.account_holder,
                 iban: bankDataToStore.iban,
                 bic: bankDataToStore.bic,
-                reference: result.confirmation_number || result.order_id
+                reference: result.order_id || result.confirmation_number
               }
             };
             
-            console.log("✅ Bank details injected into order response:", result.payment_instructions.bank_details);
+            console.log("✅ Bank details injected into order response with order_id reference:", result.payment_instructions.bank_details);
           } else {
             console.warn("⚠️ No bank data available for instant mode - bank transfer instructions will not be shown");
           }

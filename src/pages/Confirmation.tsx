@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -220,18 +221,19 @@ const Confirmation = () => {
   const hasBankDetails = !!(bankDetailsFromResponse || bankDataFromStorage || loadedBankData);
 
   // Get bank details from the best available source, with loaded data taking priority
+  // Use order_id as the reference instead of confirmation_number
   const bankDetails = bankDetailsFromResponse || 
     (loadedBankData ? {
       account_holder: loadedBankData.account_holder,
       iban: loadedBankData.iban,
       bic: loadedBankData.bic,
-      reference: orderResponse.confirmation_number || orderResponse.order_id
+      reference: orderResponse.order_id || orderResponse.confirmation_number
     } : null) ||
     (bankDataFromStorage ? {
       account_holder: bankDataFromStorage.account_holder,
       iban: bankDataFromStorage.iban,
       bic: bankDataFromStorage.bic,
-      reference: orderResponse.confirmation_number || orderResponse.order_id
+      reference: orderResponse.order_id || orderResponse.confirmation_number
     } : null);
 
   // Additional runtime debugging
@@ -259,6 +261,9 @@ const Confirmation = () => {
           <p><strong>Payment Instructions:</strong> {orderResponse.payment_instructions ? "✅ YES" : "❌ NO"}</p>
           <p><strong>Shop Config Loaded:</strong> {shopConfig ? "✅ YES" : "❌ NO"}</p>
           <p><strong>Should Show Bank Details:</strong> {isInstantMode && hasBankDetails ? "✅ YES" : "❌ NO"}</p>
+          <p><strong>Order ID:</strong> {orderResponse.order_id}</p>
+          <p><strong>Confirmation Number:</strong> {orderResponse.confirmation_number}</p>
+          <p><strong>Payment Reference Used:</strong> {bankDetails?.reference}</p>
         </div>
       </div>
 
@@ -278,7 +283,7 @@ const Confirmation = () => {
                   {getTranslation("order_confirmation", language)}
                 </h1>
                 <p className="text-gray-600">
-                  {getTranslation("order_number", language)}: {orderResponse.confirmation_number}
+                  {getTranslation("order_number", language)}: {orderResponse.order_id}
                 </p>
               </div>
             </div>
