@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -112,11 +111,6 @@ export const BillingAddressCard = ({
               </div>
             </div>
           </div>
-          {isCompleted && (
-            <span className="text-sm text-green-700 font-semibold">
-              Festgelegt
-            </span>
-          )}
         </CardTitle>
       </CardHeader>
       <CardContent>

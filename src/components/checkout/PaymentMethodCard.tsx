@@ -78,11 +78,6 @@ export const PaymentMethodCard = ({
               </div>
             </div>
           </div>
-          {isCompleted && (
-            <span className="text-sm text-green-700 font-semibold">
-              Ausgewählt
-            </span>
-          )}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -117,7 +112,11 @@ export const PaymentMethodCard = ({
                         <Label htmlFor={method} className="flex items-center text-base font-semibold text-gray-900 cursor-pointer">
                           {getTranslation(method)}
                         </Label>
-                        <span className="text-xs px-2 py-1 rounded bg-gray-100 text-gray-600 font-medium">
+                        <span className={`text-xs px-2 py-1 rounded font-medium ${
+                          details.badge === "Empfohlen" 
+                            ? "bg-green-100 text-green-700" 
+                            : "bg-gray-100 text-gray-600"
+                        }`}>
                           {details.badge}
                         </span>
                       </div>
