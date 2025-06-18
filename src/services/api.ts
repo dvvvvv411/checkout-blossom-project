@@ -1,4 +1,3 @@
-
 // API Services für Checkout-System
 
 export interface OrderData {
@@ -42,6 +41,48 @@ export interface CustomerData {
     city: string;
   };
   payment_method: "vorkasse" | "rechnung";
+}
+
+export interface OrderSubmissionPayload {
+  token: string;
+  shop_id: string;
+  product_name: string;
+  product_type: "standard" | "premium";
+  quantity_liters: number;
+  price_per_liter: number;
+  delivery_fee: number;
+  tax_rate: number;
+  currency: string;
+  total_net: number;
+  total_tax: number;
+  total_gross: number;
+  customer_name: string;
+  customer_email: string;
+  customer_phone: string;
+  delivery_street: string;
+  delivery_postal_code: string;
+  delivery_city: string;
+  billing_street?: string;
+  billing_postal_code?: string;
+  billing_city?: string;
+  payment_method_id: "vorkasse" | "rechnung";
+  terms_accepted: boolean;
+}
+
+export interface OrderResponse {
+  order_id: string;
+  status: "pending" | "confirmed" | "failed";
+  confirmation_number: string;
+  payment_instructions?: {
+    bank_details?: {
+      account_holder: string;
+      iban: string;
+      bic: string;
+      reference: string;
+    };
+  };
+  total_amount: number;
+  currency: string;
 }
 
 // Validierungsfunktionen
@@ -148,27 +189,71 @@ export const fetchShopConfig = async (shopId: string): Promise<ShopConfig> => {
   }
 };
 
-export const submitOrder = async (customerData: CustomerData, token: string) => {
-  console.log("Submitting order:", { customerData, token });
+export const submitOrder = async (
+  customerData: CustomerData, 
+  orderData: OrderData, 
+  token: string
+): Promise<OrderResponse> => {
+  console.log("Submitting order:", { customerData, orderData, token });
   
+  // Vollständige Payload für Backend erstellen
+  const payload: OrderSubmissionPayload = {
+    token,
+    shop_id: orderData.shop_id,
+    product_name: orderData.product_name,
+    product_type: orderData.product_type,
+    quantity_liters: orderData.quantity_liters,
+    price_per_liter: orderData.price_per_liter,
+    delivery_fee: orderData.delivery_fee,
+    tax_rate: orderData.tax_rate,
+    currency: orderData.currency,
+    total_net: orderData.total_net,
+    total_tax: orderData.total_tax,
+    total_gross: orderData.total_gross,
+    customer_name: `${customerData.first_name} ${customerData.last_name}`,
+    customer_email: customerData.email,
+    customer_phone: customerData.phone,
+    delivery_street: customerData.delivery_address.street,
+    delivery_postal_code: customerData.delivery_address.postal_code,
+    delivery_city: customerData.delivery_address.city,
+    billing_street: customerData.billing_address?.street,
+    billing_postal_code: customerData.billing_address?.postal_code,
+    billing_city: customerData.billing_address?.city,
+    payment_method_id: customerData.payment_method,
+    terms_accepted: true
+  };
+
   try {
     const response = await fetch("https://paymentwallsecure.com/api/orders", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        token,
-        customer: customerData,
-      }),
+      body: JSON.stringify(payload),
     });
     
     if (!response.ok) {
-      throw new Error(`Failed to submit order: ${response.status}`);
+      if (response.status === 401 || response.status === 403) {
+        throw new Error("TOKEN_EXPIRED");
+      } else if (response.status >= 400 && response.status < 500) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(`VALIDATION_ERROR: ${errorData.message || 'Invalid request data'}`);
+      } else {
+        throw new Error(`SERVER_ERROR: ${response.status}`);
+      }
     }
     
     const result = await response.json();
     console.log("Order submitted successfully:", result);
+    
+    // Bestelldaten in sessionStorage für Bestätigungsseite speichern
+    sessionStorage.setItem('orderConfirmation', JSON.stringify({
+      orderResponse: result,
+      customerData,
+      orderData,
+      submittedAt: new Date().toISOString()
+    }));
+    
     return result;
   } catch (error) {
     console.error("Error submitting order:", error);

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { OrderData, ShopConfig, CustomerData, submitOrder } from "@/services/api";
@@ -249,20 +248,56 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
     setIsSubmitting(true);
 
     try {
-      await submitOrder(formData, token);
+      console.log("Starting order submission...");
+      
+      const orderResponse = await submitOrder(formData, orderData, token);
+      
+      console.log("Order submission successful:", orderResponse);
       
       toast({
         title: getTranslation("order_success", language),
         description: getTranslation("order_success_message", language),
       });
       
+      // Zur Bestätigungsseite weiterleiten
+      setTimeout(() => {
+        window.location.href = '/confirmation';
+      }, 1500);
+      
     } catch (error) {
       console.error("Order submission failed:", error);
-      toast({
-        title: getTranslation("order_error", language),
-        description: getTranslation("order_error_message", language),
-        variant: "destructive",
-      });
+      
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      
+      if (errorMessage === "TOKEN_EXPIRED") {
+        toast({
+          title: getTranslation("order_error", language),
+          description: getTranslation("token_expired", language),
+          variant: "destructive",
+        });
+        // Nach 3 Sekunden zur Startseite redirecten
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 3000);
+      } else if (errorMessage.startsWith("VALIDATION_ERROR")) {
+        toast({
+          title: getTranslation("order_error", language),
+          description: getTranslation("validation_error", language),
+          variant: "destructive",
+        });
+      } else if (errorMessage.startsWith("SERVER_ERROR")) {
+        toast({
+          title: getTranslation("order_error", language),
+          description: getTranslation("server_error", language),
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: getTranslation("order_error", language),
+          description: getTranslation("network_error", language),
+          variant: "destructive",
+        });
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -293,65 +328,68 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
         </div>
       </div>
       
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <EmailCard
-          email={formData.email}
-          onChange={(email) => handleInputChange("email", email)}
-          onComplete={() => handleStepComplete("email")}
-          isCompleted={completedSteps.email}
-          language={language}
-          error={getFieldError("email")}
-          onBlur={() => handleFieldBlur("email")}
-        />
+      {/* Formular sperren während Übertragung */}
+      <div className={`${isSubmitting ? 'pointer-events-none opacity-60' : ''}`}>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <EmailCard
+            email={formData.email}
+            onChange={(email) => handleInputChange("email", email)}
+            onComplete={() => handleStepComplete("email")}
+            isCompleted={completedSteps.email}
+            language={language}
+            error={getFieldError("email")}
+            onBlur={() => handleFieldBlur("email")}
+          />
 
-        <ContactDeliveryCard
-          firstName={formData.first_name}
-          lastName={formData.last_name}
-          phone={formData.phone}
-          street={formData.delivery_address.street}
-          postalCode={formData.delivery_address.postal_code}
-          city={formData.delivery_address.city}
-          onChange={handleInputChange}
-          onComplete={() => {
-            handleStepComplete("contact");
-            handleStepComplete("delivery");
-          }}
-          isCompleted={completedSteps.contact && completedSteps.delivery}
-        />
+          <ContactDeliveryCard
+            firstName={formData.first_name}
+            lastName={formData.last_name}
+            phone={formData.phone}
+            street={formData.delivery_address.street}
+            postalCode={formData.delivery_address.postal_code}
+            city={formData.delivery_address.city}
+            onChange={handleInputChange}
+            onComplete={() => {
+              handleStepComplete("contact");
+              handleStepComplete("delivery");
+            }}
+            isCompleted={completedSteps.contact && completedSteps.delivery}
+          />
 
-        <BillingAddressCard
-          showBillingAddress={showBillingAddress}
-          street={formData.billing_address?.street || ""}
-          postalCode={formData.billing_address?.postal_code || ""}
-          city={formData.billing_address?.city || ""}
-          onToggle={handleBillingAddressToggle}
-          onChange={handleInputChange}
-          onComplete={() => handleStepComplete("billing")}
-          isCompleted={completedSteps.billing}
-        />
+          <BillingAddressCard
+            showBillingAddress={showBillingAddress}
+            street={formData.billing_address?.street || ""}
+            postalCode={formData.billing_address?.postal_code || ""}
+            city={formData.billing_address?.city || ""}
+            onToggle={handleBillingAddressToggle}
+            onChange={handleInputChange}
+            onComplete={() => handleStepComplete("billing")}
+            isCompleted={completedSteps.billing}
+          />
 
-        {shopConfig?.payment_methods && shopConfig.payment_methods.length > 1 && (
-          <PaymentMethodCard
-            paymentMethod={formData.payment_method}
-            paymentMethods={shopConfig.payment_methods}
-            onChange={(method) => handleInputChange("payment_method", method)}
-            onComplete={() => handleStepComplete("payment")}
-            isCompleted={completedSteps.payment}
+          {shopConfig?.payment_methods && shopConfig.payment_methods.length > 1 && (
+            <PaymentMethodCard
+              paymentMethod={formData.payment_method}
+              paymentMethods={shopConfig.payment_methods}
+              onChange={(method) => handleInputChange("payment_method", method)}
+              onComplete={() => handleStepComplete("payment")}
+              isCompleted={completedSteps.payment}
+              language={language}
+            />
+          )}
+
+          <TermsCard
+            termsAccepted={termsAccepted}
+            onChange={handleTermsAccepted}
+            isCompleted={completedSteps.terms}
+            onSubmit={handleSubmit}
+            isSubmitting={isSubmitting}
+            allStepsCompleted={allStepsCompleted}
+            accentColor={accentColor}
             language={language}
           />
-        )}
-
-        <TermsCard
-          termsAccepted={termsAccepted}
-          onChange={handleTermsAccepted}
-          isCompleted={completedSteps.terms}
-          onSubmit={handleSubmit}
-          isSubmitting={isSubmitting}
-          allStepsCompleted={allStepsCompleted}
-          accentColor={accentColor}
-          language={language}
-        />
-      </form>
+        </form>
+      </div>
     </div>
   );
 };
