@@ -162,8 +162,17 @@ export const transformShopConfig = (backendData: any): any => {
     logo_url = "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=200&h=80&fit=crop&crop=center"; // Default logo
   }
 
-  // Extract and validate shop URL
-  let shop_url = shopData.shop_url || backendData.shop_url;
+  // Enhanced shop URL extraction with multiple field mappings
+  let shop_url = shopData.shop_url || 
+                 shopData.website_url || 
+                 shopData.landing_url || 
+                 shopData.return_url ||
+                 shopData.redirect_url ||
+                 backendData.shop_url || 
+                 backendData.website_url || 
+                 backendData.landing_url ||
+                 backendData.return_url ||
+                 backendData.redirect_url;
   
   // Validate shop URL if provided
   if (shop_url && typeof shop_url === 'string' && shop_url.trim()) {
@@ -190,7 +199,10 @@ export const transformShopConfig = (backendData: any): any => {
     shop_url: shop_url, // Include shop URL in transformed data
   };
   
-  logger.dev("Shop config transformed successfully");
+  logger.dev("Shop config transformed successfully", {
+    hasShopUrl: !!shop_url,
+    shopUrl: shop_url
+  });
   return transformed;
 };
 

@@ -173,6 +173,79 @@ const extractShopIdFromUrl = (): string | null => {
   return null;
 };
 
+// Function to extract shop URL from URL parameters or referrer
+const extractShopUrlFromRequest = (): string | null => {
+  logger.dev("Extracting shop URL from request");
+  
+  // Try to get shop URL from URL parameters first
+  const urlParams = new URLSearchParams(window.location.search);
+  const shopUrlFromParams = urlParams.get('shop_url') || urlParams.get('return_url') || urlParams.get('redirect_url');
+  
+  if (shopUrlFromParams) {
+    logger.devDetailed("Shop URL found in URL params:", shopUrlFromParams);
+    
+    // Validate the URL
+    try {
+      new URL(shopUrlFromParams);
+      logger.dev("Valid shop URL found in URL params");
+      return shopUrlFromParams;
+    } catch (error) {
+      logger.warn("Invalid shop URL from URL params:", shopUrlFromParams);
+    }
+  }
+  
+  // Try to get from document referrer as fallback
+  if (document.referrer) {
+    try {
+      const referrerUrl = new URL(document.referrer);
+      // Only use referrer if it's not from the same domain (checkout domain)
+      if (referrerUrl.hostname !== window.location.hostname) {
+        logger.dev("Using referrer as shop URL:", document.referrer);
+        return referrerUrl.origin;
+      } else {
+        logger.dev("Referrer is from same domain, skipping");
+      }
+    } catch (error) {
+      logger.warn("Invalid referrer URL:", document.referrer);
+    }
+  }
+  
+  logger.dev("No valid shop URL found in request");
+  return null;
+};
+
+// Store captured shop URL in sessionStorage for later use
+const storeShopUrl = (shopUrl: string): void => {
+  try {
+    sessionStorage.setItem('capturedShopUrl', shopUrl);
+    logger.dev("Shop URL stored in sessionStorage:", shopUrl);
+  } catch (error) {
+    logger.warn("Failed to store shop URL in sessionStorage:", error);
+  }
+};
+
+// Retrieve stored shop URL from sessionStorage
+const getStoredShopUrl = (): string | null => {
+  try {
+    const storedUrl = sessionStorage.getItem('capturedShopUrl');
+    if (storedUrl) {
+      logger.dev("Retrieved shop URL from sessionStorage:", storedUrl);
+      return storedUrl;
+    }
+  } catch (error) {
+    logger.warn("Failed to retrieve shop URL from sessionStorage:", error);
+  }
+  return null;
+};
+
+// Initialize shop URL capture when the checkout loads
+export const initializeShopUrlCapture = (): void => {
+  const capturedShopUrl = extractShopUrlFromRequest();
+  if (capturedShopUrl) {
+    storeShopUrl(capturedShopUrl);
+  }
+};
+
 // Währungsformatierung
 export const formatCurrency = (
   amount: number, 
@@ -629,12 +702,22 @@ export const submitOrder = async (
       }
     }
     
+    // Get the captured shop URL for the confirmation page
+    const capturedShopUrl = getStoredShopUrl();
+    
+    // Enhance shop config with captured shop URL if available
+    if (shopConfigToStore && capturedShopUrl) {
+      shopConfigToStore.shop_url = capturedShopUrl;
+      logger.dev("Enhanced shop config with captured shop URL:", capturedShopUrl);
+    }
+    
     const confirmationData = {
       orderResponse: result,
       customerData,
       orderData,
       shopConfig: shopConfigToStore,
       bankData: bankDataToStore,
+      capturedShopUrl: capturedShopUrl, // Store separately as fallback
       submittedAt: new Date().toISOString()
     };
     

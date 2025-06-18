@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, Info, CreditCard, MapPin, Mail, Phone, ArrowLeft, Truck, Copy } from "lucide-react";
-import { formatCurrency, fetchShopConfig, fetchBankData, ShopConfig, BankData } from "@/services/api";
+import { formatCurrency, fetchShopConfig, fetchBankData, ShopConfig, BankData, initializeShopUrlCapture } from "@/services/api";
 import { getTranslation, getProductNameTranslation } from "@/utils/translations";
 import { formatIBAN } from "@/utils/formatters";
 import { logger } from "@/utils/logger";
@@ -29,6 +29,7 @@ interface OrderConfirmationData {
   orderData: any;
   shopConfig?: ShopConfig;
   bankData?: BankData;
+  capturedShopUrl?: string; // Added captured shop URL
   submittedAt: string;
 }
 
@@ -38,6 +39,11 @@ const Confirmation = () => {
   const [shopConfig, setShopConfig] = useState<ShopConfig | null>(null);
   const [loadedBankData, setLoadedBankData] = useState<BankData | null>(null);
   const [language, setLanguage] = useState<"DE" | "EN" | "FR">("DE");
+
+  // Initialize shop URL capture when component mounts
+  useEffect(() => {
+    initializeShopUrlCapture();
+  }, []);
 
   useEffect(() => {
     logger.dev("Confirmation page loading");
@@ -154,15 +160,23 @@ const Confirmation = () => {
   }, [confirmationData, shopConfig, loadedBankData]);
 
   const handleBackToShop = () => {
-    // Get shop URL from various sources
+    // Enhanced shop URL detection with multiple fallbacks
     const shopUrl = shopConfig?.shop_url || 
-                   confirmationData?.shopConfig?.shop_url;
+                   confirmationData?.shopConfig?.shop_url ||
+                   confirmationData?.capturedShopUrl;
+    
+    logger.dev("Attempting to redirect to shop", {
+      shopConfigUrl: shopConfig?.shop_url,
+      confirmationShopConfigUrl: confirmationData?.shopConfig?.shop_url,
+      capturedShopUrl: confirmationData?.capturedShopUrl,
+      finalUrl: shopUrl
+    });
     
     if (shopUrl) {
-      logger.dev("Redirecting to shop URL:", shopUrl);
+      logger.info("Redirecting to shop URL:", shopUrl);
       window.location.href = shopUrl;
     } else {
-      logger.dev("No shop URL found, navigating to home");
+      logger.warn("No shop URL found, navigating to home");
       navigate('/');
     }
   };
