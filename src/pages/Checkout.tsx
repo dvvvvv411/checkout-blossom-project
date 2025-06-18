@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -71,6 +70,9 @@ const Checkout = () => {
         });
       }
       console.log("Language:", shopConfig.language);
+      console.log("=== LOGO DEBUG IN CHECKOUT ===");
+      console.log("Logo URL from shopConfig:", shopConfig.logo_url);
+      console.log("Company Name:", shopConfig.company_name);
       console.log("=====================================");
     }
   }, [shopConfig]);
@@ -266,18 +268,38 @@ const Checkout = () => {
               <ArrowLeft className="h-6 w-6" />
             </button>
             <div className="text-center">
-              {/* Logo */}
+              {/* Enhanced Logo with better error handling and debugging */}
               {shopConfig?.logo_url && (
                 <div className="mb-4">
                   <img 
                     src={shopConfig.logo_url} 
-                    alt={shopConfig.company_name}
-                    className="h-12 mx-auto object-contain"
+                    alt={shopConfig.company_name || "Shop Logo"}
+                    className="h-12 mx-auto object-contain transition-opacity duration-200"
+                    onLoad={() => {
+                      console.log("Logo loaded successfully:", shopConfig.logo_url);
+                    }}
                     onError={(e) => {
-                      // Verstecke Logo bei Fehler
-                      e.currentTarget.style.display = 'none';
+                      console.error("Logo failed to load:", shopConfig.logo_url);
+                      console.log("Attempting to load fallback logo");
+                      // Instead of hiding, try a fallback logo
+                      const fallbackLogo = "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=200&h=80&fit=crop&crop=center";
+                      if (e.currentTarget.src !== fallbackLogo) {
+                        e.currentTarget.src = fallbackLogo;
+                        console.log("Switched to fallback logo:", fallbackLogo);
+                      } else {
+                        // If even fallback fails, hide the image
+                        console.log("Fallback logo also failed, hiding logo");
+                        e.currentTarget.style.display = 'none';
+                      }
                     }}
                   />
+                </div>
+              )}
+              
+              {/* Debug info - only show in development */}
+              {process.env.NODE_ENV === 'development' && (
+                <div className="text-xs text-gray-500 mb-2">
+                  Debug: Logo URL = {shopConfig?.logo_url || 'undefined'}
                 </div>
               )}
               

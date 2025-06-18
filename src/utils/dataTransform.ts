@@ -1,4 +1,3 @@
-
 // Data transformation utilities for backend/frontend compatibility
 
 export interface BackendOrderData {
@@ -110,6 +109,7 @@ export const transformOrderData = (backendData: any): any => {
 
 // Transform backend shop config to frontend format
 export const transformShopConfig = (backendData: any): any => {
+  console.log("=== SHOP CONFIG TRANSFORMATION DEBUG ===");
   console.log("Transforming backend shop config:", backendData);
   console.log("Backend data type:", typeof backendData);
   console.log("Backend data keys:", Object.keys(backendData || {}));
@@ -152,6 +152,29 @@ export const transformShopConfig = (backendData: any): any => {
   // Extract other fields, also checking nested shop object if available
   const shopData = backendData.shop || backendData;
   
+  // Extract and validate logo URL with detailed debugging
+  let logo_url = shopData.logo_url || backendData.logo_url;
+  console.log("=== LOGO URL DEBUG ===");
+  console.log("Raw logo_url from shopData:", shopData.logo_url);
+  console.log("Raw logo_url from backendData:", backendData.logo_url);
+  console.log("Final extracted logo_url:", logo_url);
+  
+  // Validate logo URL
+  if (logo_url && typeof logo_url === 'string' && logo_url.trim()) {
+    // Basic URL validation
+    try {
+      new URL(logo_url);
+      console.log("Logo URL validation passed:", logo_url);
+    } catch (error) {
+      console.error("Invalid logo URL format:", logo_url, error);
+      logo_url = "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=200&h=80&fit=crop&crop=center"; // Default logo
+      console.log("Using default logo due to invalid URL");
+    }
+  } else {
+    console.log("No valid logo URL provided, using default");
+    logo_url = "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=200&h=80&fit=crop&crop=center"; // Default logo
+  }
+  
   const transformed = {
     shop_id: shop_id,
     accent_color: shopData.accent_color || backendData.accent_color || "#2563eb",
@@ -159,13 +182,16 @@ export const transformShopConfig = (backendData: any): any => {
     payment_methods: shopData.payment_methods || backendData.payment_methods || ["vorkasse", "rechnung"],
     currency: shopData.currency || backendData.currency || "EUR",
     company_name: shopData.company_name || backendData.company_name || "Demo Shop",
-    logo_url: shopData.logo_url || backendData.logo_url,
+    logo_url: logo_url,
     support_phone: shopData.support_phone || backendData.support_phone,
     checkout_mode: shopData.checkout_mode || backendData.checkout_mode || "standard",
   };
   
+  console.log("=== FINAL SHOP CONFIG ===");
   console.log("Transformed shop config:", transformed);
   console.log("Final shop_id for validation:", transformed.shop_id);
+  console.log("Final logo_url:", transformed.logo_url);
+  console.log("==============================");
   return transformed;
 };
 
