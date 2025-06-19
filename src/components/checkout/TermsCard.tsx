@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { FileText, Shield, Check } from "lucide-react";
+import { FileText, Shield, Check, Loader2 } from "lucide-react";
 import { getTranslation } from "@/utils/translations";
 import { logger } from "@/utils/logger";
 
@@ -104,13 +104,16 @@ export const TermsCard = ({
         <button
           type="submit"
           onClick={handleButtonClick}
-          className={`w-full h-14 text-white font-semibold text-lg rounded-lg transition-all duration-200 disabled:opacity-50 ${
+          className={`w-full h-14 text-white font-semibold text-lg rounded-lg transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2 ${
             allStepsCompleted && termsAccepted
               ? "bg-gradient-to-r from-green-500 to-emerald-600 shadow-lg hover:shadow-xl hover:from-green-600 hover:to-emerald-700" 
               : "bg-gray-500"
           }`}
           disabled={isSubmitting || !allStepsCompleted || !termsAccepted}
         >
+          {isSubmitting && (
+            <Loader2 className="h-5 w-5 animate-spin" />
+          )}
           {isSubmitting 
             ? getTranslation("processing_order", language) 
             : getTranslation("submit_order", language)
