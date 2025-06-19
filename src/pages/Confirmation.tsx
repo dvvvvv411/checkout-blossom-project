@@ -7,6 +7,7 @@ import { formatCurrency, fetchShopConfig, fetchBankData, ShopConfig, BankData } 
 import { getTranslation, getProductNameTranslation } from "@/utils/translations";
 import { formatIBAN } from "@/utils/formatters";
 import { logger } from "@/utils/logger";
+import { getAccentColorStyles, getStepNumberStyles, getBankDetailsStyles, getAccentColorClasses } from "@/utils/accentColor";
 
 interface OrderConfirmationData {
   orderResponse: {
@@ -237,6 +238,11 @@ const Confirmation = () => {
   const isInstantMode = checkoutMode === "instant";
   const accentColor = shopConfig?.accent_color || "#2563eb";
 
+  // Get accent color styles
+  const accentStyles = getAccentColorStyles(accentColor);
+  const stepNumberStyles = getStepNumberStyles(accentColor);
+  const bankDetailsStyles = getBankDetailsStyles(accentColor);
+
   // Enhanced bank details detection - check all sources including loaded bank data
   const bankDetailsFromResponse = orderResponse.payment_instructions?.bank_details;
   const bankDataFromStorage = confirmationData.bankData;
@@ -314,16 +320,19 @@ const Confirmation = () => {
               {isInstantMode ? (
                 <CheckCircle className="h-24 w-24 text-green-600" />
               ) : (
-                <Info className="h-24 w-24 text-blue-600" />
+                <Info className="h-24 w-24" style={{ color: accentColor }} />
               )}
             </div>
-            <h2 className={`text-4xl font-bold mb-4 ${isInstantMode ? 'text-green-900' : 'text-blue-900'}`}>
+            <h2 className={`text-4xl font-bold mb-4 ${isInstantMode ? 'text-green-900' : ''}`} 
+                style={!isInstantMode ? { color: accentStyles.backgroundColor } : {}}>
               {getTranslation(isInstantMode ? "order_confirmed" : "order_received", language)}
             </h2>
-            <p className={`text-xl mb-6 ${isInstantMode ? 'text-green-700' : 'text-blue-700'}`}>
+            <p className={`text-xl mb-6 ${isInstantMode ? 'text-green-700' : ''}`}
+               style={!isInstantMode ? { color: accentColor } : {}}>
               {getTranslation(isInstantMode ? "order_confirmed_message" : "order_received_message", language)}
             </p>
-            <p className={`text-lg font-medium ${isInstantMode ? 'text-green-600' : 'text-blue-600'}`}>
+            <p className={`text-lg font-medium ${isInstantMode ? 'text-green-600' : ''}`}
+               style={!isInstantMode ? { color: accentColor } : {}}>
               {getTranslation(isInstantMode ? "invoice_sent_email" : "confirmation_sent_email", language)}
             </p>
           </div>
@@ -350,7 +359,10 @@ const Confirmation = () => {
                       {isInstantMode ? (
                         <div className="space-y-4">
                           <div className="flex items-start space-x-3">
-                            <div className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                            <div 
+                              className="flex-shrink-0 w-8 h-8 text-white rounded-full flex items-center justify-center font-bold text-sm"
+                              style={stepNumberStyles}
+                            >
                               1
                             </div>
                             <div>
@@ -365,7 +377,10 @@ const Confirmation = () => {
                             </div>
                           </div>
                           <div className="flex items-start space-x-3">
-                            <div className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                            <div 
+                              className="flex-shrink-0 w-8 h-8 text-white rounded-full flex items-center justify-center font-bold text-sm"
+                              style={stepNumberStyles}
+                            >
                               2
                             </div>
                             <div>
@@ -379,7 +394,10 @@ const Confirmation = () => {
                       ) : (
                         <div className="space-y-4">
                           <div className="flex items-start space-x-3">
-                            <div className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                            <div 
+                              className="flex-shrink-0 w-8 h-8 text-white rounded-full flex items-center justify-center font-bold text-sm"
+                              style={stepNumberStyles}
+                            >
                               1
                             </div>
                             <div>
@@ -390,7 +408,10 @@ const Confirmation = () => {
                             </div>
                           </div>
                           <div className="flex items-start space-x-3">
-                            <div className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                            <div 
+                              className="flex-shrink-0 w-8 h-8 text-white rounded-full flex items-center justify-center font-bold text-sm"
+                              style={stepNumberStyles}
+                            >
                               2
                             </div>
                             <div>
@@ -401,7 +422,10 @@ const Confirmation = () => {
                             </div>
                           </div>
                           <div className="flex items-start space-x-3">
-                            <div className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                            <div 
+                              className="flex-shrink-0 w-8 h-8 text-white rounded-full flex items-center justify-center font-bold text-sm"
+                              style={stepNumberStyles}
+                            >
                               3
                             </div>
                             <div>
@@ -417,17 +441,32 @@ const Confirmation = () => {
 
                     {/* Bank Details - Show in Instant Mode when available */}
                     {isInstantMode && bankDetails && (
-                      <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-6 mt-6">
-                        <h4 className="font-bold text-blue-900 mb-4 text-lg">
+                      <div 
+                        className="border-2 rounded-lg p-6 mt-6"
+                        style={{ 
+                          backgroundColor: bankDetailsStyles.backgroundColor,
+                          borderColor: bankDetailsStyles.borderColor 
+                        }}
+                      >
+                        <h4 
+                          className="font-bold mb-4 text-lg"
+                          style={{ color: bankDetailsStyles.headingColor }}
+                        >
                           {getTranslation("bank_transfer_details", language)}
                         </h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div>
-                            <span className="text-blue-700 font-semibold text-sm block mb-1">
+                            <span 
+                              className="font-semibold text-sm block mb-1"
+                              style={{ color: bankDetailsStyles.labelColor }}
+                            >
                               {getTranslation("account_holder", language)}:
                             </span>
                             <div className="flex items-center justify-between">
-                              <p className="text-blue-900 font-medium text-lg">
+                              <p 
+                                className="font-medium text-lg"
+                                style={{ color: bankDetailsStyles.textColor }}
+                              >
                                 {bankDetails.account_holder}
                               </p>
                               <button
@@ -435,7 +474,8 @@ const Confirmation = () => {
                                   bankDetails.account_holder,
                                   getTranslation("account_holder", language)
                                 )}
-                                className="ml-2 p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded transition-colors"
+                                className="ml-2 p-1 hover:bg-white hover:bg-opacity-50 rounded transition-colors"
+                                style={{ color: bankDetailsStyles.textColor }}
                                 title={getTranslation("copy_tooltip", language)}
                               >
                                 <Copy className="h-4 w-4" />
@@ -443,14 +483,23 @@ const Confirmation = () => {
                             </div>
                           </div>
                           <div>
-                            <span className="text-blue-700 font-semibold text-sm block mb-1">IBAN:</span>
+                            <span 
+                              className="font-semibold text-sm block mb-1"
+                              style={{ color: bankDetailsStyles.labelColor }}
+                            >
+                              IBAN:
+                            </span>
                             <div className="flex items-center justify-between">
-                              <p className="text-blue-900 font-mono text-lg font-medium">
+                              <p 
+                                className="font-mono text-lg font-medium"
+                                style={{ color: bankDetailsStyles.textColor }}
+                              >
                                 {formatIBAN(bankDetails.iban)}
                               </p>
                               <button
                                 onClick={() => handleCopyToClipboard(formatIBAN(bankDetails.iban), "IBAN")}
-                                className="ml-2 p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded transition-colors"
+                                className="ml-2 p-1 hover:bg-white hover:bg-opacity-50 rounded transition-colors"
+                                style={{ color: bankDetailsStyles.textColor }}
                                 title={getTranslation("copy_tooltip", language)}
                               >
                                 <Copy className="h-4 w-4" />
@@ -458,14 +507,23 @@ const Confirmation = () => {
                             </div>
                           </div>
                           <div>
-                            <span className="text-blue-700 font-semibold text-sm block mb-1">BIC:</span>
+                            <span 
+                              className="font-semibold text-sm block mb-1"
+                              style={{ color: bankDetailsStyles.labelColor }}
+                            >
+                              BIC:
+                            </span>
                             <div className="flex items-center justify-between">
-                              <p className="text-blue-900 font-mono text-lg font-medium">
+                              <p 
+                                className="font-mono text-lg font-medium"
+                                style={{ color: bankDetailsStyles.textColor }}
+                              >
                                 {bankDetails.bic}
                               </p>
                               <button
                                 onClick={() => handleCopyToClipboard(bankDetails.bic, "BIC")}
-                                className="ml-2 p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded transition-colors"
+                                className="ml-2 p-1 hover:bg-white hover:bg-opacity-50 rounded transition-colors"
+                                style={{ color: bankDetailsStyles.textColor }}
                                 title={getTranslation("copy_tooltip", language)}
                               >
                                 <Copy className="h-4 w-4" />
@@ -473,11 +531,17 @@ const Confirmation = () => {
                             </div>
                           </div>
                           <div>
-                            <span className="text-blue-700 font-semibold text-sm block mb-1">
+                            <span 
+                              className="font-semibold text-sm block mb-1"
+                              style={{ color: bankDetailsStyles.labelColor }}
+                            >
                               {getTranslation("reference", language)}:
                             </span>
                             <div className="flex items-center justify-between">
-                              <p className="text-blue-900 font-mono text-lg font-bold bg-yellow-100 px-2 py-1 rounded">
+                              <p 
+                                className="font-mono text-lg font-bold bg-yellow-100 px-2 py-1 rounded"
+                                style={{ color: bankDetailsStyles.textColor }}
+                              >
                                 {bankDetails.reference}
                               </p>
                               <button
@@ -485,7 +549,8 @@ const Confirmation = () => {
                                   bankDetails.reference,
                                   getTranslation("reference", language)
                                 )}
-                                className="ml-2 p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded transition-colors"
+                                className="ml-2 p-1 hover:bg-white hover:bg-opacity-50 rounded transition-colors"
+                                style={{ color: bankDetailsStyles.textColor }}
                                 title={getTranslation("copy_tooltip", language)}
                               >
                                 <Copy className="h-4 w-4" />
