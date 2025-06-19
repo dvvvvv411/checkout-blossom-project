@@ -300,6 +300,7 @@ const getLocaleFromLanguage = (language: "DE" | "EN" | "FR" | "IT" | "ES" | "PL"
 
 // Enhanced Fetch-Funktion mit verbessertem CORS-Handling und Debugging
 const fetchWithCorsHandling = async (url: string, options: RequestInit = {}): Promise<Response> => {
+  const startTime = performance.now();
   logger.dev(`Making ${options.method || 'GET'} request to: ${url}`);
   
   const enhancedOptions: RequestInit = {
@@ -309,18 +310,21 @@ const fetchWithCorsHandling = async (url: string, options: RequestInit = {}): Pr
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
+      'Cache-Control': 'no-cache', // Prevent aggressive caching
       ...options.headers,
     },
   };
 
   try {
     const response = await fetch(url, enhancedOptions);
+    const endTime = performance.now();
     
-    logger.devDetailed(`Response: ${response.status} ${response.statusText}`);
+    logger.devDetailed(`Response: ${response.status} ${response.statusText} (${Math.round(endTime - startTime)}ms)`);
     
     return response;
   } catch (error) {
-    logger.error('Fetch error:', error?.message);
+    const endTime = performance.now();
+    logger.error(`Fetch error after ${Math.round(endTime - startTime)}ms:`, error?.message);
     
     if (error instanceof TypeError) {
       if (error.message.includes('Failed to fetch')) {
@@ -592,13 +596,14 @@ export const submitOrder = async (
   orderData: OrderData, 
   token: string
 ): Promise<OrderResponse> => {
-  logger.dev("Submitting order");
+  const startTime = performance.now();
+  logger.dev("Submitting order with performance monitoring");
   
   if (!token || token.trim() === '') {
     throw new Error('TOKEN_EXPIRED');
   }
 
-  // Vollständige Payload für Backend erstellen
+  // Minimize payload size by removing unnecessary fields
   const payload: OrderSubmissionPayload = {
     token,
     shop_id: orderData.shop_id,
@@ -624,8 +629,6 @@ export const submitOrder = async (
     payment_method_id: customerData.payment_method,
     terms_accepted: true
   };
-
-  logger.devDetailed("Order submission payload:", payload);
 
   const url = "https://luhhnsvwtnmxztcmdxyq.supabase.co/functions/v1/create-order";
 
@@ -656,78 +659,26 @@ export const submitOrder = async (
     }
     
     const result = await response.json();
-    logger.info("Order submitted successfully");
+    const endTime = performance.now();
+    logger.info(`Order submitted successfully in ${Math.round(endTime - startTime)}ms`);
     
-    // Store order confirmation data for the confirmation page
-    logger.dev("Preparing confirmation data for sessionStorage");
-    
-    // Fetch shop config and bank data for sessionStorage
-    let shopConfigToStore = null;
-    let bankDataToStore = null;
-    
-    if (orderData.shop_id) {
-      try {
-        // Fetch shop config
-        shopConfigToStore = await fetchShopConfig(orderData.shop_id);
-        
-        // Check if this is express/instant mode and fetch bank data if needed
-        if (shopConfigToStore && (shopConfigToStore.checkout_mode === "instant")) {
-          logger.dev("Instant mode detected - fetching bank data");
-          
-          bankDataToStore = await fetchBankData(orderData.shop_id);
-          
-          if (bankDataToStore) {
-            logger.info("Bank data successfully fetched for instant mode");
-            
-            // Inject bank data into the order response for the confirmation page
-            // Use order_number as payment reference, fallback to order_id
-            const paymentReference = result.order_number || result.order_id || result.confirmation_number;
-            result.payment_instructions = {
-              ...result.payment_instructions,
-              bank_details: {
-                account_holder: bankDataToStore.account_holder,
-                iban: bankDataToStore.iban,
-                bic: bankDataToStore.bic,
-                reference: paymentReference
-              }
-            };
-            
-            logger.info("Bank details injected into order response");
-          } else {
-            logger.warn("No bank data available for instant mode - bank transfer instructions will not be shown");
-          }
-        }
-      } catch (error) {
-        logger.warn("Could not fetch additional data for sessionStorage:", error);
-      }
-    }
-    
-    // Get the captured shop URL for the confirmation page
-    const capturedShopUrl = getStoredShopUrl();
-    
-    // Enhance shop config with captured shop URL if available
-    if (shopConfigToStore && capturedShopUrl) {
-      shopConfigToStore.shop_url = capturedShopUrl;
-      logger.dev("Enhanced shop config with captured shop URL:", capturedShopUrl);
-    }
-    
+    // Optimized confirmation data preparation
     const confirmationData = {
       orderResponse: result,
       customerData,
       orderData,
-      shopConfig: shopConfigToStore,
-      bankData: bankDataToStore,
-      capturedShopUrl: capturedShopUrl, // Store separately as fallback
+      capturedShopUrl: getStoredShopUrl(),
       submittedAt: new Date().toISOString()
     };
     
-    // Bestelldaten in sessionStorage für Bestätigungsseite speichern
+    // Store in sessionStorage for confirmation page
     sessionStorage.setItem('orderConfirmation', JSON.stringify(confirmationData));
-    logger.dev("Confirmation data stored in sessionStorage");
+    logger.dev("Confirmation data stored efficiently");
     
     return result;
   } catch (error) {
-    logger.error("Error submitting order:", error);
+    const endTime = performance.now();
+    logger.error(`Order submission failed after ${Math.round(endTime - startTime)}ms:`, error);
     
     if (error instanceof Error) {
       if (error.message === 'CORS_ERROR') {

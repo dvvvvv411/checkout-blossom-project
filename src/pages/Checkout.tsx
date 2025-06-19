@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -6,7 +5,8 @@ import { Loader2, ArrowLeft, Phone, AlertTriangle, Wifi, WifiOff } from "lucide-
 import { OrderSummary } from "@/components/checkout/OrderSummary";
 import { CustomerForm } from "@/components/checkout/CustomerForm";
 import { VerifiedShopCard } from "@/components/checkout/VerifiedShopCard";
-import { fetchOrderDataWithShopId, fetchShopConfig } from "@/services/api";
+import { CheckoutSkeleton, OrderSummarySkeleton } from "@/components/checkout/CheckoutSkeleton";
+import { checkoutService, CheckoutInitData } from "@/services/checkoutService";
 import { getTranslation } from "@/utils/translations";
 import { Button } from "@/components/ui/button";
 import { getSupportedLanguage } from "@/lib/utils";
@@ -30,10 +30,10 @@ const Checkout = () => {
     }
   }, []);
 
-  // First query: Get order data and shop ID from token
-  const { data: orderDataWithShopId, isLoading: orderLoading, error: orderError, refetch: refetchOrder } = useQuery({
-    queryKey: ["orderWithShopId", token],
-    queryFn: () => fetchOrderDataWithShopId(token!),
+  // Optimized single query for all checkout data
+  const { data: checkoutData, isLoading, error, refetch } = useQuery({
+    queryKey: ["checkoutInit", token],
+    queryFn: () => checkoutService.initializeCheckout(token!),
     enabled: !!token,
     retry: (failureCount, error) => {
       if (error instanceof Error && error.message === 'CORS_ERROR') {
@@ -42,31 +42,20 @@ const Checkout = () => {
         return false;
       }
       if (error instanceof Error && error.message === 'TOKEN_EXPIRED') {
-        logger.error("Token expired during order fetch");
+        logger.error("Token expired during checkout init");
         return false;
       }
       return failureCount < 1;
     },
     retryDelay: 1000,
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    gcTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  // Extract order data and shop ID from the first query
-  const orderData = orderDataWithShopId?.orderData;
-  const shopId = orderDataWithShopId?.shopId;
-
-  // Second query: Get shop config using the shop ID
-  const { data: shopConfig, isLoading: configLoading } = useQuery({
-    queryKey: ["shopConfig", shopId],
-    queryFn: () => fetchShopConfig(shopId!),
-    enabled: !!shopId,
-    retry: (failureCount, error) => {
-      if (error instanceof Error && error.message === 'CORS_ERROR') {
-        logger.warn("CORS error in shop config fetch");
-        return false;
-      }
-      return failureCount < 1;
-    },
-  });
+  // Extract data from optimized response
+  const orderData = checkoutData?.orderData;
+  const shopConfig = checkoutData?.shopConfig;
+  const shopId = checkoutData?.shopId;
 
   // Get the final language
   const language = getSupportedLanguage(shopConfig?.language);
@@ -86,8 +75,8 @@ const Checkout = () => {
   const handleRetry = () => {
     setCorsError(false);
     setRetryCount(prev => prev + 1);
-    logger.info(`Retrying order fetch, attempt ${retryCount + 2}`);
-    refetchOrder();
+    logger.info(`Retrying checkout initialization, attempt ${retryCount + 2}`);
+    refetch();
   };
 
   // Token validation
@@ -112,22 +101,45 @@ const Checkout = () => {
       </div>
     );
   }
-
-  const isLoading = orderLoading || (orderData && configLoading);
   
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="flex flex-col items-center space-y-4">
-          <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
-          {corsError && (
-            <div className="text-center mt-4">
-              <WifiOff className="h-6 w-6 text-orange-500 mx-auto mb-2" />
-              <p className="text-sm text-gray-600 mb-3">
-                {getTranslation("verbindungsprobleme", language)}
-              </p>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+        {/* Optimized loading header */}
+        <div className="bg-white border-b border-gray-200 shadow-sm">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div className="flex justify-center relative">
+              <div className="text-center space-y-4">
+                <div className="flex items-center justify-center space-x-2">
+                  <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+                  <span className="text-sm text-gray-600">
+                    {getTranslation("loading_checkout", language) || "Checkout wird geladen..."}
+                  </span>
+                </div>
+                {corsError && (
+                  <div className="text-center">
+                    <WifiOff className="h-5 w-5 text-orange-500 mx-auto mb-2" />
+                    <p className="text-xs text-gray-600">
+                      {getTranslation("verbindungsprobleme", language)}
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
-          )}
+          </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div className="lg:col-span-5 lg:order-2">
+              <div className="lg:sticky lg:top-8 space-y-6">
+                <OrderSummarySkeleton />
+              </div>
+            </div>
+            <div className="lg:col-span-7 lg:order-1">
+              <CheckoutSkeleton />
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -162,7 +174,7 @@ const Checkout = () => {
   }
 
   // Token expired error
-  if (orderError && orderError instanceof Error && orderError.message === 'TOKEN_EXPIRED') {
+  if (error && error instanceof Error && error.message === 'TOKEN_EXPIRED') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center max-w-md mx-auto px-6">
@@ -184,8 +196,8 @@ const Checkout = () => {
   }
 
   // Other errors
-  if (orderError && !orderData) {
-    logger.error("Order loading failed", orderError);
+  if (error && !orderData) {
+    logger.error("Order loading failed", error);
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center max-w-md mx-auto px-6">

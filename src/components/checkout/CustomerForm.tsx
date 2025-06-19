@@ -9,7 +9,7 @@ import { ContactDeliveryCard } from "./ContactDeliveryCard";
 import { BillingAddressCard } from "./BillingAddressCard";
 import { PaymentMethodCard } from "./PaymentMethodCard";
 import { TermsCard } from "./TermsCard";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, CheckCircle2 } from "lucide-react";
 import { useFormValidation, FormValues } from "@/hooks/useFormValidation";
 import { getTranslation } from "@/utils/translations";
 import { logger } from "@/utils/logger";
@@ -44,6 +44,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
 
   const [showBillingAddress, setShowBillingAddress] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissionStarted, setSubmissionStarted] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [completedSteps, setCompletedSteps] = useState({
     email: false,
@@ -185,6 +186,15 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Immediate feedback
+    setSubmissionStarted(true);
+    
+    // Show immediate toast for better UX
+    toast({
+      title: getTranslation("processing_order", language),
+      description: "Ihre Bestellung wird verarbeitet...",
+    });
+    
     if (!token) {
       logger.error("Order submission attempted without token");
       toast({
@@ -192,6 +202,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
         description: getTranslation("checkout_token_missing", language),
         variant: "destructive",
       });
+      setSubmissionStarted(false);
       return;
     }
 
@@ -201,6 +212,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
         description: getTranslation("terms_required", language),
         variant: "destructive",
       });
+      setSubmissionStarted(false);
       return;
     }
 
@@ -226,14 +238,19 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
         description: getTranslation("order_error_message", language),
         variant: "destructive",
       });
+      setSubmissionStarted(false);
       return;
     }
 
     setIsSubmitting(true);
-    logger.info("Submitting order");
+    logger.info("Submitting order with optimized flow");
 
     try {
+      const startTime = performance.now();
       const orderResponse = await submitOrder(formData, orderData, token);
+      const endTime = performance.now();
+      
+      logger.info(`Order submitted successfully in ${Math.round(endTime - startTime)}ms`);
       
       // Store order confirmation data including captured shop URL
       const confirmationData = {
@@ -241,21 +258,23 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
         customerData: formData,
         orderData,
         shopConfig,
-        capturedShopUrl, // Include captured shop URL
+        capturedShopUrl,
         submittedAt: new Date().toISOString()
       };
       
       sessionStorage.setItem('orderConfirmation', JSON.stringify(confirmationData));
       
-      logger.info("Order submitted successfully");
+      // Show success feedback immediately
       toast({
         title: getTranslation("order_success", language),
         description: getTranslation("order_success_message", language),
+        action: <CheckCircle2 className="h-4 w-4 text-green-600" />,
       });
       
+      // Shorter delay for better UX
       setTimeout(() => {
         window.location.href = '/confirmation';
-      }, 1500);
+      }, 1000);
       
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Unknown error";
@@ -303,6 +322,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
       }
     } finally {
       setIsSubmitting(false);
+      setSubmissionStarted(false);
     }
   };
 
@@ -330,7 +350,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
         </div>
       </div>
       
-      <div className={`${isSubmitting ? 'pointer-events-none opacity-60' : ''}`}>
+      <div className={`${isSubmitting ? 'pointer-events-none opacity-60' : ''} ${submissionStarted ? 'animate-pulse' : ''}`}>
         <form onSubmit={handleSubmit} className="space-y-6">
           <EmailCard
             email={formData.email}
