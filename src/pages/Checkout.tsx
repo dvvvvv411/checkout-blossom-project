@@ -112,9 +112,6 @@ const Checkout = () => {
               <div className="text-center space-y-4">
                 <div className="flex items-center justify-center space-x-2">
                   <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
-                  <span className="text-sm text-gray-600">
-                    {getTranslation("loading_checkout", language) || "Checkout wird geladen..."}
-                  </span>
                 </div>
                 {corsError && (
                   <div className="text-center">
