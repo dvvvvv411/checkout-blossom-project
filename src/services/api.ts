@@ -1,3 +1,4 @@
+
 // API Services für Checkout-System
 
 import { 
@@ -50,6 +51,8 @@ export interface CustomerData {
     postal_code: string;
     city: string;
   };
+  billing_first_name?: string;
+  billing_last_name?: string;
   payment_method: "vorkasse" | "rechnung";
 }
 
@@ -75,6 +78,8 @@ export interface OrderSubmissionPayload {
   billing_street?: string;
   billing_postal_code?: string;
   billing_city?: string;
+  billing_first_name?: string;
+  billing_last_name?: string;
   payment_method_id: "vorkasse" | "rechnung";
   terms_accepted: boolean;
 }
@@ -609,6 +614,8 @@ export const submitOrder = async (
     phone: customerData.phone,
     delivery_address: customerData.delivery_address,
     billing_address: customerData.billing_address,
+    billing_first_name: customerData.billing_first_name,
+    billing_last_name: customerData.billing_last_name,
     payment_method: customerData.payment_method
   });
 
@@ -635,6 +642,8 @@ export const submitOrder = async (
     billing_street: customerData.billing_address?.street,
     billing_postal_code: customerData.billing_address?.postal_code,
     billing_city: customerData.billing_address?.city,
+    billing_first_name: customerData.billing_first_name,
+    billing_last_name: customerData.billing_last_name,
     payment_method_id: customerData.payment_method,
     terms_accepted: true
   };
@@ -649,7 +658,9 @@ export const submitOrder = async (
     billing_data: {
       street: payload.billing_street,
       postal_code: payload.billing_postal_code,
-      city: payload.billing_city
+      city: payload.billing_city,
+      first_name: payload.billing_first_name,
+      last_name: payload.billing_last_name
     },
     addresses_different: (
       payload.delivery_street !== payload.billing_street ||

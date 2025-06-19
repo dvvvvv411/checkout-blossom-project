@@ -19,6 +19,8 @@ export interface FormValues {
   billing_street?: string;
   billing_postal_code?: string;
   billing_city?: string;
+  billing_first_name?: string;
+  billing_last_name?: string;
 }
 
 export const useFormValidation = (language: "DE" | "EN" | "FR" | "IT" | "ES" | "PL" | "NL" = "DE") => {
@@ -78,6 +80,19 @@ export const useFormValidation = (language: "DE" | "EN" | "FR" | "IT" | "ES" | "
           logger.dev(`Billing address field ${field} - using delivery address, no validation needed`);
         }
         break;
+
+      case "billing_first_name":
+      case "billing_last_name":
+        // Billing name fields - only validate if separate billing address is shown
+        if (showBillingAddress) {
+          if (!validateRequired(value)) {
+            const fieldKey = field === "billing_first_name" ? "first_name_required" : "last_name_required";
+            return getTranslation(fieldKey, language);
+          }
+        } else {
+          logger.dev(`Billing name field ${field} - using delivery names, no validation needed`);
+        }
+        break;
     }
     
     logger.dev(`Field ${field} validation passed`);
@@ -113,8 +128,25 @@ export const useFormValidation = (language: "DE" | "EN" | "FR" | "IT" | "ES" | "
       logger.dev("Billing address validation - separate billing address enabled, accepting all inputs", {
         billing_street: values.billing_street,
         billing_postal_code: values.billing_postal_code,
-        billing_city: values.billing_city
+        billing_city: values.billing_city,
+        billing_first_name: values.billing_first_name,
+        billing_last_name: values.billing_last_name
       });
+      
+      // Validate billing name fields when separate billing is enabled
+      if (values.billing_first_name !== undefined) {
+        const firstNameError = validateField("billing_first_name", values.billing_first_name, showBillingAddress);
+        if (firstNameError) {
+          newErrors["billing_first_name"] = firstNameError;
+        }
+      }
+      
+      if (values.billing_last_name !== undefined) {
+        const lastNameError = validateField("billing_last_name", values.billing_last_name, showBillingAddress);
+        if (lastNameError) {
+          newErrors["billing_last_name"] = lastNameError;
+        }
+      }
     } else {
       logger.dev("Billing address validation - using delivery address");
     }

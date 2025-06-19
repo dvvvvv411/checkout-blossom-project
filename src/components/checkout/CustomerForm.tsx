@@ -38,6 +38,8 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
       postal_code: "",
       city: "",
     },
+    billing_first_name: "",
+    billing_last_name: "",
     payment_method: "vorkasse",
   });
 
@@ -66,11 +68,12 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
     hasFieldError,
   } = useFormValidation(language);
 
-  // Auto-copy delivery address to billing address when billing address is not shown separately
+  // Auto-copy delivery address and names to billing when billing address is not shown separately
   useEffect(() => {
     if (!showBillingAddress) {
-      logger.dev("Auto-copying delivery address to billing address", {
-        deliveryAddress: formData.delivery_address
+      logger.dev("Auto-copying delivery address and names to billing address", {
+        deliveryAddress: formData.delivery_address,
+        deliveryNames: { first_name: formData.first_name, last_name: formData.last_name }
       });
       setFormData(prev => ({
         ...prev,
@@ -79,11 +82,13 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
           postal_code: prev.delivery_address.postal_code,
           city: prev.delivery_address.city,
         },
+        billing_first_name: prev.first_name,
+        billing_last_name: prev.last_name,
       }));
     } else {
       logger.dev("Billing address is separate - not auto-copying");
     }
-  }, [showBillingAddress, formData.delivery_address]);
+  }, [showBillingAddress, formData.delivery_address, formData.first_name, formData.last_name]);
 
   // Check step completion whenever form data changes
   useEffect(() => {
@@ -91,7 +96,13 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
       email: !!formData.email && formData.email.includes("@") && formData.email.includes("."),
       contact: !!(formData.first_name && formData.last_name && formData.phone),
       delivery: !!(formData.delivery_address.street && formData.delivery_address.postal_code && formData.delivery_address.city),
-      billing: !showBillingAddress || !!(formData.billing_address?.street && formData.billing_address?.postal_code && formData.billing_address?.city),
+      billing: !showBillingAddress || !!(
+        formData.billing_address?.street && 
+        formData.billing_address?.postal_code && 
+        formData.billing_address?.city &&
+        formData.billing_first_name &&
+        formData.billing_last_name
+      ),
       payment: true,
       terms: termsAccepted,
     };
@@ -99,7 +110,8 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
     logger.dev("Step completion status updated", { 
       completedSteps: newCompletedSteps,
       showBillingAddress,
-      billingAddress: formData.billing_address 
+      billingAddress: formData.billing_address,
+      billingNames: { first_name: formData.billing_first_name, last_name: formData.billing_last_name }
     });
     
     setCompletedSteps(newCompletedSteps);
@@ -129,14 +141,25 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
       }));
     } else if (field.startsWith("billing_address.")) {
       const addressField = field.split(".")[1];
-      logger.dev(`Updating billing address field: ${addressField} = ${value}`);
-      setFormData(prev => ({
-        ...prev,
-        billing_address: {
-          ...prev.billing_address,
-          [addressField]: value,
-        },
-      }));
+      if (addressField === "first_name" || addressField === "last_name") {
+        // Handle billing name fields
+        const nameField = addressField === "first_name" ? "billing_first_name" : "billing_last_name";
+        logger.dev(`Updating billing name field: ${nameField} = ${value}`);
+        setFormData(prev => ({
+          ...prev,
+          [nameField]: value,
+        }));
+      } else {
+        // Handle billing address fields
+        logger.dev(`Updating billing address field: ${addressField} = ${value}`);
+        setFormData(prev => ({
+          ...prev,
+          billing_address: {
+            ...prev.billing_address,
+            [addressField]: value,
+          },
+        }));
+      }
     } else {
       setFormData(prev => ({
         ...prev,
@@ -150,7 +173,16 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
   const handleFieldBlur = (field: string) => {
     setFieldTouched(field);
     const value = getFieldValue(field);
-    const error = validateField(field.replace("delivery_address.", "").replace("billing_address.", ""), value, showBillingAddress);
+    let validationField = field.replace("delivery_address.", "").replace("billing_address.", "");
+    
+    // Map billing name fields correctly for validation
+    if (field === "billing_address.first_name") {
+      validationField = "billing_first_name";
+    } else if (field === "billing_address.last_name") {
+      validationField = "billing_last_name";
+    }
+    
+    const error = validateField(validationField, value, showBillingAddress);
     if (error) {
       setFieldError(field, error);
     } else {
@@ -164,7 +196,13 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
       return formData.delivery_address[addressField] || "";
     } else if (field.startsWith("billing_address.")) {
       const addressField = field.split(".")[1];
-      return formData.billing_address?.[addressField] || "";
+      if (addressField === "first_name") {
+        return formData.billing_first_name || "";
+      } else if (addressField === "last_name") {
+        return formData.billing_last_name || "";
+      } else {
+        return formData.billing_address?.[addressField] || "";
+      }
     } else {
       return formData[field] || "";
     }
@@ -174,7 +212,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
     logger.dev(`Billing address toggle: ${checked}`);
     setShowBillingAddress(checked);
     if (checked) {
-      // Initialize separate billing address
+      // Initialize separate billing address and names
       setFormData(prev => ({
         ...prev,
         billing_address: {
@@ -182,10 +220,12 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
           postal_code: "",
           city: "",
         },
+        billing_first_name: "",
+        billing_last_name: "",
       }));
-      logger.dev("Initialized separate billing address");
+      logger.dev("Initialized separate billing address and names");
     } else {
-      // Copy delivery address to billing address
+      // Copy delivery address and names to billing
       setFormData(prev => ({
         ...prev,
         billing_address: {
@@ -193,8 +233,10 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
           postal_code: prev.delivery_address.postal_code,
           city: prev.delivery_address.city,
         },
+        billing_first_name: prev.first_name,
+        billing_last_name: prev.last_name,
       }));
-      logger.dev("Copied delivery address to billing address");
+      logger.dev("Copied delivery address and names to billing");
     }
   };
 
@@ -248,7 +290,8 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
       formData,
       showBillingAddress,
       deliveryAddress: formData.delivery_address,
-      billingAddress: formData.billing_address
+      billingAddress: formData.billing_address,
+      billingNames: { first_name: formData.billing_first_name, last_name: formData.billing_last_name }
     });
 
     const formValues: FormValues = {
@@ -262,6 +305,8 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
       billing_street: formData.billing_address?.street,
       billing_postal_code: formData.billing_address?.postal_code,
       billing_city: formData.billing_address?.city,
+      billing_first_name: formData.billing_first_name,
+      billing_last_name: formData.billing_last_name,
     };
 
     logger.dev("Form values for validation:", formValues);
@@ -280,9 +325,10 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
     }
 
     setIsSubmitting(true);
-    logger.info("Submitting order with billing address data:", {
+    logger.info("Submitting order with billing address and name data:", {
       deliveryAddress: formData.delivery_address,
       billingAddress: formData.billing_address,
+      billingNames: { first_name: formData.billing_first_name, last_name: formData.billing_last_name },
       showBillingAddress
     });
 
@@ -433,6 +479,8 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
 
           <BillingAddressCard
             showBillingAddress={showBillingAddress}
+            firstName={formData.billing_first_name || ""}
+            lastName={formData.billing_last_name || ""}
             street={formData.billing_address?.street || ""}
             postalCode={formData.billing_address?.postal_code || ""}
             city={formData.billing_address?.city || ""}
@@ -441,9 +489,13 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
             onComplete={() => handleStepComplete("billing")}
             isCompleted={completedSteps.billing}
             language={language}
+            firstNameError={getFieldError("billing_address.first_name")}
+            lastNameError={getFieldError("billing_address.last_name")}
             streetError={getFieldError("billing_address.street")}
             postalCodeError={getFieldError("billing_address.postal_code")}
             cityError={getFieldError("billing_address.city")}
+            onFirstNameBlur={() => handleFieldBlur("billing_address.first_name")}
+            onLastNameBlur={() => handleFieldBlur("billing_address.last_name")}
             onStreetBlur={() => handleFieldBlur("billing_address.street")}
             onPostalCodeBlur={() => handleFieldBlur("billing_address.postal_code")}
             onCityBlur={() => handleFieldBlur("billing_address.city")}
