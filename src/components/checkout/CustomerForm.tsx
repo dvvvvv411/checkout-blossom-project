@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { OrderData, ShopConfig, CustomerData, submitOrder } from "@/services/api";
@@ -70,6 +69,9 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
   // Auto-copy delivery address to billing address when billing address is not shown separately
   useEffect(() => {
     if (!showBillingAddress) {
+      logger.dev("Auto-copying delivery address to billing address", {
+        deliveryAddress: formData.delivery_address
+      });
       setFormData(prev => ({
         ...prev,
         billing_address: {
@@ -78,6 +80,8 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
           city: prev.delivery_address.city,
         },
       }));
+    } else {
+      logger.dev("Billing address is separate - not auto-copying");
     }
   }, [showBillingAddress, formData.delivery_address]);
 
@@ -91,6 +95,12 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
       payment: true,
       terms: termsAccepted,
     };
+    
+    logger.dev("Step completion status updated", { 
+      completedSteps: newCompletedSteps,
+      showBillingAddress,
+      billingAddress: formData.billing_address 
+    });
     
     setCompletedSteps(newCompletedSteps);
   }, [formData, showBillingAddress, termsAccepted]);
@@ -106,6 +116,8 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
   }, [shopConfig?.payment_methods, formData.payment_method]);
 
   const handleInputChange = (field: string, value: string) => {
+    logger.dev(`Input change: ${field} = ${value}`);
+    
     if (field.startsWith("delivery_address.")) {
       const addressField = field.split(".")[1];
       setFormData(prev => ({
@@ -117,6 +129,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
       }));
     } else if (field.startsWith("billing_address.")) {
       const addressField = field.split(".")[1];
+      logger.dev(`Updating billing address field: ${addressField} = ${value}`);
       setFormData(prev => ({
         ...prev,
         billing_address: {
@@ -158,8 +171,10 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
   };
 
   const handleBillingAddressToggle = (checked: boolean) => {
+    logger.dev(`Billing address toggle: ${checked}`);
     setShowBillingAddress(checked);
     if (checked) {
+      // Initialize separate billing address
       setFormData(prev => ({
         ...prev,
         billing_address: {
@@ -168,6 +183,18 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
           city: "",
         },
       }));
+      logger.dev("Initialized separate billing address");
+    } else {
+      // Copy delivery address to billing address
+      setFormData(prev => ({
+        ...prev,
+        billing_address: {
+          street: prev.delivery_address.street,
+          postal_code: prev.delivery_address.postal_code,
+          city: prev.delivery_address.city,
+        },
+      }));
+      logger.dev("Copied delivery address to billing address");
     }
   };
 
@@ -216,6 +243,14 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
       return;
     }
 
+    // Log form data before validation
+    logger.dev("Form data before submission:", {
+      formData,
+      showBillingAddress,
+      deliveryAddress: formData.delivery_address,
+      billingAddress: formData.billing_address
+    });
+
     const formValues: FormValues = {
       email: formData.email,
       first_name: formData.first_name,
@@ -228,6 +263,8 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
       billing_postal_code: formData.billing_address?.postal_code,
       billing_city: formData.billing_address?.city,
     };
+
+    logger.dev("Form values for validation:", formValues);
 
     const isValid = validateForm(formValues, showBillingAddress);
     
@@ -243,7 +280,11 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
     }
 
     setIsSubmitting(true);
-    logger.info("Submitting order with optimized flow");
+    logger.info("Submitting order with billing address data:", {
+      deliveryAddress: formData.delivery_address,
+      billingAddress: formData.billing_address,
+      showBillingAddress
+    });
 
     try {
       const startTime = performance.now();
@@ -379,15 +420,15 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
             firstNameError={getFieldError("first_name")}
             lastNameError={getFieldError("last_name")}
             phoneError={getFieldError("phone")}
-            streetError={getFieldError("street")}
-            postalCodeError={getFieldError("postal_code")}
-            cityError={getFieldError("city")}
+            streetError={getFieldError("delivery_address.street")}
+            postalCodeError={getFieldError("delivery_address.postal_code")}
+            cityError={getFieldError("delivery_address.city")}
             onFirstNameBlur={() => handleFieldBlur("first_name")}
             onLastNameBlur={() => handleFieldBlur("last_name")}
             onPhoneBlur={() => handleFieldBlur("phone")}
-            onStreetBlur={() => handleFieldBlur("street")}
-            onPostalCodeBlur={() => handleFieldBlur("postal_code")}
-            onCityBlur={() => handleFieldBlur("city")}
+            onStreetBlur={() => handleFieldBlur("delivery_address.street")}
+            onPostalCodeBlur={() => handleFieldBlur("delivery_address.postal_code")}
+            onCityBlur={() => handleFieldBlur("delivery_address.city")}
           />
 
           <BillingAddressCard
@@ -400,6 +441,12 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
             onComplete={() => handleStepComplete("billing")}
             isCompleted={completedSteps.billing}
             language={language}
+            streetError={getFieldError("billing_address.street")}
+            postalCodeError={getFieldError("billing_address.postal_code")}
+            cityError={getFieldError("billing_address.city")}
+            onStreetBlur={() => handleFieldBlur("billing_address.street")}
+            onPostalCodeBlur={() => handleFieldBlur("billing_address.postal_code")}
+            onCityBlur={() => handleFieldBlur("billing_address.city")}
           />
 
           {shopConfig?.payment_methods && shopConfig.payment_methods.length > 1 && (

@@ -602,6 +602,16 @@ export const submitOrder = async (
     throw new Error('TOKEN_EXPIRED');
   }
 
+  // Log customer data to debug billing address transfer
+  logger.dev("Customer data being submitted:", {
+    email: customerData.email,
+    name: `${customerData.first_name} ${customerData.last_name}`,
+    phone: customerData.phone,
+    delivery_address: customerData.delivery_address,
+    billing_address: customerData.billing_address,
+    payment_method: customerData.payment_method
+  });
+
   // Minimize payload size by removing unnecessary fields
   const payload: OrderSubmissionPayload = {
     token,
@@ -628,6 +638,25 @@ export const submitOrder = async (
     payment_method_id: customerData.payment_method,
     terms_accepted: true
   };
+
+  // Log the payload to verify billing address is included
+  logger.dev("Order submission payload:", {
+    delivery_data: {
+      street: payload.delivery_street,
+      postal_code: payload.delivery_postal_code,
+      city: payload.delivery_city
+    },
+    billing_data: {
+      street: payload.billing_street,
+      postal_code: payload.billing_postal_code,
+      city: payload.billing_city
+    },
+    addresses_different: (
+      payload.delivery_street !== payload.billing_street ||
+      payload.delivery_postal_code !== payload.billing_postal_code ||
+      payload.delivery_city !== payload.billing_city
+    )
+  });
 
   const url = "https://luhhnsvwtnmxztcmdxyq.supabase.co/functions/v1/create-order";
 

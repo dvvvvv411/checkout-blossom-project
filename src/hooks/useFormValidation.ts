@@ -60,12 +60,23 @@ export const useFormValidation = (language: "DE" | "EN" | "FR" | "IT" | "ES" | "
         break;
       
       case "street":
-      case "billing_street":
       case "postal_code":
-      case "billing_postal_code":
       case "city":
+        // Delivery address fields - no validation (accept any input)
+        logger.dev(`Delivery address field ${field} - no validation required`);
+        break;
+        
+      case "billing_street":
+      case "billing_postal_code":
       case "billing_city":
-        // No validation for address fields - accept any input including empty strings
+        // Billing address fields - only validate if separate billing address is shown
+        if (showBillingAddress) {
+          logger.dev(`Billing address field ${field} - separate billing address enabled, validating if needed`);
+          // For now, we accept any input for billing address fields too
+          // This can be changed later if specific validation is required
+        } else {
+          logger.dev(`Billing address field ${field} - using delivery address, no validation needed`);
+        }
         break;
     }
     
@@ -78,7 +89,7 @@ export const useFormValidation = (language: "DE" | "EN" | "FR" | "IT" | "ES" | "
     
     const newErrors: ValidationErrors = {};
     
-    // Only validate required fields (email, names, phone) - skip address fields
+    // Validate required fields (email, names, phone)
     const requiredFields = ["email", "first_name", "last_name", "phone"];
     
     for (const field of requiredFields) {
@@ -89,8 +100,24 @@ export const useFormValidation = (language: "DE" | "EN" | "FR" | "IT" | "ES" | "
       }
     }
     
-    // No validation for billing address fields - they accept any input
-    logger.dev("Skipping address field validation - all address fields accept any input");
+    // Address fields validation - currently no validation required
+    // Delivery address
+    logger.dev("Delivery address validation - accepting all inputs", {
+      street: values.street,
+      postal_code: values.postal_code,
+      city: values.city
+    });
+    
+    // Billing address - only if separate billing address is shown
+    if (showBillingAddress) {
+      logger.dev("Billing address validation - separate billing address enabled, accepting all inputs", {
+        billing_street: values.billing_street,
+        billing_postal_code: values.billing_postal_code,
+        billing_city: values.billing_city
+      });
+    } else {
+      logger.dev("Billing address validation - using delivery address");
+    }
     
     setErrors(newErrors);
     const isValid = Object.keys(newErrors).length === 0;
