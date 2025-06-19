@@ -9,6 +9,7 @@ import { CheckoutSkeleton, OrderSummarySkeleton } from "@/components/checkout/Ch
 import { checkoutService, CheckoutInitData } from "@/services/checkoutService";
 import { getTranslation } from "@/utils/translations";
 import { Button } from "@/components/ui/button";
+import { Toaster } from "@/components/ui/toaster";
 import { getSupportedLanguage } from "@/lib/utils";
 import { logger } from "@/utils/logger";
 
@@ -223,6 +224,7 @@ const Checkout = () => {
   // Success state - show checkout form
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <Toaster />
       {corsError && (
         <div className="bg-orange-50 border-b border-orange-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
