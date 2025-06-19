@@ -310,7 +310,6 @@ const fetchWithCorsHandling = async (url: string, options: RequestInit = {}): Pr
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'Cache-Control': 'no-cache', // Prevent aggressive caching
       ...options.headers,
     },
   };
