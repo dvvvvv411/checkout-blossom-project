@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -10,6 +11,7 @@ import { checkoutService, CheckoutInitData } from "@/services/checkoutService";
 import { getTranslation } from "@/utils/translations";
 import { getPageTranslation } from "@/utils/pageTranslations";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { useMetaTags } from "@/hooks/useMetaTags";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/toaster";
 import { getSupportedLanguage } from "@/lib/utils";
@@ -68,15 +70,21 @@ const Checkout = () => {
     ? getPageTranslation("checkout_shop_title", language, { shopName: shopConfig.company_name })
     : getPageTranslation("checkout_title", language);
 
-  usePageTitle(pageTitle);
+  // Dynamic meta description
+  const metaDescription = getPageTranslation("checkout_meta_description", language);
 
-  // Update meta description dynamically
-  useEffect(() => {
-    const metaDescription = document.querySelector('meta[name="description"]');
-    if (metaDescription) {
-      metaDescription.setAttribute('content', getPageTranslation("checkout_meta_description", language));
-    }
-  }, [language]);
+  // Use improved hooks with proper configuration
+  usePageTitle(pageTitle, false); // Don't restore title when component unmounts
+
+  useMetaTags({
+    title: pageTitle,
+    description: metaDescription,
+    language: language.toLowerCase(),
+    ogTitle: pageTitle,
+    ogDescription: metaDescription,
+    twitterTitle: pageTitle,
+    twitterDescription: metaDescription,
+  });
 
   // Set accent color when shop config loads
   useEffect(() => {
