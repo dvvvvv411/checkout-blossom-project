@@ -80,7 +80,7 @@ const Checkout = () => {
     ogDescription: metaDescription,
     twitterTitle: pageTitle,
     twitterDescription: metaDescription,
-    author: getTranslation("checkout_system", language)
+    author: getPageTranslation("checkout_system", language)
   });
 
   // Set accent color when shop config loads
