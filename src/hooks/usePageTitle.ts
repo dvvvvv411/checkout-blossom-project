@@ -6,9 +6,9 @@ export const usePageTitle = (title: string, restoreTitle: boolean = true) => {
     const previousTitle = document.title;
     document.title = title;
     
-    // Cleanup function to restore previous title if component unmounts
+    // Only restore title if explicitly requested and component unmounts
     return () => {
-      if (restoreTitle) {
+      if (restoreTitle && previousTitle !== title) {
         document.title = previousTitle;
       }
     };

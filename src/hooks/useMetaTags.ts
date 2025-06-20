@@ -9,6 +9,7 @@ interface MetaTagsConfig {
   ogDescription?: string;
   twitterTitle?: string;
   twitterDescription?: string;
+  author?: string;
 }
 
 export const useMetaTags = (config: MetaTagsConfig) => {
@@ -18,11 +19,24 @@ export const useMetaTags = (config: MetaTagsConfig) => {
       document.documentElement.lang = config.language.toLowerCase();
     }
 
+    // Update page title
+    if (config.title) {
+      document.title = config.title;
+    }
+
     // Update meta description
     if (config.description) {
       const metaDescription = document.querySelector('meta[name="description"]');
       if (metaDescription) {
         metaDescription.setAttribute('content', config.description);
+      }
+    }
+
+    // Update author
+    if (config.author) {
+      const metaAuthor = document.querySelector('meta[name="author"]');
+      if (metaAuthor) {
+        metaAuthor.setAttribute('content', config.author);
       }
     }
 

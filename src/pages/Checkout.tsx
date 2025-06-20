@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -10,7 +9,6 @@ import { CheckoutSkeleton, OrderSummarySkeleton } from "@/components/checkout/Ch
 import { checkoutService, CheckoutInitData } from "@/services/checkoutService";
 import { getTranslation } from "@/utils/translations";
 import { getPageTranslation } from "@/utils/pageTranslations";
-import { usePageTitle } from "@/hooks/usePageTitle";
 import { useMetaTags } from "@/hooks/useMetaTags";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/toaster";
@@ -73,17 +71,16 @@ const Checkout = () => {
   // Dynamic meta description
   const metaDescription = getPageTranslation("checkout_meta_description", language);
 
-  // Use improved hooks with proper configuration
-  usePageTitle(pageTitle, false); // Don't restore title when component unmounts
-
+  // Use improved meta tags hook with comprehensive configuration
   useMetaTags({
     title: pageTitle,
     description: metaDescription,
-    language: language.toLowerCase(),
+    language: language,
     ogTitle: pageTitle,
     ogDescription: metaDescription,
     twitterTitle: pageTitle,
     twitterDescription: metaDescription,
+    author: getTranslation("checkout_system", language)
   });
 
   // Set accent color when shop config loads

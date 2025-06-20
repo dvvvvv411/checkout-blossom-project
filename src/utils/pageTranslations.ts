@@ -35,6 +35,17 @@ export const pageTranslations: PageTranslations = {
     it: "Pagina di checkout sicura e semplice per il tuo ordine. Crittografata SSL e affidabile.",
     nl: "Veilige en eenvoudige checkout pagina voor uw bestelling. SSL versleuteld en betrouwbaar.",
     pl: "Bezpieczna i prosta strona kasy dla Twojego zamówienia. Szyfrowana SSL i godna zaufania."
+  },
+
+  // Author metadata
+  checkout_system: {
+    de: "Checkout-System",
+    en: "Checkout System",
+    fr: "Système de Commande",
+    es: "Sistema de Pago",
+    it: "Sistema di Checkout",
+    nl: "Checkout Systeem",
+    pl: "System Kasy"
   }
 };
 
