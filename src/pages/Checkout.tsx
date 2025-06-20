@@ -63,10 +63,8 @@ const Checkout = () => {
   // Get the final language
   const language = getSupportedLanguage(shopConfig?.language);
 
-  // Dynamic page title based on shop data
-  const pageTitle = shopConfig?.company_name 
-    ? getPageTranslation("checkout_shop_title", language, { shopName: shopConfig.company_name })
-    : getPageTranslation("checkout_title", language);
+  // Simple page title - just "Checkout"
+  const pageTitle = getPageTranslation("checkout_title", language);
 
   usePageTitle(pageTitle);
 
