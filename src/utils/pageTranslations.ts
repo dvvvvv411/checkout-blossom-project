@@ -6,24 +6,24 @@ interface PageTranslations {
 }
 
 export const pageTranslations: PageTranslations = {
-  // Page titles
+  // Page titles - simplified to just "Checkout"
   checkout_title: {
     de: "Checkout",
     en: "Checkout",
-    fr: "Commande",
-    es: "Pago",
+    fr: "Checkout",
+    es: "Checkout",
     it: "Checkout",
-    nl: "Afrekenen",
-    pl: "Kasa"
+    nl: "Checkout",
+    pl: "Checkout"
   },
   checkout_shop_title: {
-    de: "Checkout - {shopName}",
-    en: "Checkout - {shopName}",
-    fr: "Commande - {shopName}",
-    es: "Pago - {shopName}",
-    it: "Checkout - {shopName}",
-    nl: "Afrekenen - {shopName}",
-    pl: "Kasa - {shopName}"
+    de: "Checkout",
+    en: "Checkout",
+    fr: "Checkout",
+    es: "Checkout",
+    it: "Checkout",
+    nl: "Checkout",
+    pl: "Checkout"
   },
   
   // Meta descriptions
