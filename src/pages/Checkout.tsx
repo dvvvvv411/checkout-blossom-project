@@ -9,7 +9,7 @@ import { CheckoutSkeleton, OrderSummarySkeleton } from "@/components/checkout/Ch
 import { checkoutService, CheckoutInitData } from "@/services/checkoutService";
 import { getTranslation } from "@/utils/translations";
 import { getPageTranslation } from "@/utils/pageTranslations";
-import { useMetaTags } from "@/hooks/useMetaTags";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/toaster";
 import { getSupportedLanguage } from "@/lib/utils";
@@ -63,23 +63,20 @@ const Checkout = () => {
   // Get the final language
   const language = getSupportedLanguage(shopConfig?.language);
 
-  // Static page title - always "Checkout"
-  const pageTitle = "Checkout";
+  // Dynamic page title based on shop data
+  const pageTitle = shopConfig?.company_name 
+    ? getPageTranslation("checkout_shop_title", language, { shopName: shopConfig.company_name })
+    : getPageTranslation("checkout_title", language);
 
-  // Dynamic meta description
-  const metaDescription = getPageTranslation("checkout_meta_description", language);
+  usePageTitle(pageTitle);
 
-  // Use improved meta tags hook with comprehensive configuration
-  useMetaTags({
-    title: pageTitle,
-    description: metaDescription,
-    language: language,
-    ogTitle: pageTitle,
-    ogDescription: metaDescription,
-    twitterTitle: pageTitle,
-    twitterDescription: metaDescription,
-    author: getPageTranslation("checkout_system", language)
-  });
+  // Update meta description dynamically
+  useEffect(() => {
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', getPageTranslation("checkout_meta_description", language));
+    }
+  }, [language]);
 
   // Set accent color when shop config loads
   useEffect(() => {
