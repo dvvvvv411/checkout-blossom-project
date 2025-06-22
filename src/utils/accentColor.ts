@@ -56,16 +56,16 @@ export const getStepNumberStyles = (accentColor?: string) => {
 export const getBankDetailsStyles = (accentColor?: string) => {
   const baseColor = accentColor || "#2563eb";
   
-  // Create lighter versions for backgrounds
-  const lightBackground = adjustColorBrightness(baseColor, 85);
-  const borderColor = adjustColorBrightness(baseColor, 60);
-  const textColor = adjustColorBrightness(baseColor, -30);
+  // Create much lighter versions for backgrounds - increased lightening significantly
+  const lightBackground = adjustColorBrightness(baseColor, 92);
+  const borderColor = adjustColorBrightness(baseColor, 75);
+  const textColor = adjustColorBrightness(baseColor, -25);
   
   return {
     backgroundColor: lightBackground,
     borderColor: borderColor,
     textColor: textColor,
-    headingColor: adjustColorBrightness(baseColor, -40),
-    labelColor: adjustColorBrightness(baseColor, -20),
+    headingColor: adjustColorBrightness(baseColor, -35),
+    labelColor: adjustColorBrightness(baseColor, -15),
   };
 };

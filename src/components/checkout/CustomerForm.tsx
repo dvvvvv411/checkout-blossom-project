@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { OrderData, ShopConfig, CustomerData, submitOrder } from "@/services/api";
@@ -258,10 +259,10 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
     // Immediate feedback
     setSubmissionStarted(true);
     
-    // Show immediate toast for better UX
+    // Show immediate toast for better UX - now using translated text
     toast({
       title: getTranslation("processing_order", language),
-      description: "Ihre Bestellung wird verarbeitet...",
+      description: getTranslation("processing_order_message", language),
     });
     
     if (!token) {
