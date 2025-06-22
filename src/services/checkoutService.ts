@@ -46,6 +46,11 @@ export class CheckoutService {
       const orderResult = await this.fetchOrderDataWithCache(token);
       const { orderData, shopId } = orderResult;
 
+      logger.dev("=== CHECKOUT SERVICE DEBUG: Order data received ===", {
+        shopId,
+        orderDataKeys: Object.keys(orderData),
+      });
+
       // Step 2: Parallelize shop config and bank data fetching
       logger.dev("Starting parallel fetch for shop config and bank data");
       const [shopConfig, bankData] = await Promise.allSettled([
@@ -55,6 +60,24 @@ export class CheckoutService {
 
       const finalShopConfig = shopConfig.status === 'fulfilled' ? shopConfig.value : null;
       const finalBankData = bankData.status === 'fulfilled' ? bankData.value : null;
+
+      // Enhanced logging for shop config
+      if (shopConfig.status === 'fulfilled' && finalShopConfig) {
+        logger.dev("=== CHECKOUT SERVICE DEBUG: Shop config received successfully ===", {
+          shopId,
+          shopConfigKeys: Object.keys(finalShopConfig),
+          paymentMethods: finalShopConfig.payment_methods,
+          paymentMethodsType: typeof finalShopConfig.payment_methods,
+          paymentMethodsLength: finalShopConfig.payment_methods?.length,
+          rawShopConfig: JSON.stringify(finalShopConfig, null, 2)
+        });
+      } else {
+        logger.error("=== CHECKOUT SERVICE DEBUG: Shop config failed ===", {
+          status: shopConfig.status,
+          reason: shopConfig.status === 'rejected' ? shopConfig.reason : 'Unknown',
+          shopId
+        });
+      }
 
       if (shopConfig.status === 'rejected') {
         logger.warn("Shop config fetch failed:", shopConfig.reason);
@@ -66,12 +89,22 @@ export class CheckoutService {
       const endTime = performance.now();
       logger.info(`Checkout initialization completed in ${Math.round(endTime - startTime)}ms`);
 
-      return {
+      const result = {
         orderData,
         shopConfig: finalShopConfig,
         bankData: finalBankData,
         shopId
       };
+
+      logger.dev("=== FINAL CHECKOUT INIT RESULT ===", {
+        hasOrderData: !!result.orderData,
+        hasShopConfig: !!result.shopConfig,
+        hasBankData: !!result.bankData,
+        shopId: result.shopId,
+        shopConfigPaymentMethods: result.shopConfig?.payment_methods,
+      });
+
+      return result;
     } catch (error) {
       logger.error("Checkout initialization failed:", error);
       throw error;
@@ -91,6 +124,10 @@ export class CheckoutService {
 
     try {
       const result = await promise;
+      logger.dev("Order data fetched successfully", {
+        shopId: result.shopId,
+        orderDataKeys: Object.keys(result.orderData)
+      });
       return result;
     } finally {
       this.loadingPromises.delete(cacheKey);
@@ -101,7 +138,10 @@ export class CheckoutService {
     // Check cache first
     const cached = getCachedShopConfig(shopId);
     if (cached) {
-      logger.dev("Using cached shop config");
+      logger.dev("Using cached shop config", {
+        shopId,
+        cachedPaymentMethods: cached.payment_methods
+      });
       return cached;
     }
 
@@ -112,13 +152,22 @@ export class CheckoutService {
       return this.loadingPromises.get(cacheKey)!;
     }
 
+    logger.dev("Fetching fresh shop config from API", { shopId });
     const promise = fetchShopConfig(shopId);
     this.loadingPromises.set(cacheKey, promise);
 
     try {
       const result = await promise;
+      logger.dev("Fresh shop config fetched successfully", {
+        shopId,
+        paymentMethods: result.payment_methods,
+        resultKeys: Object.keys(result)
+      });
       setCachedShopConfig(shopId, result);
       return result;
+    } catch (error) {
+      logger.error("Failed to fetch shop config", { shopId, error });
+      throw error;
     } finally {
       this.loadingPromises.delete(cacheKey);
     }

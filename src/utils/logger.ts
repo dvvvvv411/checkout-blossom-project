@@ -6,7 +6,7 @@
 const isDevelopment = import.meta.env.DEV || import.meta.env.MODE === 'development';
 
 // Flag to control detailed logging - can be toggled for debugging
-const ENABLE_DETAILED_LOGGING = false;
+const ENABLE_DETAILED_LOGGING = true; // Temporarily enabled for payment method debugging
 
 export const logger = {
   // Development-only logs
