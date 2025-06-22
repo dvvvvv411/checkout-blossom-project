@@ -860,24 +860,24 @@ const translations = {
     PL: "Brak tokenu checkout.",
     NL: "Checkout token ontbreekt."
   },
-  // NEW ERROR MESSAGE TRANSLATIONS
+  // ERROR MESSAGE TRANSLATIONS
   cors_error_title: {
-    DE: "Verbindungsfehler (CORS)",
-    EN: "Connection Error (CORS)",
-    FR: "Erreur de connexion (CORS)",
-    IT: "Errore di connessione (CORS)",
-    ES: "Error de conexión (CORS)",
-    PL: "Błąd połączenia (CORS)",
-    NL: "Verbindingsfout (CORS)"
+    DE: "Verbindungsproblem",
+    EN: "Connection Problem",
+    FR: "Problème de connexion",
+    IT: "Problema di connessione",
+    ES: "Problema de conexión",
+    PL: "Problem z połączeniem",
+    NL: "Verbindingsprobleem"
   },
   cors_error_message: {
-    DE: "Die Verbindung zum Server wurde durch Browser-Sicherheitsrichtlinien blockiert. Dies ist ein CORS-Problem. Bitte kontaktieren Sie den Support.",
-    EN: "The connection to the server was blocked by browser security policies. This is a CORS issue. Please contact support.",
-    FR: "La connexion au serveur a été bloquée par les politiques de sécurité du navigateur. Il s'agit d'un problème CORS. Veuillez contacter le support.",
-    IT: "La connessione al server è stata bloccata dalle politiche di sicurezza del browser. Questo è un problema CORS. Contatta il supporto.",
-    ES: "La conexión al servidor fue bloqueada por las políticas de seguridad del navegador. Este es un problema CORS. Contacte al soporte.",
-    PL: "Połączenie z serwerem zostało zablokowane przez zasady bezpieczeństwa przeglądarki. To problem CORS. Skontaktuj się z pomocą techniczną.",
-    NL: "De verbinding met de server werd geblokkeerd door browserbeveiligingsbeleid. Dit is een CORS-probleem. Neem contact op met de ondersteuning."
+    DE: "Es gibt ein Problem mit der Serververbindung.",
+    EN: "There is a problem with the server connection.",
+    FR: "Il y a un problème avec la connexion au serveur.",
+    IT: "C'è un problema con la connessione al server.",
+    ES: "Hay un problema con la conexión al servidor.",
+    PL: "Jest problem z połączeniem z serwerem.",
+    NL: "Er is een probleem met de serververbinding."
   },
   token_expired_message: {
     DE: "Der Checkout-Link ist abgelaufen. Sie werden zur Startseite weitergeleitet.",
@@ -959,24 +959,6 @@ const translations = {
     ES: "Cargando checkout...",
     PL: "Ładowanie checkout...",
     NL: "Checkout laden..."
-  },
-  cors_error_title: {
-    DE: "Verbindungsproblem",
-    EN: "Connection Problem",
-    FR: "Problème de connexion",
-    IT: "Problema di connessione",
-    ES: "Problema de conexión",
-    PL: "Problem z połączeniem",
-    NL: "Verbindingsprobleem"
-  },
-  cors_error_message: {
-    DE: "Es gibt ein Problem mit der Serververbindung.",
-    EN: "There is a problem with the server connection.",
-    FR: "Il y a un problème avec la connexion au serveur.",
-    IT: "C'è un problema con la connessione al server.",
-    ES: "Hay un problema con la conexión al servidor.",
-    PL: "Jest problem z połączeniem z serwerem.",
-    NL: "Er is een probleem met de serververbinding."
   },
   retry_button: {
     DE: "Erneut versuchen",
