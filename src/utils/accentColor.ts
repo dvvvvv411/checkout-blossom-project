@@ -1,4 +1,3 @@
-
 export interface AccentColorStyles {
   backgroundColor: string;
   color: string;
@@ -56,13 +55,12 @@ export const getStepNumberStyles = (accentColor?: string) => {
 export const getBankDetailsStyles = (accentColor?: string) => {
   const baseColor = accentColor || "#2563eb";
   
-  // Create much lighter versions for backgrounds - increased lightening significantly
-  const lightBackground = adjustColorBrightness(baseColor, 92);
-  const borderColor = adjustColorBrightness(baseColor, 75);
+  // Use white background with subtle accent color border and text
+  const borderColor = adjustColorBrightness(baseColor, 30); // Lighter border
   const textColor = adjustColorBrightness(baseColor, -25);
   
   return {
-    backgroundColor: lightBackground,
+    backgroundColor: "#ffffff", // Pure white background
     borderColor: borderColor,
     textColor: textColor,
     headingColor: adjustColorBrightness(baseColor, -35),
