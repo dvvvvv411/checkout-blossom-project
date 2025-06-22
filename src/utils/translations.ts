@@ -758,7 +758,7 @@ const translations = {
     FR: "Informations",
     IT: "Informazioni",
     ES: "Información",
-    PL: "Informazioni",
+    PL: "Informacje",
     NL: "Informatie"
   },
   shipping: {
@@ -796,6 +796,15 @@ const translations = {
     ES: "Procesando pedido...",
     PL: "Przetwarzanie zamówienia...",
     NL: "Bestelling verwerken..."
+  },
+  processing_order_message: {
+    DE: "Bitte warten Sie, während Ihre Bestellung verarbeitet wird.",
+    EN: "Please wait while your order is being processed.",
+    FR: "Veuillez patienter pendant que votre commande est traitée.",
+    IT: "Attendere mentre il tuo ordine viene elaborato.",
+    ES: "Por favor espere mientras se procesa su pedido.",
+    PL: "Proszę czekać, zamówienie jest przetwarzane.",
+    NL: "Even geduld terwijl uw bestelling wordt verwerkt."
   },
   order_success: {
     DE: "Bestellung erfolgreich",
@@ -850,6 +859,70 @@ const translations = {
     ES: "Token de checkout faltante.",
     PL: "Brak tokenu checkout.",
     NL: "Checkout token ontbreekt."
+  },
+  // NEW ERROR MESSAGE TRANSLATIONS
+  cors_error_title: {
+    DE: "Verbindungsfehler (CORS)",
+    EN: "Connection Error (CORS)",
+    FR: "Erreur de connexion (CORS)",
+    IT: "Errore di connessione (CORS)",
+    ES: "Error de conexión (CORS)",
+    PL: "Błąd połączenia (CORS)",
+    NL: "Verbindingsfout (CORS)"
+  },
+  cors_error_message: {
+    DE: "Die Verbindung zum Server wurde durch Browser-Sicherheitsrichtlinien blockiert. Dies ist ein CORS-Problem. Bitte kontaktieren Sie den Support.",
+    EN: "The connection to the server was blocked by browser security policies. This is a CORS issue. Please contact support.",
+    FR: "La connexion au serveur a été bloquée par les politiques de sécurité du navigateur. Il s'agit d'un problème CORS. Veuillez contacter le support.",
+    IT: "La connessione al server è stata bloccata dalle politiche di sicurezza del browser. Questo è un problema CORS. Contatta il supporto.",
+    ES: "La conexión al servidor fue bloqueada por las políticas de seguridad del navegador. Este es un problema CORS. Contacte al soporte.",
+    PL: "Połączenie z serwerem zostało zablokowane przez zasady bezpieczeństwa przeglądarki. To problem CORS. Skontaktuj się z pomocą techniczną.",
+    NL: "De verbinding met de server werd geblokkeerd door browserbeveiligingsbeleid. Dit is een CORS-probleem. Neem contact op met de ondersteuning."
+  },
+  token_expired_message: {
+    DE: "Der Checkout-Link ist abgelaufen. Sie werden zur Startseite weitergeleitet.",
+    EN: "The checkout link has expired. You will be redirected to the homepage.",
+    FR: "Le lien de caisse a expiré. Vous serez redirigé vers la page d'accueil.",
+    IT: "Il link di checkout è scaduto. Verrai reindirizzato alla homepage.",
+    ES: "El enlace de checkout ha expirado. Será redirigido a la página de inicio.",
+    PL: "Link checkout wygasł. Zostaniesz przekierowany na stronę główną.",
+    NL: "De checkout link is verlopen. U wordt doorgestuurd naar de homepage."
+  },
+  validation_error_message: {
+    DE: "Die eingegebenen Daten sind ungültig. Bitte überprüfen Sie Ihre Eingaben.",
+    EN: "The entered data is invalid. Please check your inputs.",
+    FR: "Les données saisies sont invalides. Veuillez vérifier vos entrées.",
+    IT: "I dati inseriti non sono validi. Controlla i tuoi input.",
+    ES: "Los datos ingresados son inválidos. Verifique sus entradas.",
+    PL: "Wprowadzone dane są nieprawidłowe. Sprawdź swoje dane wejściowe.",
+    NL: "De ingevoerde gegevens zijn ongeldig. Controleer uw invoer."
+  },
+  server_error_message: {
+    DE: "Es gibt ein Problem mit dem Server. Bitte versuchen Sie es später erneut.",
+    EN: "There is a problem with the server. Please try again later.",
+    FR: "Il y a un problème avec le serveur. Veuillez réessayer plus tard.",
+    IT: "C'è un problema con il server. Riprova più tardi.",
+    ES: "Hay un problema con el servidor. Inténtelo de nuevo más tarde.",
+    PL: "Jest problem z serwerem. Spróbuj ponownie później.",
+    NL: "Er is een probleem met de server. Probeer het later opnieuw."
+  },
+  network_error_message: {
+    DE: "Netzwerkfehler. Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.",
+    EN: "Network error. Please check your internet connection and try again.",
+    FR: "Erreur réseau. Veuillez vérifier votre connexion Internet et réessayer.",
+    IT: "Errore di rete. Controlla la tua connessione internet e riprova.",
+    ES: "Error de red. Verifique su conexión a internet e intente nuevamente.",
+    PL: "Błąd sieci. Sprawdź połączenie internetowe i spróbuj ponownie.",
+    NL: "Netwerkfout. Controleer uw internetverbinding en probeer opnieuw."
+  },
+  unknown_error_message: {
+    DE: "Ein unbekannter Fehler ist aufgetreten. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
+    EN: "An unknown error occurred. Please try again or contact support.",
+    FR: "Une erreur inconnue s'est produite. Veuillez réessayer ou contacter le support.",
+    IT: "Si è verificato un errore sconosciuto. Riprova o contatta il supporto.",
+    ES: "Ocurrió un error desconocido. Inténtelo de nuevo o contacte al soporte.",
+    PL: "Wystąpił nieznany błąd. Spróbuj ponownie lub skontaktuj się z pomocą techniczną.",
+    NL: "Er is een onbekende fout opgetreden. Probeer opnieuw of neem contact op met de ondersteuning."
   },
   invalid_checkout_link: {
     DE: "Ungültiger Checkout-Link",
@@ -1255,7 +1328,7 @@ const translations = {
     FR: "Informations client",
     IT: "Informazioni cliente",
     ES: "Información del cliente",
-    PL: "Informazioni o kliencie",
+    PL: "Informacje o kliencie",
     NL: "Klantinformatie"
   },
   print_confirmation: {
@@ -1271,7 +1344,7 @@ const translations = {
     DE: "Neue Bestellung",
     EN: "New Order",
     FR: "Nouvelle commande",
-    IT: "Nuovo ordine",
+    IT: "Nuovo ordine",  
     ES: "Nuevo pedido",
     PL: "Nowe zamówienie",
     NL: "Nieuwe bestelling"

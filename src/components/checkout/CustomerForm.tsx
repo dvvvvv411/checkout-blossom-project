@@ -370,14 +370,14 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
       
       if (errorMessage === "CORS_ERROR") {
         toast({
-          title: "Verbindungsfehler (CORS)",
-          description: "Die Verbindung zum Server wurde durch Browser-Sicherheitsrichtlinien blockiert. Dies ist ein CORS-Problem. Bitte kontaktieren Sie den Support.",
+          title: getTranslation("cors_error_title", language),
+          description: getTranslation("cors_error_message", language),
           variant: "destructive",
         });
       } else if (errorMessage === "TOKEN_EXPIRED") {
         toast({
           title: getTranslation("order_error", language),
-          description: "Der Checkout-Link ist abgelaufen. Sie werden zur Startseite weitergeleitet.",
+          description: getTranslation("token_expired_message", language),
           variant: "destructive",
         });
         setTimeout(() => {
@@ -386,25 +386,25 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
       } else if (errorMessage.startsWith("VALIDATION_ERROR")) {
         toast({
           title: getTranslation("order_error", language),
-          description: "Die eingegebenen Daten sind ungültig. Bitte überprüfen Sie Ihre Eingaben.",
+          description: getTranslation("validation_error_message", language),
           variant: "destructive",
         });
       } else if (errorMessage.startsWith("SERVER_ERROR")) {
         toast({
           title: getTranslation("order_error", language),
-          description: "Es gibt ein Problem mit dem Server. Bitte versuchen Sie es später erneut.",
+          description: getTranslation("server_error_message", language),
           variant: "destructive",
         });
       } else if (errorMessage === "NETWORK_ERROR") {
         toast({
           title: getTranslation("order_error", language),
-          description: "Netzwerkfehler. Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.",
+          description: getTranslation("network_error_message", language),
           variant: "destructive",
         });
       } else {
         toast({
           title: getTranslation("order_error", language),
-          description: "Ein unbekannter Fehler ist aufgetreten. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
+          description: getTranslation("unknown_error_message", language),
           variant: "destructive",
         });
       }
