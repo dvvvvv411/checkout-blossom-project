@@ -1,4 +1,3 @@
-
 // API Services für Checkout-System
 
 import { 
@@ -433,35 +432,42 @@ export const fetchBankData = async (shopId?: string): Promise<BankData | null> =
 };
 
 // Updated fallback data functions
-const getFallbackOrderDataWithShopId = (token: string): OrderDataWithShopId => ({
-  orderData: {
-    shop_id: "demo-shop-123",
-    product_name: "Premium Heizöl",
-    product_type: "premium",
-    quantity_liters: 1000,
-    price_per_liter: 1.05,
-    delivery_fee: 0,
-    tax_rate: 0.19,
-    currency: "EUR",
-    total_net: 882.35,
-    total_tax: 167.65,
-    total_gross: 1050.00
-  },
-  shopId: "demo-shop-123"
-});
+const getFallbackOrderDataWithShopId = (token: string): OrderDataWithShopId => {
+  logger.debugCritical("🚨 USING FALLBACK ORDER DATA - Backend API failed or returned invalid data");
+  return {
+    orderData: {
+      shop_id: "demo-shop-123",
+      product_name: "Premium Heizöl",
+      product_type: "premium",
+      quantity_liters: 1000,
+      price_per_liter: 1.05,
+      delivery_fee: 0,
+      tax_rate: 0.19,
+      currency: "EUR",
+      total_net: 882.35,
+      total_tax: 167.65,
+      total_gross: 1050.00
+    },
+    shopId: "demo-shop-123"
+  };
+};
 
-const getFallbackShopConfig = (shopId: string): ShopConfig => ({
-  shop_id: shopId,
-  accent_color: "#2563eb",
-  language: "DE",
-  payment_methods: ["vorkasse", "rechnung"],
-  currency: "EUR",
-  company_name: "Heizöl Premium GmbH",
-  logo_url: undefined,
-  support_phone: "+49 123 456789",
-  checkout_mode: "standard",
-  shop_url: undefined
-});
+const getFallbackShopConfig = (shopId: string): ShopConfig => {
+  logger.debugCritical("🚨 USING FALLBACK SHOP CONFIG - Backend API failed or returned invalid data");
+  logger.paymentDebug("Fallback shop config payment methods:", ["vorkasse", "rechnung"]);
+  return {
+    shop_id: shopId,
+    accent_color: "#2563eb",
+    language: "DE",
+    payment_methods: ["vorkasse", "rechnung"],
+    currency: "EUR",
+    company_name: "Heizöl Premium GmbH",
+    logo_url: undefined,
+    support_phone: "+49 123 456789",
+    checkout_mode: "standard",
+    shop_url: undefined
+  };
+};
 
 // Updated fetchOrderData function to return both order data and shop ID
 export const fetchOrderDataWithShopId = async (token: string): Promise<OrderDataWithShopId> => {
@@ -542,53 +548,84 @@ export const fetchOrderData = async (token: string): Promise<OrderData> => {
 };
 
 export const fetchShopConfig = async (shopId: string): Promise<ShopConfig> => {
-  logger.dev("Fetching shop config");
+  logger.apiDebug("=== FETCH SHOP CONFIG START ===");
+  logger.apiDebug("Fetching shop config for shop ID:", shopId);
   
   if (!shopId || shopId.trim() === '') {
-    logger.error('Invalid shop ID provided');
+    logger.error('Invalid shop ID provided to fetchShopConfig');
+    logger.debugCritical("Empty shop ID - returning fallback config");
     return getFallbackShopConfig('demo-shop');
   }
 
   const url = `https://luhhnsvwtnmxztcmdxyq.supabase.co/functions/v1/get-shop-config/shop/${encodeURIComponent(shopId)}/config`;
+  logger.apiDebug("API URL:", url);
   
   try {
+    logger.apiDebug("Making API request...");
     const response = await fetchWithCorsHandling(url);
+    
+    logger.apiDebug("Response status:", response.status);
+    logger.apiDebug("Response headers:", Object.fromEntries(response.headers.entries()));
     
     if (!response.ok) {
       logger.warn(`Shop config HTTP error: ${response.status}`);
       
       if (response.status === 404) {
-        logger.warn('Shop config not found - using fallback');
+        logger.debugCritical("Shop config not found (404) - using fallback");
+        logger.paymentDebug("404 fallback shop config payment methods:", ["vorkasse", "rechnung"]);
         return getFallbackShopConfig(shopId);
       } else if (response.status >= 500) {
-        logger.error('Server error');
+        logger.error('Server error fetching shop config');
         throw new Error('SERVER_ERROR');
       } else {
-        logger.error(`HTTP error: ${response.status}`);
+        logger.error(`HTTP error fetching shop config: ${response.status}`);
         throw new Error('VALIDATION_ERROR');
       }
     }
     
+    logger.apiDebug("Successfully received response, parsing JSON...");
     const rawData = await response.json();
-    logger.dev("Shop config received successfully");
+    logger.debugCritical("=== RAW BACKEND SHOP CONFIG DATA ===", JSON.stringify(rawData, null, 2));
     
+    // Enhanced payment methods detection before transformation
+    logger.paymentDebug("=== PRE-TRANSFORMATION PAYMENT METHODS ANALYSIS ===");
+    const paymentMethodsInRaw = rawData.payment_methods || rawData.shop?.payment_methods || rawData.paymentMethods;
+    logger.paymentDebug("Raw payment methods found:", {
+      value: paymentMethodsInRaw,
+      type: typeof paymentMethodsInRaw,
+      isArray: Array.isArray(paymentMethodsInRaw),
+      length: paymentMethodsInRaw?.length,
+      stringified: JSON.stringify(paymentMethodsInRaw)
+    });
+    
+    logger.apiDebug("Transforming shop config data...");
     // Transform the data to expected format
     const transformedData = transformShopConfig(rawData);
+    logger.debugCritical("=== TRANSFORMED SHOP CONFIG DATA ===", JSON.stringify(transformedData, null, 2));
     
+    logger.paymentDebug("Post-transformation payment methods:", transformedData.payment_methods);
+    
+    logger.apiDebug("Validating transformed shop config...");
     // Validate the transformed data
     if (!validateShopConfig(transformedData)) {
       logger.warn('Shop config validation failed after transformation - using fallback');
+      logger.debugCritical("Validation failed - using fallback config");
       return getFallbackShopConfig(shopId);
     }
     
+    logger.apiDebug("=== FETCH SHOP CONFIG SUCCESS ===");
+    logger.paymentDebug("Final payment methods being returned:", transformedData.payment_methods);
     return transformedData;
   } catch (error) {
     logger.error("Error fetching shop config:", error);
+    logger.debugCritical("Exception caught in fetchShopConfig:", error);
     
     if (error instanceof Error && error.message === 'CORS_ERROR') {
       logger.warn('CORS error - using fallback shop config');
+      logger.debugCritical("CORS error detected - using fallback");
     } else {
       logger.warn('Error fetching shop config - using fallback');
+      logger.debugCritical("Generic error - using fallback");
     }
     
     return getFallbackShopConfig(shopId);

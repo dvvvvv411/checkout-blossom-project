@@ -23,6 +23,27 @@ export const logger = {
     }
   },
   
+  // Critical debugging logs (always shown in dev, styled for visibility)
+  debugCritical: (message: string, ...args: any[]) => {
+    if (isDevelopment) {
+      console.log(`%c[🔍 CRITICAL DEBUG] ${message}`, 'background: #ff6b6b; color: white; padding: 2px 8px; border-radius: 3px; font-weight: bold;', ...args);
+    }
+  },
+  
+  // Payment method specific debugging
+  paymentDebug: (message: string, ...args: any[]) => {
+    if (isDevelopment) {
+      console.log(`%c[💳 PAYMENT DEBUG] ${message}`, 'background: #4ecdc4; color: white; padding: 2px 8px; border-radius: 3px; font-weight: bold;', ...args);
+    }
+  },
+  
+  // API call debugging
+  apiDebug: (message: string, ...args: any[]) => {
+    if (isDevelopment) {
+      console.log(`%c[🌐 API DEBUG] ${message}`, 'background: #45b7d1; color: white; padding: 2px 8px; border-radius: 3px; font-weight: bold;', ...args);
+    }
+  },
+  
   // Error logging (always shown)
   error: (message: string, error?: any) => {
     console.error(`[ERROR] ${message}`, error);
