@@ -81,7 +81,7 @@ export const PaymentMethodCard = ({
       rechnung: {
         title: getTranslation("rechnung", language),
         description: getTranslation("rechnung_description", language),
-        badge: "Verfügbar"
+        badge: getTranslation("existing_customers_only", language)
       }
     };
     
