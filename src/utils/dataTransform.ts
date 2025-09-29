@@ -11,7 +11,8 @@ export interface BackendOrderData {
   quantity_liters?: number; // Fallback for correct format
   price_per_liter: number;
   delivery_fee: number;
-  tax_rate: number;
+  vat_rate?: number; // Backend uses 'vat_rate' 
+  tax_rate?: number; // Legacy fallback field
   currency: string;
   basePrice?: number; // Backend field for net total
   totalAmount?: number; // Backend field for gross total
@@ -48,7 +49,18 @@ export const transformOrderData = (backendData: any): any => {
   const quantity_liters = backendData.quantity_liters || backendData.liters || 0;
   const price_per_liter = backendData.price_per_liter || 0;
   const delivery_fee = backendData.delivery_fee || 0;
-  const tax_rate = backendData.tax_rate || 0.19;
+  
+  // Handle VAT rate with proper fallback (vat_rate is primary, tax_rate is fallback)
+  const tax_rate = backendData.vat_rate || backendData.tax_rate || 0.19;
+  
+  // Log which VAT rate source was used for debugging
+  if (backendData.vat_rate !== undefined) {
+    logger.apiDebug("Using vat_rate from backend:", backendData.vat_rate);
+  } else if (backendData.tax_rate !== undefined) {
+    logger.apiDebug("Using tax_rate fallback from backend:", backendData.tax_rate);
+  } else {
+    logger.warn("No VAT rate provided by backend, using default 19%");
+  }
   
   // Use new field names (basePrice, totalAmount) or fall back to legacy fields
   let total_net = backendData.basePrice || backendData.total_net;
