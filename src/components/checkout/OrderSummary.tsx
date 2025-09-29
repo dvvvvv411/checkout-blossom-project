@@ -129,7 +129,7 @@ export const OrderSummary = ({ orderData, shopConfig, accentColor, language }: O
           
           <div className="flex justify-between items-center py-1 border-b border-gray-100">
             <span className="text-gray-700 text-sm">
-              {getTranslation("vat", language)} ({Math.round(orderData.tax_rate * 100)}%)
+              {getTranslation("vat", language)} ({Math.round((orderData.tax_rate || 0.19) * 100)}%)
             </span>
             <span className="font-medium text-gray-900 text-sm">
               {formatPrice(orderData.total_tax)}

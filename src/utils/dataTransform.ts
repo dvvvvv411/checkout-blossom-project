@@ -50,17 +50,21 @@ export const transformOrderData = (backendData: any): any => {
   const price_per_liter = backendData.price_per_liter || 0;
   const delivery_fee = backendData.delivery_fee || 0;
   
-  // Handle VAT rate with proper fallback (vat_rate is primary, tax_rate is fallback)
-  const tax_rate = backendData.vat_rate || backendData.tax_rate || 0.19;
-  
-  // Log which VAT rate source was used for debugging
+  // Handle VAT rate - backend sends percentage (19), convert to decimal (0.19) for calculations
+  let rawVatRate;
   if (backendData.vat_rate !== undefined) {
+    rawVatRate = backendData.vat_rate;
     logger.apiDebug("Using vat_rate from backend:", backendData.vat_rate);
   } else if (backendData.tax_rate !== undefined) {
+    rawVatRate = backendData.tax_rate;
     logger.apiDebug("Using tax_rate fallback from backend:", backendData.tax_rate);
   } else {
+    rawVatRate = 19;
     logger.warn("No VAT rate provided by backend, using default 19%");
   }
+  
+  // Convert percentage to decimal for calculations (19 -> 0.19)
+  const tax_rate = rawVatRate > 1 ? rawVatRate / 100 : rawVatRate;
   
   // Use new field names (basePrice, totalAmount) or fall back to legacy fields
   let total_net = backendData.basePrice || backendData.total_net;
