@@ -106,6 +106,17 @@ export const transformOrderData = (backendData: any): any => {
     logger.devDetailed("Calculated missing total_tax:", total_tax);
   }
   
+  // Debug log for currency mapping
+  logger.apiDebug("Backend data structure for currency:", {
+    shop_currency: backendData.shop?.currency,
+    direct_currency: backendData.currency,
+    shop_object: backendData.shop
+  });
+
+  // Use shop currency first (new API structure), then fallback to direct currency (legacy)
+  const currency = backendData.shop?.currency || backendData.currency || "EUR";
+  logger.apiDebug("Currency resolved to:", currency);
+
   const transformed = {
     shop_id: backendData.shop_id,
     product_name: backendData.product_name || backendData.product || "Heizöl",
@@ -114,7 +125,7 @@ export const transformOrderData = (backendData: any): any => {
     price_per_liter,
     delivery_fee,
     tax_rate,
-    currency: backendData.currency || "EUR",
+    currency,
     total_net: Number(total_net.toFixed(2)),
     total_tax: Number(total_tax.toFixed(2)),
     total_gross: Number(total_gross.toFixed(2)),
