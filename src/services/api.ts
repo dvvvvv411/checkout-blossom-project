@@ -258,21 +258,45 @@ export const formatCurrency = (
 ): string => {
   const locale = getLocaleFromLanguage(language);
   
+  // Currency symbol mapping for fallback
+  const currencySymbols: Record<string, string> = {
+    "EUR": "€",
+    "USD": "$", 
+    "PLN": "zł",
+    "GBP": "£"
+  };
+  
   try {
-    return new Intl.NumberFormat(locale, {
+    const formatted = new Intl.NumberFormat(locale, {
       style: 'currency',
       currency: currency,
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(amount);
+    
+    logger.dev(`Currency formatting successful: ${amount} ${currency} -> ${formatted}`);
+    return formatted;
   } catch (error) {
-    // Fallback to EUR if currency is not supported
-    return new Intl.NumberFormat(locale, {
-      style: 'currency',
-      currency: 'EUR',
+    logger.warn(`Currency formatting failed for ${currency}, using fallback:`, error);
+    
+    // Manual formatting with proper currency symbol
+    const symbol = currencySymbols[currency] || "€";
+    const formattedNumber = new Intl.NumberFormat(locale, {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(amount);
+    
+    // For Polish locale with PLN, put symbol after the number (Polish convention)
+    if (currency === "PLN" && language === "PL") {
+      const result = `${formattedNumber} ${symbol}`;
+      logger.dev(`PLN manual formatting: ${amount} -> ${result}`);
+      return result;
+    }
+    
+    // For other currencies, put symbol before the number
+    const result = `${symbol} ${formattedNumber}`;
+    logger.dev(`Manual formatting: ${amount} ${currency} -> ${result}`);
+    return result;
   }
 };
 
