@@ -275,6 +275,14 @@ export const formatCurrency = (
     }).format(amount);
     
     logger.dev(`Currency formatting successful: ${amount} ${currency} -> ${formatted}`);
+    
+    // Post-processing: Check if PLN was formatted as "PLN" instead of "zł"
+    if (currency === "PLN" && formatted.includes("PLN")) {
+      const polishFormatted = formatted.replace(/PLN/g, "zł");
+      logger.dev(`PLN post-processing: ${formatted} -> ${polishFormatted}`);
+      return polishFormatted;
+    }
+    
     return formatted;
   } catch (error) {
     logger.warn(`Currency formatting failed for ${currency}, using fallback:`, error);
