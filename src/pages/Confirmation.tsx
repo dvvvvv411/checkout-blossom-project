@@ -654,7 +654,7 @@ const Confirmation = () => {
                     <div className="flex justify-between py-2 border-t-2 border-gray-200 text-lg font-bold">
                       <span>{getTranslation("total", language)}:</span>
                       <span style={{ color: accentColor }}>
-                        {formatCurrency(orderResponse.total_amount, orderResponse.currency, language)}
+                        {formatCurrency(orderResponse.total_amount, orderData.currency || orderResponse.currency || "EUR", language)}
                       </span>
                     </div>
                   </div>
