@@ -38,6 +38,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
       street: "",
       postal_code: "",
       city: "",
+      company_name: "",
     },
     billing_first_name: "",
     billing_last_name: "",
@@ -82,6 +83,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
           street: prev.delivery_address.street,
           postal_code: prev.delivery_address.postal_code,
           city: prev.delivery_address.city,
+          company_name: prev.delivery_address.company_name,
         },
         billing_first_name: prev.first_name,
         billing_last_name: prev.last_name,
@@ -220,6 +222,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
           street: "",
           postal_code: "",
           city: "",
+          company_name: "",
         },
         billing_first_name: "",
         billing_last_name: "",
@@ -233,6 +236,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
           street: prev.delivery_address.street,
           postal_code: prev.delivery_address.postal_code,
           city: prev.delivery_address.city,
+          company_name: prev.delivery_address.company_name,
         },
         billing_first_name: prev.first_name,
         billing_last_name: prev.last_name,
@@ -454,6 +458,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
             firstName={formData.first_name}
             lastName={formData.last_name}
             phone={formData.phone}
+            companyName={formData.delivery_address.company_name || ""}
             street={formData.delivery_address.street}
             postalCode={formData.delivery_address.postal_code}
             city={formData.delivery_address.city}
@@ -473,6 +478,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
             onFirstNameBlur={() => handleFieldBlur("first_name")}
             onLastNameBlur={() => handleFieldBlur("last_name")}
             onPhoneBlur={() => handleFieldBlur("phone")}
+            onCompanyNameBlur={() => handleFieldBlur("delivery_address.company_name")}
             onStreetBlur={() => handleFieldBlur("delivery_address.street")}
             onPostalCodeBlur={() => handleFieldBlur("delivery_address.postal_code")}
             onCityBlur={() => handleFieldBlur("delivery_address.city")}
@@ -482,6 +488,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
             showBillingAddress={showBillingAddress}
             firstName={formData.billing_first_name || ""}
             lastName={formData.billing_last_name || ""}
+            companyName={formData.billing_address?.company_name || ""}
             street={formData.billing_address?.street || ""}
             postalCode={formData.billing_address?.postal_code || ""}
             city={formData.billing_address?.city || ""}
@@ -497,6 +504,7 @@ export const CustomerForm = ({ orderData, shopConfig, accentColor, showMobileNav
             cityError={getFieldError("billing_address.city")}
             onFirstNameBlur={() => handleFieldBlur("billing_address.first_name")}
             onLastNameBlur={() => handleFieldBlur("billing_address.last_name")}
+            onCompanyNameBlur={() => handleFieldBlur("billing_address.company_name")}
             onStreetBlur={() => handleFieldBlur("billing_address.street")}
             onPostalCodeBlur={() => handleFieldBlur("billing_address.postal_code")}
             onCityBlur={() => handleFieldBlur("billing_address.city")}

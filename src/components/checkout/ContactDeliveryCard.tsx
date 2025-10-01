@@ -10,6 +10,7 @@ interface ContactDeliveryCardProps {
   firstName: string;
   lastName: string;
   phone: string;
+  companyName: string;
   street: string;
   postalCode: string;
   city: string;
@@ -28,6 +29,7 @@ interface ContactDeliveryCardProps {
   onFirstNameBlur?: () => void;
   onLastNameBlur?: () => void;
   onPhoneBlur?: () => void;
+  onCompanyNameBlur?: () => void;
   onStreetBlur?: () => void;
   onPostalCodeBlur?: () => void;
   onCityBlur?: () => void;
@@ -37,6 +39,7 @@ export const ContactDeliveryCard = ({
   firstName, 
   lastName, 
   phone, 
+  companyName,
   street, 
   postalCode, 
   city, 
@@ -53,6 +56,7 @@ export const ContactDeliveryCard = ({
   onFirstNameBlur,
   onLastNameBlur,
   onPhoneBlur,
+  onCompanyNameBlur,
   onStreetBlur,
   onPostalCodeBlur,
   onCityBlur
@@ -91,6 +95,8 @@ export const ContactDeliveryCard = ({
       checkCompletion(firstName, value, phone, street, postalCode, city);
     } else if (field === "phone") {
       checkCompletion(firstName, lastName, value, street, postalCode, city);
+    } else if (field === "delivery_address.company_name") {
+      // Company name is optional, no need to check completion
     } else if (field === "delivery_address.street") {
       checkCompletion(firstName, lastName, phone, value, postalCode, city);
     } else if (field === "delivery_address.postal_code") {
@@ -148,6 +154,28 @@ export const ContactDeliveryCard = ({
           {/* Personal Data Section */}
           <div>
             <div className="space-y-4">
+              {/* Company Name Field - Optional, above first/last name */}
+              <div>
+                <Label htmlFor="company_name" className="text-sm font-medium text-gray-700 mb-2 block">
+                  {getTranslation("company_name", language)}
+                </Label>
+                <div className="relative">
+                  <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    id="company_name"
+                    value={companyName}
+                    onChange={(e) => handleChange("delivery_address.company_name", e.target.value)}
+                    onFocus={() => setFocused(true)}
+                    onBlur={() => {
+                      setFocused(false);
+                      onCompanyNameBlur?.();
+                    }}
+                    className="pl-10 h-12 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-200 text-base bg-white border-gray-300"
+                    placeholder={getTranslation("company_name_placeholder", language)}
+                  />
+                </div>
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="first_name" className="text-sm font-medium text-gray-700 mb-2 block">

@@ -545,6 +545,24 @@ const translations = {
     PL: "Miasto",
     NL: "Stad"
   },
+  company_name: {
+    DE: "Firmenname (optional)",
+    EN: "Company Name (optional)",
+    FR: "Nom de l'entreprise (optionnel)",
+    IT: "Nome azienda (facoltativo)",
+    ES: "Nombre de la empresa (opcional)",
+    PL: "Nazwa firmy (opcjonalnie)",
+    NL: "Bedrijfsnaam (optioneel)"
+  },
+  company_name_placeholder: {
+    DE: "Ihr Firmenname",
+    EN: "Your company name",
+    FR: "Nom de votre entreprise",
+    IT: "Nome della tua azienda",
+    ES: "Nombre de su empresa",
+    PL: "Nazwa Twojej firmy",
+    NL: "Uw bedrijfsnaam"
+  },
   email: {
     DE: "E-Mail",
     EN: "Email",

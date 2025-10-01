@@ -12,6 +12,7 @@ interface BillingAddressCardProps {
   showBillingAddress: boolean;
   firstName: string;
   lastName: string;
+  companyName: string;
   street: string;
   postalCode: string;
   city: string;
@@ -27,6 +28,7 @@ interface BillingAddressCardProps {
   cityError?: string;
   onFirstNameBlur?: () => void;
   onLastNameBlur?: () => void;
+  onCompanyNameBlur?: () => void;
   onStreetBlur?: () => void;
   onPostalCodeBlur?: () => void;
   onCityBlur?: () => void;
@@ -36,6 +38,7 @@ export const BillingAddressCard = ({
   showBillingAddress,
   firstName,
   lastName,
+  companyName,
   street, 
   postalCode, 
   city, 
@@ -51,6 +54,7 @@ export const BillingAddressCard = ({
   cityError,
   onFirstNameBlur,
   onLastNameBlur,
+  onCompanyNameBlur,
   onStreetBlur,
   onPostalCodeBlur,
   onCityBlur
@@ -82,6 +86,9 @@ export const BillingAddressCard = ({
       // Update the value that was just changed
       if (field === "billing_address.first_name") firstNameValue = value;
       if (field === "billing_address.last_name") lastNameValue = value;
+      if (field === "billing_address.company_name") {
+        // Company name is optional, no need to check for completion
+      }
       if (field === "billing_address.street") streetValue = value;
       if (field === "billing_address.postal_code") postalCodeValue = value;
       if (field === "billing_address.city") cityValue = value;
@@ -141,6 +148,28 @@ export const BillingAddressCard = ({
 
         <Collapsible open={showBillingAddress}>
           <CollapsibleContent className="space-y-4">
+            {/* Company Name Field - Optional, above first/last name */}
+            <div>
+              <Label htmlFor="billing_company_name" className="text-sm font-medium text-gray-700 mb-2 block">
+                {getTranslation("company_name", language)}
+              </Label>
+              <div className="relative">
+                <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  id="billing_company_name"
+                  value={companyName}
+                  onChange={(e) => handleChange("billing_address.company_name", e.target.value)}
+                  onFocus={() => setFocused(true)}
+                  onBlur={() => {
+                    setFocused(false);
+                    onCompanyNameBlur?.();
+                  }}
+                  className="pl-10 h-12 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all"
+                  placeholder={getTranslation("company_name_placeholder", language)}
+                />
+              </div>
+            </div>
+
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="billing_first_name" className="text-sm font-medium text-gray-700 mb-2 block">

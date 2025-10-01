@@ -44,11 +44,13 @@ export interface CustomerData {
     street: string;
     postal_code: string;
     city: string;
+    company_name?: string;
   };
   billing_address?: {
     street: string;
     postal_code: string;
     city: string;
+    company_name?: string;
   };
   billing_first_name?: string;
   billing_last_name?: string;
@@ -74,9 +76,11 @@ export interface OrderSubmissionPayload {
   delivery_street: string;
   delivery_postal_code: string;
   delivery_city: string;
+  delivery_company_name?: string;
   billing_street?: string;
   billing_postal_code?: string;
   billing_city?: string;
+  billing_company_name?: string;
   billing_first_name?: string;
   billing_last_name?: string;
   payment_method_id: "vorkasse" | "rechnung";
@@ -708,9 +712,11 @@ export const submitOrder = async (
     delivery_street: customerData.delivery_address.street,
     delivery_postal_code: customerData.delivery_address.postal_code,
     delivery_city: customerData.delivery_address.city,
+    delivery_company_name: customerData.delivery_address.company_name,
     billing_street: customerData.billing_address?.street,
     billing_postal_code: customerData.billing_address?.postal_code,
     billing_city: customerData.billing_address?.city,
+    billing_company_name: customerData.billing_address?.company_name,
     billing_first_name: customerData.billing_first_name,
     billing_last_name: customerData.billing_last_name,
     payment_method_id: customerData.payment_method,
